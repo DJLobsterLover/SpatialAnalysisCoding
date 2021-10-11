@@ -1,5 +1,8 @@
 package com.cl.Frame;
 
+/**
+ * @author DJLobster
+ */
 public class Mouse {
 
     public static void main(String[] args) {
