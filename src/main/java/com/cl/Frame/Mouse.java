@@ -9,6 +9,7 @@ public class Mouse {
         // TODO Auto-generated method stub
         FrameWithMouseEvent f1=new FrameWithMouseEvent();
         f1.init();
+        System.out.println("hello");
     }
 
 }
