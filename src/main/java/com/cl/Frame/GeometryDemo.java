@@ -12,9 +12,9 @@ import com.vividsolutions.jts.io.WKTReader;
 public class GeometryDemo {
     private GeometryFactory geomFactory = new GeometryFactory();
 
-    public Point createPoint(double x, double y){
+    public Point createPoint(double x, double y,double z){
 //        Coordinate coord = new Coordinate(109.013388, 32.715519);
-        Coordinate coord = new Coordinate(x, y,1);
+        Coordinate coord = new Coordinate(x, y,z);
         Point point = geomFactory.createPoint( coord );
 
         return point;
@@ -64,9 +64,10 @@ public class GeometryDemo {
 //        for(Coordinate coord:coords){
 //            System.out.println(coord.x+","+coord.y);
 //        }
-        Point p1 = gt.createPoint(1,1);
-        LineString p2 = gt.createLine();
+        Point p1 = gt.createPoint(0,0,0);
+        Point p2 = gt.createPoint(1,1,1);
+//        LineString p2 = gt.createLine();
         Polygon p3 = gt.createPolygonByWKT();
-        System.out.println(p3.getArea());
+        System.out.println(p1.distance(p2));
     }
 }

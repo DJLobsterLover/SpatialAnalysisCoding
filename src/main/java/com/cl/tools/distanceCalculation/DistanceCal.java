@@ -1,6 +1,7 @@
 package com.cl.tools.distanceCalculation;
 
 import com.cl.pojo.Point;
+//import com.vividsolutions.jts.geom.Point;
 
 /**
  * @author DJLobster

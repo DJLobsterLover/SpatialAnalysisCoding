@@ -1,6 +1,6 @@
 package com.cl.tools.vectorSpaceCal;
 
-import com.cl.pojo.Point;
+import com.vividsolutions.jts.geom.Point;
 
 import java.util.List;
 
