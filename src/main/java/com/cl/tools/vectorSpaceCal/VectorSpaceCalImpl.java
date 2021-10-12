@@ -16,5 +16,6 @@ public class VectorSpaceCalImpl implements VectorSpaceCal{
                     - (points.get(i).getX() * points.get(i+1).getY()));
         }
         return rs;
+
     }
 }
