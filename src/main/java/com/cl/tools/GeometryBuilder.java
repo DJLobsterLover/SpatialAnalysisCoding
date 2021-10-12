@@ -1,4 +1,4 @@
-package com.cl.pojo;
+package com.cl.tools;
 import com.vividsolutions.jts.algorithm.MinimumDiameter;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.geom.Point;
@@ -11,14 +11,13 @@ import com.vividsolutions.jts.io.WKTReader;
  */
 public class GeometryBuilder {
     private GeometryFactory geomFactory = new GeometryFactory();
-
     /**
      * @author DJLobster
      * 创建点
      */
-    public Point createPoint(double x, double y, double z){
+    public Point createPoint(double x, double y){
 //        Coordinate coord = new Coordinate(109.013388, 32.715519);
-        Coordinate coord = new Coordinate(x, y,z);
+        Coordinate coord = new Coordinate(x, y);
         Point point = geomFactory.createPoint( coord );
         return point;
     }
@@ -31,5 +30,13 @@ public class GeometryBuilder {
                 new Coordinate(endPoint.getX(), endPoint.getY())};
         LineString line = geomFactory.createLineString(coords);
         return line;
+    }
+    /**
+     * @author DJLobster
+     * 创建面
+     */
+    public Polygon createPolygon(Coordinate[] coordinates) {
+        Polygon polygon = geomFactory.createPolygon(coordinates);
+        return polygon;
     }
 }

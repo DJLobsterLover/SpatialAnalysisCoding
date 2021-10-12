@@ -13,5 +13,13 @@ public interface SpatialRelation {
      * @return
      * 点到线的距离
      */
-    double PointToLine(Point p,LineString l);
+    double pointToLine(Point p,LineString l);
+
+    /**
+     * @param p
+     * @param pol
+     * @return
+     * 点到面的距离
+     */
+    double pointToPolygon(Point p,Polygon pol);
 }
