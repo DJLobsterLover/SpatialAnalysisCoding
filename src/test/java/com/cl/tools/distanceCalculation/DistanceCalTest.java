@@ -7,8 +7,9 @@ public class DistanceCalTest {
     @Test
     public void Test() {
         DistanceCal dc = new DistanceCalImpl();
-        Point p1 = new Point(0,0);
-        Point p2 = new Point(1,2);
-        System.out.println(dc.minkowskiDistance(p1,p2,2));
+        Point p1 = new Point(0,90);
+        Point p2 = new Point(0,45);
+        System.out.println(dc.sphericalDistance(p1,p2,2));
+
     }
 }

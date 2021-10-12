@@ -46,4 +46,37 @@ public class DistanceCalImpl implements DistanceCal{
         rs = Math.pow(rs, 1/m);
         return rs;
     }
+
+    public double mahalanobisDistance(Point startPoint, Point endPoint) {
+        double rs = 0.0;
+
+        return rs;
+    }
+
+    public double sphericalDistance(Point startPoint, Point endPoint, double R) {
+        //设x为经度，y为纬度
+        double rs = 0.0;
+        //经纬度转换弧度制
+        double long1 = startPoint.getX() * Math.PI / 180 ;
+        double long2 = endPoint.getX() * Math.PI / 180 ;
+        double lat1 = startPoint.getY() * Math.PI / 180;
+        double lat2 = endPoint.getY() * Math.PI / 180;
+        rs = R * Math.acos(Math.cos(lat1) * Math.cos(lat2) *
+                Math.cos(long1 - long2) + Math.sin(lat1) * Math.sin(lat2));
+        return rs;
+    }
+
+    public double sphericalDistanceHaversine(Point startPoint, Point endPoint, double R) {
+        double rs = 0.0;
+        //经纬度转换弧度制
+        double long1 = startPoint.getX() * Math.PI / 180 ;
+        double long2 = endPoint.getX() * Math.PI / 180 ;
+        double lat1 = startPoint.getY() * Math.PI / 180;
+        double lat2 = endPoint.getY() * Math.PI / 180;
+        double A = (lat1 - lat2) / 2;
+        double B = (long1 - long2) / 2;
+        rs = 2 * R * Math.asin(Math.sqrt(Math.pow(Math.sin(A), 2) + Math.pow(Math.sin(B), 2) *
+                Math.cos(lat1) * Math.cos(lat2)));
+        return rs;
+    }
 }
