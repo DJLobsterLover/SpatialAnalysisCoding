@@ -8,6 +8,12 @@ public class Point {
     private double y;
     private double z;
 
+    public Point(double x) {
+        this.x = x;
+        this.y = 0;
+        this.z = 0;
+    }
+
     public Point(double x, double y) {
         this.x = x;
         this.y = y;
@@ -55,4 +61,5 @@ public class Point {
                 ", z=" + z +
                 '}';
     }
+
 }
