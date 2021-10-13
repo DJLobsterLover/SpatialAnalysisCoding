@@ -51,6 +51,7 @@ public class GeometryDemo {
         };
         WKTReader reader = new WKTReader( geomFactory );
         Polygon polygon = geomFactory.createPolygon(coordinates);
+
 //        Polygon polygon = (Polygon) reader.read("POLYGON((50 10 , 30 0 , 40 10 , 30 20 , 50 10 ))");
         return polygon;
     }

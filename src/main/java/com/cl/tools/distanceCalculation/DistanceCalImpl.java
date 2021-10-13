@@ -1,16 +1,18 @@
 package com.cl.tools.distanceCalculation;
 
-import com.cl.pojo.Point;
+import com.cl.pojo.MyLine;
+import com.cl.pojo.MyPoint;
+import com.cl.pojo.MyPolygon;
+import com.mysql.jdbc.StringUtils;
 //import com.vividsolutions.jts.geom.Point;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author DJLobster
  */
 public class DistanceCalImpl implements DistanceCal{
-    public double euclideanDistance(Point startPoint, Point endPoint) {
+    public double euclideanDistance(MyPoint startPoint, MyPoint endPoint) {
         double rs = 0.0;
         rs += Math.pow(startPoint.getX()-endPoint.getX(),2);
         rs += Math.pow(startPoint.getY()-endPoint.getY(),2);
@@ -19,7 +21,7 @@ public class DistanceCalImpl implements DistanceCal{
         return rs;
     }
 
-    public double manhattanDistance(Point startPoint, Point endPoint) {
+    public double manhattanDistance(MyPoint startPoint, MyPoint endPoint) {
         double rs = 0.0;
         rs += Math.abs(startPoint.getX() - endPoint.getX());
         rs += Math.abs(startPoint.getY() - endPoint.getY());
@@ -27,7 +29,7 @@ public class DistanceCalImpl implements DistanceCal{
         return rs;
     }
 
-    public double chebyshevDistance(Point startPoint, Point endPoint) {
+    public double chebyshevDistance(MyPoint startPoint, MyPoint endPoint) {
         double rs = 0.0;
         ArrayList list = new ArrayList();
         list.add(Math.abs(startPoint.getX() - endPoint.getX()));
@@ -39,7 +41,7 @@ public class DistanceCalImpl implements DistanceCal{
         return rs;
     }
 
-    public double minkowskiDistance(Point startPoint, Point endPoint ,double m) {
+    public double minkowskiDistance(MyPoint startPoint, MyPoint endPoint , double m) {
         double rs = 0.0;
         rs += Math.pow(Math.abs(startPoint.getX() - endPoint.getX()),m);
         rs += Math.pow(Math.abs(startPoint.getY() - endPoint.getY()),m);
@@ -48,13 +50,13 @@ public class DistanceCalImpl implements DistanceCal{
         return rs;
     }
 
-    public double mahalanobisDistance(Point startPoint, Point endPoint) {
+    public double mahalanobisDistance(MyPoint startPoint, MyPoint endPoint) {
         double rs = 0.0;
 
         return rs;
     }
 
-    public double sphericalDistance(Point startPoint, Point endPoint, double R) {
+    public double sphericalDistance(MyPoint startPoint, MyPoint endPoint, double R) {
         //设x为经度，y为纬度
         double rs = 0.0;
         //经纬度转换弧度制
@@ -67,7 +69,7 @@ public class DistanceCalImpl implements DistanceCal{
         return rs;
     }
 
-    public double sphericalDistanceHaversine(Point startPoint, Point endPoint, double R) {
+    public double sphericalDistanceHaversine(MyPoint startPoint, MyPoint endPoint, double R) {
         double rs = 0.0;
         //经纬度转换弧度制
         double long1 = startPoint.getX() * Math.PI / 180 ;
@@ -78,6 +80,42 @@ public class DistanceCalImpl implements DistanceCal{
         double B = (long1 - long2) / 2;
         rs = 2 * R * Math.asin(Math.sqrt(Math.pow(Math.sin(A), 2) + Math.pow(Math.sin(B), 2) *
                 Math.cos(lat1) * Math.cos(lat2)));
+        return rs;
+    }
+
+    public double pointToLineDistance(MyPoint point, MyLine line, String type) {
+        double rs = 0;
+        if ((StringUtils.isNullOrEmpty(type))) {
+            //求点到线的最大距离
+            rs = Math.min(euclideanDistance(point, line.getStartPoint()),euclideanDistance(point,line.getEndPoint()));
+        } else if (type.equals("max")) {
+            //求点到直线的最小距离
+            rs = Math.max(euclideanDistance(point, line.getStartPoint()), euclideanDistance(point, line.getEndPoint()));
+        } else {
+            rs = Math.min(euclideanDistance(point, line.getStartPoint()),euclideanDistance(point,line.getEndPoint()));
+        }
+        return rs;
+    }
+
+    public double pointToPolygon(MyPoint p, MyPolygon polygon, String type) {
+        double rs = 0;
+        try {
+            rs = euclideanDistance(p, polygon.getPolygonPoints().get(0));
+            if (StringUtils.isNullOrEmpty(type) || type.equals("min")) {
+                //如果为空，默认为最小距离
+                for (int i = 1; i < polygon.getPolygonPoints().size(); i++) {
+                    rs = Math.min(rs, euclideanDistance(p, polygon.getPolygonPoints().get(i)));
+                }
+            } else if (type.equals("max")) {
+                for (int i = 1; i < polygon.getPolygonPoints().size(); i++) {
+                    rs = Math.max(rs, euclideanDistance(p, polygon.getPolygonPoints().get(i)));
+                }
+            } else {
+                System.out.println("请输入max Or min");
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
         return rs;
     }
 }

@@ -3,30 +3,30 @@ package com.cl.pojo;
 /**
  * @author DJLobster
  */
-public class Point {
+public class MyPoint {
     private double x;
     private double y;
     private double z;
 
-    public Point(double x) {
+    public MyPoint(double x) {
         this.x = x;
         this.y = 0;
         this.z = 0;
     }
 
-    public Point(double x, double y) {
+    public MyPoint(double x, double y) {
         this.x = x;
         this.y = y;
         this.z = 0;
     }
 
-    public Point(double x, double y, double z) {
+    public MyPoint(double x, double y, double z) {
         this.x = x;
         this.y = y;
         this.z = z;
     }
 
-    public Point() {
+    public MyPoint() {
     }
 
     public double getX() {
