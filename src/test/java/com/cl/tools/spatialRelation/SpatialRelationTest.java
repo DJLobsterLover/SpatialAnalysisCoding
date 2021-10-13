@@ -18,15 +18,17 @@ public class SpatialRelationTest {
     }
     @Test
     public void test1() {
-        Point p1 = gb.createPoint(-1, -1);
+        Point p1 = gb.createPoint(0, 0);
+        Point p2 = gb.createPoint(1,1);
+        LineString line = gb.createLine(p1, p2);
         Coordinate[] coordinates = new Coordinate[]{
-                new Coordinate(0, 0),
-                new Coordinate(0, 2),
-                new Coordinate(2, 2),
-                new Coordinate(2, 0),
-                new Coordinate(0, 0),
+                new Coordinate(0, -1),
+                new Coordinate(0, -2),
+                new Coordinate(1, -2),
+                new Coordinate(1, 0),
+                new Coordinate(0, -1),
         };
         Polygon polygon = gb.createPolygon(coordinates);
-        System.out.println(sr.pointToPolygon(p1,polygon));
+        System.out.println(line.distance(polygon));
     }
 }

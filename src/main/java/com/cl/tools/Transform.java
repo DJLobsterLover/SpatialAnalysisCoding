@@ -34,4 +34,9 @@ public class Transform {
         return polygon1;
     }
 
+    public MyPoint PointTransBack(Point p) {
+        MyPoint p1 = new MyPoint(p.getX(), p.getY());
+        return p1;
+    }
+
 }

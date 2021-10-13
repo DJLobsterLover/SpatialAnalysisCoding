@@ -82,5 +82,29 @@ public interface DistanceCal {
      * @return
      * 计算点到多边形的距离
      */
-    double pointToPolygon(MyPoint p, MyPolygon polygon ,String type);
+    double pointToPolygonDistance(MyPoint p, MyPolygon polygon ,String type);
+
+    /**
+     * @param l1
+     * @param l2
+     * @return
+     * 计算线到线间的距离
+     */
+    double lineToLineDistance(MyLine l1, MyLine l2);
+
+    /**
+     * @param l1
+     * @param polygon
+     * @return
+     * 计算线到面的距离
+     */
+    double lineToPolygonDistance(MyLine l1, MyPolygon polygon);
+
+    /**
+     * @param polygon1
+     * @param polygon2
+     * @return
+     * 计算面到面的距离
+     */
+    double polygonToPolygonDistance(MyPolygon polygon1, MyPolygon polygon2, String type);
 }

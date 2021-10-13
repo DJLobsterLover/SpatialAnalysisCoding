@@ -3,7 +3,9 @@ package com.cl.tools.distanceCalculation;
 import com.cl.pojo.MyLine;
 import com.cl.pojo.MyPoint;
 import com.cl.pojo.MyPolygon;
+import com.cl.tools.Transform;
 import com.mysql.jdbc.StringUtils;
+import com.vividsolutions.jts.geom.Polygon;
 //import com.vividsolutions.jts.geom.Point;
 
 import java.util.ArrayList;
@@ -12,6 +14,8 @@ import java.util.ArrayList;
  * @author DJLobster
  */
 public class DistanceCalImpl implements DistanceCal{
+    private Transform tf = new Transform();
+
     public double euclideanDistance(MyPoint startPoint, MyPoint endPoint) {
         double rs = 0.0;
         rs += Math.pow(startPoint.getX()-endPoint.getX(),2);
@@ -97,7 +101,7 @@ public class DistanceCalImpl implements DistanceCal{
         return rs;
     }
 
-    public double pointToPolygon(MyPoint p, MyPolygon polygon, String type) {
+    public double pointToPolygonDistance(MyPoint p, MyPolygon polygon, String type) {
         double rs = 0;
         try {
             rs = euclideanDistance(p, polygon.getPolygonPoints().get(0));
@@ -110,11 +114,63 @@ public class DistanceCalImpl implements DistanceCal{
                 for (int i = 1; i < polygon.getPolygonPoints().size(); i++) {
                     rs = Math.max(rs, euclideanDistance(p, polygon.getPolygonPoints().get(i)));
                 }
+            } else if (type.equals("center")){
+                Polygon tempPolygon = tf.PolygonTrans(polygon);
+                MyPoint tempPoint = tf.PointTransBack(tempPolygon.getCentroid());
+                rs = euclideanDistance(p,tempPoint);
             } else {
-                System.out.println("请输入max Or min");
+                System.out.println("请输入max Or min Or center");
             }
         }catch (Exception e) {
             e.printStackTrace();
+        }
+        return rs;
+    }
+
+    public double lineToLineDistance(MyLine l1, MyLine l2) {
+        double rs = 0;
+        rs = euclideanDistance(l1.getStartPoint(), l2.getStartPoint());
+        rs = Math.min(rs , euclideanDistance(l1.getStartPoint(),l2.getEndPoint()));
+        rs = Math.min(rs , euclideanDistance(l1.getEndPoint(),l2.getStartPoint()));
+        rs = Math.min(rs , euclideanDistance(l1.getEndPoint(),l2.getEndPoint()));
+        return rs;
+    }
+
+    public double lineToPolygonDistance(MyLine l1, MyPolygon polygon) {
+        double rs = 0;
+        rs = euclideanDistance(l1.getStartPoint(),polygon.getPolygonPoints().get(0));
+        for (int i = 1; i < polygon.getPolygonPoints().size(); i++) {
+            rs = Math.min(rs, euclideanDistance(l1.getStartPoint(),polygon.getPolygonPoints().get(i)));
+        }
+        for (int i = 0; i < polygon.getPolygonPoints().size(); i++) {
+            rs = Math.min(rs, euclideanDistance(l1.getEndPoint(),polygon.getPolygonPoints().get(i)));
+        }
+        return rs;
+    }
+
+    public double polygonToPolygonDistance(MyPolygon polygon1, MyPolygon polygon2, String type) {
+        double rs = 0;
+        if (StringUtils.isNullOrEmpty(type)) {
+            System.out.println("请输入一种类型[min、max、center】");
+        } else if (type.equals("center")) {
+            Polygon tempPolygon1 = tf.PolygonTrans(polygon1);
+            Polygon tempPolygon2 = tf.PolygonTrans(polygon2);
+            rs = euclideanDistance(tf.PointTransBack(tempPolygon1.getCentroid()),tf.PointTransBack(tempPolygon2.getCentroid()));
+        } else if (type.equals("max")) {
+            for (int i = 0; i < polygon1.getPolygonPoints().size(); i++) {
+                for (int j = 0; j < polygon2.getPolygonPoints().size(); j++) {
+                    rs = Math.max(rs, euclideanDistance(polygon1.getPolygonPoints().get(i), polygon2.getPolygonPoints().get(j)));
+                }
+            }
+        } else if (type.equals("min")) {
+            rs = euclideanDistance(polygon1.getPolygonPoints().get(0), polygon2.getPolygonPoints().get(0));
+            for (int i = 0; i < polygon1.getPolygonPoints().size(); i++) {
+                for (int j = 0; j < polygon2.getPolygonPoints().size(); j++) {
+                    rs = Math.min(rs, euclideanDistance(polygon1.getPolygonPoints().get(i), polygon2.getPolygonPoints().get(j)));
+                }
+            }
+        } else {
+            System.out.println("请输入一种类型[min、max、center】");
         }
         return rs;
     }
