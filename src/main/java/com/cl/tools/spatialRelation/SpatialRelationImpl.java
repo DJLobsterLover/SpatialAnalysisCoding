@@ -38,15 +38,18 @@ public class SpatialRelationImpl implements SpatialRelation{
     public boolean pointWithinPolygonWinding(MyPoint p, MyPolygon pol) {
         double angle = 0;
         boolean rs = false;
-        double temp = 0;
         int sumPoints = pol.getPolygonPoints().size();
         for (int i = 0; i < sumPoints; i++) {
             double a = dc.euclideanDistance(pol.getPolygonPoints().get(i%sumPoints),pol.getPolygonPoints().get((i+1)%sumPoints));
             double b = dc.euclideanDistance(p,pol.getPolygonPoints().get(i%sumPoints));
             double c = dc.euclideanDistance(p,pol.getPolygonPoints().get((i+1)%sumPoints));
-            temp = Math.acos((Math.pow(b, 2)+ Math.pow(c, 2) - Math.pow(a,2))/(2*b*c)) / Math.PI * 180;
-            System.out.println(temp);
-            angle += temp;
+            if (b == 0 | c == 0) {
+                rs = false;
+                System.out.println("该点在多边形上");
+                break;
+            } else {
+                angle += Math.acos((Math.pow(b, 2)+ Math.pow(c, 2) - Math.pow(a,2))/(2*b*c)) / Math.PI * 180;
+            }
         }
         System.out.println(angle);
         if (Math.abs(angle - 360) <= 1) {

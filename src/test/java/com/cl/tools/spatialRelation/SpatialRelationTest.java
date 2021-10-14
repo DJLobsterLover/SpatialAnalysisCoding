@@ -25,7 +25,7 @@ public class SpatialRelationTest {
     }
     @Test
     public void test1() {
-        Point p1 = gb.createPoint(9, 2);
+        Point p1 = gb.createPoint(1, 2);
         Point p2 = gb.createPoint(1,1);
         LineString line = gb.createLine(p1, p2);
         MyPoint myPoint = tf.PointTransBack(p1);
