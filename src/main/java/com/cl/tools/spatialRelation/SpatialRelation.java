@@ -29,4 +29,12 @@ public interface SpatialRelation {
      * @return 判断点是否子啊多边形内部
      */
     boolean pointWithinPolygon(MyPoint p, MyPolygon pol);
+
+    /**
+     * @param p
+     * @param pol
+     * @return
+     * 点在多边形内部，旋转数法
+     */
+    boolean pointWithinPolygonWinding(MyPoint p, MyPolygon pol);
 }
