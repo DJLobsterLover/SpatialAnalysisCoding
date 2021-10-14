@@ -11,10 +11,10 @@ public class TransformTest {
     public void Transform() {
         Transform tf = new Transform();
         ArrayList points = new ArrayList();
-        points.add(new MyPoint(0,0));
-        points.add(new MyPoint(1,0));
-        points.add(new MyPoint(1,1));
         points.add(new MyPoint(0,1));
+        points.add(new MyPoint(1,0));
+        points.add(new MyPoint(2,1));
+        points.add(new MyPoint(1,1));
         MyPolygon mPolygon = new MyPolygon(points);
         Polygon polygon = tf.PolygonTrans(mPolygon);
         System.out.println(polygon.getArea());

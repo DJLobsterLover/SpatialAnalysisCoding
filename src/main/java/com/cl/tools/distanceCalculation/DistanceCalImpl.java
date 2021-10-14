@@ -3,8 +3,12 @@ package com.cl.tools.distanceCalculation;
 import com.cl.pojo.MyLine;
 import com.cl.pojo.MyPoint;
 import com.cl.pojo.MyPolygon;
+import com.cl.tools.GeometryBuilder;
 import com.cl.tools.Transform;
 import com.mysql.jdbc.StringUtils;
+import com.vividsolutions.jts.algorithm.MinimumBoundingCircle;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 //import com.vividsolutions.jts.geom.Point;
 
@@ -15,6 +19,7 @@ import java.util.ArrayList;
  */
 public class DistanceCalImpl implements DistanceCal{
     private Transform tf = new Transform();
+    private GeometryBuilder gb = new GeometryBuilder();
 
     public double euclideanDistance(MyPoint startPoint, MyPoint endPoint) {
         double rs = 0.0;
@@ -173,5 +178,37 @@ public class DistanceCalImpl implements DistanceCal{
             System.out.println("请输入一种类型[min、max、center】");
         }
         return rs;
+    }
+
+    public MyPoint getPolygonCentroid(MyPolygon polygon) {
+        Polygon tempPolygon = tf.PolygonTrans(polygon);
+        return tf.PointTransBack(tempPolygon.getCentroid());
+    }
+
+    public MyPoint getPolygonInteriorPoint(MyPolygon polygon) {
+        Polygon tempPolygon = tf.PolygonTrans(polygon);
+        return tf.PointTransBack(tempPolygon.getInteriorPoint());
+    }
+
+    public MyPoint getPolygonCenter(MyPolygon polygon) {
+        double x = 0;
+        double y = 0;
+        for (int i = 0; i < polygon.getPolygonPoints().size(); i++) {
+            x += polygon.getPolygonPoints().get(i).getX();
+        }
+        for (int i = 0; i < polygon.getPolygonPoints().size(); i++) {
+            y += polygon.getPolygonPoints().get(i).getY();
+        }
+        x = x / polygon.getPolygonPoints().size();
+        y = y / polygon.getPolygonPoints().size();
+        MyPoint p = new MyPoint(x, y);
+        return p;
+    }
+
+    public MyPoint getPolygonExternal(MyPolygon polygon) {
+        MinimumBoundingCircle circle = new MinimumBoundingCircle(tf.PolygonTrans(polygon));
+        Coordinate co = circle.getCentre();
+        MyPoint myPoint = tf.PointTransBack(gb.createPoint(co.x, co.y));
+        return myPoint;
     }
 }

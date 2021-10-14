@@ -107,4 +107,33 @@ public interface DistanceCal {
      * 计算面到面的距离
      */
     double polygonToPolygonDistance(MyPolygon polygon1, MyPolygon polygon2, String type);
+
+    /**
+     * @param polygon
+     * @return
+     * 得到一个多边形的质心
+     */
+    MyPoint getPolygonCentroid(MyPolygon polygon);
+
+    /**
+     * @param polygon
+     * @return
+     * 获得任意多边形的内心
+     */
+    MyPoint getPolygonInteriorPoint(MyPolygon polygon);
+
+    /**
+     * @param polygon
+     * @return
+     * 获得任意多边形中心
+     */
+    MyPoint getPolygonCenter(MyPolygon polygon);
+
+    /**
+     * @param polygon
+     * @return
+     * 获得多边形外心
+     */
+    MyPoint getPolygonExternal(MyPolygon polygon);
+
 }

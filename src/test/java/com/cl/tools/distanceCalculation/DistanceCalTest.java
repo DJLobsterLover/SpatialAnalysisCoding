@@ -65,5 +65,17 @@ public class DistanceCalTest {
         System.out.println(dc.polygonToPolygonDistance(polygon,polygon1,"min"));
 
     }
+    @Test
+    public void getPolygonCentroid() {
+        ArrayList<MyPoint> points = new ArrayList<MyPoint>();
+        points.add(new MyPoint(0, 1));
+        points.add(new MyPoint(1, 0));
+        points.add(new MyPoint(2, 1));
+        points.add(new MyPoint(1, 3));
+        MyPolygon polygon = new MyPolygon(points);
+        System.out.println(dc.getPolygonExternal(polygon).getX());
+        System.out.println(dc.getPolygonExternal(polygon).getY());
+
+    }
 
 }
