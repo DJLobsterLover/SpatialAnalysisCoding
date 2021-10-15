@@ -4,10 +4,8 @@ import com.cl.pojo.MyPoint;
 import com.cl.pojo.MyPolygon;
 import com.cl.tools.GeometryBuilder;
 import com.cl.tools.Transform;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.*;
+import org.geotools.geometry.jts.JTS;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -18,10 +16,11 @@ public class SpatialRelationTest {
     private Transform tf = new Transform();
     @Test
     public void test() {
-//        Point p1 = gb.createPoint(0, 0);
-//        LineString l = gb.createLine(gb.createPoint(0, 1), gb.createPoint(1, 0));
-//        System.out.println(l.getLength());
-        System.out.println(Math.acos(Math.pow(2,0.5)/2));
+        Point p1 = gb.createPoint(0, 0);
+        LineString l = gb.createLine(gb.createPoint(0, 1), gb.createPoint(1, 0));
+        System.out.println(sr.pointToLine(p1,l));
+//        System.out.println(Math.acos(Math.pow(2,0.5)/2));
+
     }
     @Test
     public void test1() {
@@ -44,5 +43,35 @@ public class SpatialRelationTest {
         MyPolygon polygon = new MyPolygon(points);
 //        Polygon polygon = gb.createPolygon(coordinates);
         System.out.println(sr.pointWithinPolygonWinding(myPoint,polygon));
+    }
+
+    @Test
+    public void testBending() {
+        ArrayList<MyPoint> points = new ArrayList<MyPoint>();
+        points.add(new MyPoint(0,0));
+        points.add(new MyPoint(1, 1));
+        points.add(new MyPoint(2, 0));
+        System.out.println(sr.lineBending(points));
+    }
+
+    @Test
+    public void Dogulas() {
+        ArrayList<MyPoint> points = new ArrayList<MyPoint>();
+        points.add(new MyPoint(1, 2));
+        points.add(new MyPoint(2, 2));
+        points.add(new MyPoint(3, 4));
+        points.add(new MyPoint(4, -5));
+        points.add(new MyPoint(5, 3));
+        points.add(new MyPoint(6, 3));
+        points.add(new MyPoint(7, 5));
+        points.add(new MyPoint(8, 2));
+        points.add(new MyPoint(9, 0));
+        points.add(new MyPoint(10, 9));
+        points.add(new MyPoint(11, 5));
+
+        for (MyPoint p : sr.pointWeedingDouglas(points, 1)) {
+            System.out.print("(" + p.getX() + "," + p.getY() + ") ");
+        }
+
     }
 }

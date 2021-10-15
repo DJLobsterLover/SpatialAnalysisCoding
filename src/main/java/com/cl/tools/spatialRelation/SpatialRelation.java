@@ -5,6 +5,9 @@ import com.vividsolutions.jts.algorithm.MinimumDiameter;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
+
+import java.util.ArrayList;
+
 /**
  * @author DJLobster
  */
@@ -37,4 +40,21 @@ public interface SpatialRelation {
      * 点在多边形内部，旋转数法
      */
     boolean pointWithinPolygonWinding(MyPoint p, MyPolygon pol);
+
+    /**
+     * @param
+     * @return
+     * 道格拉斯扑克——点抽稀
+     * max 最大阈值
+     */
+    ArrayList<MyPoint> pointWeedingDouglas(ArrayList<MyPoint> points, double threshold);
+
+    ArrayList<MyPoint> getPointsDouglas(ArrayList<MyPoint> points,double epsilon, double maxH, int index, int end, ArrayList<MyPoint> result);
+    /**
+     * @param points
+     * @return
+     * 获得一段曲线的弯曲度
+     *
+     */
+    double lineBending(ArrayList<MyPoint> points);
 }
