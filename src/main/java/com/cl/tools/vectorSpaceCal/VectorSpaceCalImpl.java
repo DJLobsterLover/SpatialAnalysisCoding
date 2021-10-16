@@ -1,14 +1,16 @@
 package com.cl.tools.vectorSpaceCal;
 
+import com.cl.pojo.MyPoint;
 import org.locationtech.jts.geom.Point;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author DJLobster
  */
 public class VectorSpaceCalImpl implements VectorSpaceCal{
-    public  double vectorSpaceCal(List<Point> points){
+    public  double vectorSpaceCal(ArrayList<MyPoint> points){
         double rs = 0;
         int n = points.size();
         for (int i = 1; i < n - 1; i++) {

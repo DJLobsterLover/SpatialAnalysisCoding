@@ -1,7 +1,9 @@
 package com.cl.tools.vectorSpaceCal;
 
+import com.cl.pojo.MyPoint;
 import org.locationtech.jts.geom.Point;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,5 +15,5 @@ public interface VectorSpaceCal {
      * @return
      * 计算任意矢量的面积
      */
-    public double vectorSpaceCal(List<Point> points);
+    public double vectorSpaceCal(ArrayList<MyPoint> points);
 }

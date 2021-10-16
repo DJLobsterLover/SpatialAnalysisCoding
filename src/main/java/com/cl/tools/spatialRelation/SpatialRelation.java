@@ -50,6 +50,13 @@ public interface SpatialRelation {
     ArrayList<MyPoint> pointWeedingDouglas(ArrayList<MyPoint> points, double threshold);
 
     ArrayList<MyPoint> getPointsDouglas(ArrayList<MyPoint> points,double epsilon, double maxH, int index, int end, ArrayList<MyPoint> result);
+
+    /**
+     * @param points
+     * @param threshold
+     * @return 几何图像平滑
+     */
+    ArrayList<MyPoint> simpleGeometrySmooth(ArrayList<MyPoint> points, double threshold);
     /**
      * @param points
      * @return

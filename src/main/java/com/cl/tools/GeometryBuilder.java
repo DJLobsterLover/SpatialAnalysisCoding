@@ -1,9 +1,12 @@
 package com.cl.tools;
+import com.cl.pojo.MyPoint;
 import org.locationtech.jts.algorithm.MinimumDiameter;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
+
+import java.util.ArrayList;
 
 /**
  * @author DJLobster
@@ -38,5 +41,14 @@ public class GeometryBuilder {
     public Polygon createPolygon(Coordinate[] coordinates) {
         Polygon polygon = geomFactory.createPolygon(coordinates);
         return polygon;
+    }
+
+    public Geometry createGeometry(ArrayList<MyPoint> points) {
+        Coordinate[] coords = new Coordinate[points.size()];
+        for (int i = 0; i < coords.length; i++) {
+            coords[i] = new Coordinate(points.get(i).getX(), points.get(i).getY());
+        }
+        Geometry lineString = geomFactory.createLineString(coords);
+        return lineString;
     }
 }

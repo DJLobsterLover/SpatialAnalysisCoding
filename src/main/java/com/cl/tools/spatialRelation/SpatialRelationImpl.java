@@ -6,10 +6,7 @@ import com.cl.tools.GeometryBuilder;
 import com.cl.tools.Transform;
 import com.cl.tools.distanceCalculation.DistanceCal;
 import com.cl.tools.distanceCalculation.DistanceCalImpl;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.*;
 import org.geotools.geometry.jts.JTS;
 
 import java.util.ArrayList;
@@ -101,6 +98,16 @@ public class SpatialRelationImpl implements SpatialRelation{
             result.add(points.get(end - 1));
         }
         return result;
+    }
+
+    public ArrayList<MyPoint> simpleGeometrySmooth(ArrayList<MyPoint> points, double threshold) {
+        ArrayList<MyPoint> rs = new ArrayList<MyPoint>();
+        Geometry geometry = gb.createGeometry(points);
+        Geometry smooth = JTS.smooth(geometry, threshold);
+        for (int i = 0; i < smooth.getCoordinates().length; i++) {
+            rs.add(new MyPoint(smooth.getCoordinates()[i].x, smooth.getCoordinates()[i].y));
+        }
+        return rs;
     }
 
     public double lineBending(ArrayList<MyPoint> points) {

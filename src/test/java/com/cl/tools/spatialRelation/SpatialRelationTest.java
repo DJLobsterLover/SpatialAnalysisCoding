@@ -73,8 +73,8 @@ public class SpatialRelationTest {
         points.add(new MyPoint(10, 9));
         points.add(new MyPoint(11, 5));
 
-        for (MyPoint p : sr.pointWeedingDouglas(points, 1)) {
-            System.out.print("(" + p.getX() + "," + p.getY() + ") ");
+        for (MyPoint p : sr.simpleGeometrySmooth(points, 6)) {
+            System.out.println("(" + p.getX() + "," + p.getY() + ") ");
         }
 
     }
