@@ -73,9 +73,16 @@ public class SpatialRelationTest {
         points.add(new MyPoint(10, 9));
         points.add(new MyPoint(11, 5));
 
-        for (MyPoint p : sr.simpleGeometrySmooth(points, 6)) {
-            System.out.println("(" + p.getX() + "," + p.getY() + ") ");
+        MyPolygon polygon = new MyPolygon(points);
+
+        ArrayList<MyPoint> polygonConvexHull = sr.getPolygonConvexHull(polygon);
+        for (MyPoint myPoint : polygonConvexHull) {
+            System.out.println(myPoint.getX() + " " + myPoint.getY());
         }
+
+//        for (MyPoint p : sr.simpleGeometrySmooth(points, 6)) {
+//            System.out.println("(" + p.getX() + "," + p.getY() + ") ");
+//        }
 
     }
 }

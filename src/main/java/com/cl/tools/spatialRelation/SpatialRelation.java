@@ -57,6 +57,7 @@ public interface SpatialRelation {
      * @return 几何图像平滑
      */
     ArrayList<MyPoint> simpleGeometrySmooth(ArrayList<MyPoint> points, double threshold);
+
     /**
      * @param points
      * @return
@@ -64,4 +65,11 @@ public interface SpatialRelation {
      *
      */
     double lineBending(ArrayList<MyPoint> points);
+
+    /**
+     * @param polygon
+     * @return
+     * 返回一个多边形的凸包
+     */
+    ArrayList<MyPoint> getPolygonConvexHull(MyPolygon polygon);
 }

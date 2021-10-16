@@ -17,6 +17,7 @@ import java.util.List;
 
 public class vectorSpaceTest {
     private GeometryFactory geomFactory = new GeometryFactory();
+    private VectorSpaceCal vs = new VectorSpaceCalImpl();
     @Test
     public void vectorSpaceTest(){
         ArrayList<MyPoint> points = new ArrayList<MyPoint>();
@@ -30,9 +31,13 @@ public class vectorSpaceTest {
         points.add(p3);
         points.add(p4);
         points.add(p5);
-        VectorSpaceCal vs = new VectorSpaceCalImpl();
         double r = vs.vectorSpaceCal(points);
         System.out.println(r);
+    }
+
+    @Test
+    public void Test() {
+        System.out.println(vs.terrestrialSufArea(new MyPoint(0, 0),new MyPoint(90,90),2));
     }
 
 }

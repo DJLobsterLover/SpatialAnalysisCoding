@@ -20,4 +20,14 @@ public class VectorSpaceCalImpl implements VectorSpaceCal{
         return rs;
 
     }
+
+    public double terrestrialSufArea(MyPoint p1, MyPoint p2, double R) {
+        double rs = 0;
+        double lat1 = p1.getY() * Math.PI / 180;
+        double lat2 = p2.getY() * Math.PI / 180;
+        double A1 = 2 * Math.PI * (1 - Math.sin(lat1)) * Math.pow(R, 2);
+        double A2 = 2 * Math.PI * (1 - Math.sin(lat2)) * Math.pow(R, 2);
+        rs = Math.abs(A1 - A2) * Math.abs(p1.getX() - p2.getX()) / 360;
+        return rs;
+    }
 }

@@ -120,4 +120,14 @@ public class SpatialRelationImpl implements SpatialRelation{
         rs = perimeter / l;
         return rs;
     }
+
+    public ArrayList<MyPoint> getPolygonConvexHull(MyPolygon polygon) {
+        Geometry geometry = gb.createGeometry(polygon.getPolygonPoints());
+        Geometry convexHull = geometry.convexHull();
+        ArrayList<MyPoint> rs = new ArrayList<MyPoint>();
+        for (int i = 0; i < convexHull.getCoordinates().length; i++) {
+            rs.add(new MyPoint(convexHull.getCoordinates()[i].x, convexHull.getCoordinates()[i].y));
+        }
+        return rs;
+    }
 }
