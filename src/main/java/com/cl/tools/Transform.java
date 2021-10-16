@@ -3,7 +3,7 @@ package com.cl.tools;
 import com.cl.pojo.MyLine;
 import com.cl.pojo.MyPoint;
 import com.cl.pojo.MyPolygon;
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 
 /**
  * @author DJLobster

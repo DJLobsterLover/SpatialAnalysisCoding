@@ -4,7 +4,7 @@ import com.cl.pojo.MyLine;
 import com.cl.pojo.MyPoint;
 import com.cl.pojo.MyPolygon;
 import com.cl.tools.Transform;
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.Point;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -44,7 +44,7 @@ public class DistanceCalTest {
     @Test
     public void LineToLine() {
         MyLine l1 = new MyLine(new MyPoint(0,0),new MyPoint(1,1));
-        MyLine l2 = new MyLine(new MyPoint(-1,-1), new MyPoint(1,-1));
+        MyLine l2 = new MyLine(new MyPoint(-1,-1), new MyPoint(-1,0));
         System.out.println(dc.lineToLineDistance(l1,l2));
     }
     @Test

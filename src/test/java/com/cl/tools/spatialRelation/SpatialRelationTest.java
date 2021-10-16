@@ -4,7 +4,10 @@ import com.cl.pojo.MyPoint;
 import com.cl.pojo.MyPolygon;
 import com.cl.tools.GeometryBuilder;
 import com.cl.tools.Transform;
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 import org.geotools.geometry.jts.JTS;
 import org.junit.Test;
 
@@ -16,6 +19,7 @@ public class SpatialRelationTest {
     private Transform tf = new Transform();
     @Test
     public void test() {
+
         Point p1 = gb.createPoint(0, 0);
         LineString l = gb.createLine(gb.createPoint(0, 1), gb.createPoint(1, 0));
         System.out.println(sr.pointToLine(p1,l));

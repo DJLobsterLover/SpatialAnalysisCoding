@@ -1,7 +1,7 @@
 import com.cl.pojo.MyPoint;
 import com.cl.pojo.MyPolygon;
 import com.cl.tools.Transform;
-import com.vividsolutions.jts.geom.Polygon;
+import org.locationtech.jts.geom.Polygon;
 import org.junit.Test;
 
 import java.util.ArrayList;

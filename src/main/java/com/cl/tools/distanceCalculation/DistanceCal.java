@@ -3,7 +3,7 @@ package com.cl.tools.distanceCalculation;
 import com.cl.pojo.MyLine;
 import com.cl.pojo.MyPoint;
 import com.cl.pojo.MyPolygon;
-//import com.vividsolutions.jts.geom.Point;
+//import org.locationtech.jts.geom.Point;
 
 /**
  * @author DJLobster

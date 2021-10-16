@@ -6,10 +6,10 @@ import com.cl.tools.GeometryBuilder;
 import com.cl.tools.Transform;
 import com.cl.tools.distanceCalculation.DistanceCal;
 import com.cl.tools.distanceCalculation.DistanceCalImpl;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 import org.geotools.geometry.jts.JTS;
 
 import java.util.ArrayList;

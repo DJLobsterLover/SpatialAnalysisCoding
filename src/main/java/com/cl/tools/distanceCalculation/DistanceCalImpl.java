@@ -6,11 +6,11 @@ import com.cl.pojo.MyPolygon;
 import com.cl.tools.GeometryBuilder;
 import com.cl.tools.Transform;
 import com.mysql.jdbc.StringUtils;
-import com.vividsolutions.jts.algorithm.MinimumBoundingCircle;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
-//import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.algorithm.MinimumBoundingCircle;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
+//import org.locationtech.jts.geom.Point;
 
 import java.util.ArrayList;
 

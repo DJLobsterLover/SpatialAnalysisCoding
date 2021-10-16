@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="gt-opengis-22-RC">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/gt-opengis-22-RC.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

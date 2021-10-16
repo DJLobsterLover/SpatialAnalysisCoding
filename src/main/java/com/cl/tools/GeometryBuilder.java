@@ -1,9 +1,9 @@
 package com.cl.tools;
-import com.vividsolutions.jts.algorithm.MinimumDiameter;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKTReader;
+import org.locationtech.jts.algorithm.MinimumDiameter;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
 
 /**
  * @author DJLobster
