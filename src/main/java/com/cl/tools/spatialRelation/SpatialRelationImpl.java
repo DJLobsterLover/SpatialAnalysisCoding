@@ -130,4 +130,50 @@ public class SpatialRelationImpl implements SpatialRelation{
         }
         return rs;
     }
+
+    public double getP1A(MyPolygon polygon) {
+        double rs = 0;
+        Polygon polygon1 = tf.PolygonTrans(polygon);
+        rs = polygon1.getLength() / polygon1.getArea();
+        return rs;
+    }
+
+    public double getP2A(MyPolygon polygon) {
+        double rs = 0;
+        Polygon polygon1 = tf.PolygonTrans(polygon);
+        rs = Math.pow(polygon1.getLength(), 2) / polygon1.getArea();
+        return rs;
+    }
+
+    public double getPolygonMaxAxis(MyPolygon polygon) {
+        double max = 0;
+        for(int i =0;i<polygon.getPolygonPoints().size();i++) {
+            for(int j = i+1;j<polygon.getPolygonPoints().size();j++) {
+                max = Math.max(max, dc.euclideanDistance(polygon.getPolygonPoints().get(i), polygon.getPolygonPoints().get(j)));
+            }
+        }
+        return max;
+    }
+
+    public double getPolygonMinAxis(MyPolygon polygon) {
+        double min = 0;
+        min = dc.euclideanDistance(polygon.getPolygonPoints().get(0), polygon.getPolygonPoints().get(1));
+        for(int i =0;i<polygon.getPolygonPoints().size();i++) {
+            for(int j = i+1;j<polygon.getPolygonPoints().size();j++) {
+                min = Math.min(min, dc.euclideanDistance(polygon.getPolygonPoints().get(i), polygon.getPolygonPoints().get(j)));
+            }
+        }
+        return min;
+    }
+
+    public double getPolygonFormRatio(MyPolygon polygon) {
+        double rs = 0;
+        Polygon polygon1 = tf.PolygonTrans(polygon);
+        rs = polygon1.getArea() / getPolygonMaxAxis(polygon);
+        return rs;
+    }
+
+    public double getPolygonElongationRational(MyPolygon polygon) {
+        return getPolygonMaxAxis(polygon) / getPolygonMinAxis(polygon);
+    }
 }

@@ -72,4 +72,46 @@ public interface SpatialRelation {
      * 返回一个多边形的凸包
      */
     ArrayList<MyPoint> getPolygonConvexHull(MyPolygon polygon);
+
+    /**
+     * @param polygon
+     * @return
+     * 得到多边形的Perimeter/Area ratio
+     */
+    double getP1A(MyPolygon polygon);
+
+    /**
+     * @param polygon
+     * @return
+     * 获得多边形Perimeter2/Area ratio
+     */
+    double getP2A(MyPolygon polygon);
+
+    /**
+     * @param polygon
+     * @return
+     * 获得多边形最长轴
+     */
+    double getPolygonMaxAxis(MyPolygon polygon);
+
+    /**
+     * @param polygon
+     * @return
+     * 获得多边形最短轴
+     */
+    double getPolygonMinAxis(MyPolygon polygon);
+
+    /**
+     * @param polygon
+     * @return
+     * 形状比
+     */
+    double getPolygonFormRatio(MyPolygon polygon);
+
+    /**
+     * @param polygon
+     * @return
+     * 伸延率
+     */
+    double getPolygonElongationRational(MyPolygon polygon);
 }
