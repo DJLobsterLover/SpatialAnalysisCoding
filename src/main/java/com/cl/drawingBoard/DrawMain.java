@@ -47,7 +47,9 @@ public class DrawMain extends JPanel {
         JButton test = new JButton("测试结果");
         test.setBackground(Color.WHITE);
         test.addActionListener(dl);
+        JLabel resLabel = new JLabel("显示结果");
         resultPanel.add(test);
+        resultPanel.add(resLabel);
         jf.add(resultPanel, BorderLayout.EAST);
 
         // 实现颜色面板

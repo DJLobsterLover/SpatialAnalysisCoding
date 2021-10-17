@@ -2,6 +2,8 @@ package com.cl.drawingBoard;
 
 import com.cl.pojo.MyLine;
 import com.cl.pojo.MyPoint;
+import com.cl.tools.distanceCalculation.DistanceCal;
+import com.cl.tools.distanceCalculation.DistanceCalImpl;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,6 +14,7 @@ import java.awt.event.MouseEvent;
 import java.util.Random;
 
 public class DrawListener extends MouseAdapter implements ActionListener {
+    private DistanceCal dc = new DistanceCalImpl();
     private int x1, y1, x2, y2;
     private int newx1, newy1, newx2, newy2;
     private Graphics2D g;
@@ -39,7 +42,9 @@ public class DrawListener extends MouseAdapter implements ActionListener {
             g = (Graphics2D) df.getGraphics();
             g.setColor(color);
 
-            MyLine l1 = new MyLine(new MyPoint(0,0),new MyPoint(100,100));
+            MyLine l1 = new MyLine(new MyPoint(100,0),new MyPoint(0,100));
+            MyPoint p1 = new MyPoint(0,0);
+            MyPoint p2 = new MyPoint(200, 200);
             int x1 = (int) l1.getStartPoint().getX();
             int y1 = (int) l1.getStartPoint().getY();
             int x2 = (int) l1.getEndPoint().getX();
@@ -47,7 +52,18 @@ public class DrawListener extends MouseAdapter implements ActionListener {
             //设置线的粗细
             BasicStroke bs_1=new BasicStroke(2,BasicStroke.CAP_BUTT,BasicStroke.JOIN_BEVEL);
             g.setStroke(bs_1);
-            g.drawLine(x1,y1,x2,y2);
+//            g.drawLine(x1,y1,x2,y2);
+            // 画圆
+            int w = (int)p1.getX();
+            int h = (int)p1.getY();
+            int r = 2;
+            g.fillOval(w/2 - r, h/2 - r, 2 * r, 2 * r);
+
+            int w1 = (int)p2.getX();
+            int h1 = (int)p2.getY();
+            g.fillOval(w1/2 - r, h1/2 - r, 2 * r, 2 * r);
+            g.drawLine((int)p1.getX(), (int)p1.getY(),(int) p2.getX(),(int) p2.getY());
+            System.out.println(dc.euclideanDistance(p1, p2));
         }
     }
     // 实现画笔

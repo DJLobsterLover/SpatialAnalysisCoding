@@ -12,7 +12,6 @@ public class FrameWithMouseEvent extends JFrame implements MouseMotionListener,M
     private int flag=0;
     private int count=0;
 
-
     public void init(){
         FlowLayout f=new FlowLayout(FlowLayout.LEFT);
         setLayout(f);
