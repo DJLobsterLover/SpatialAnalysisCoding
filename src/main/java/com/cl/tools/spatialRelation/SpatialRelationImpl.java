@@ -176,4 +176,27 @@ public class SpatialRelationImpl implements SpatialRelation{
     public double getPolygonElongationRational(MyPolygon polygon) {
         return getPolygonMaxAxis(polygon) / getPolygonMinAxis(polygon);
     }
+
+    public double getPolygonCompactness(MyPolygon polygon) {
+        double rs = 0;
+        Polygon polygon1 = tf.PolygonTrans(polygon);
+        rs = polygon1.getLength() / (2 * Math.sqrt(Math.PI * polygon1.getArea()));
+        return rs;
+    }
+
+    public double getPolygonShapeIndex(MyPolygon polygon) {
+        double rs = 0;
+        Polygon polygon1 = tf.PolygonTrans(polygon);
+        double r = polygon1.getLength() / (2 * Math.PI);
+        rs = Math.sqrt(polygon1.getArea() / (Math.PI * Math.pow(r, 2)));
+        return rs;
+    }
+
+    public double getPolygonRelateBoundingFigure(MyPolygon polygon) {
+        double rs = 0;
+        Polygon polygon1 = tf.PolygonTrans(polygon);
+        double r = polygon1.getLength() / (2 * Math.PI);
+        rs = 1 - polygon1.getArea() / (Math.PI * Math.pow(r, 2));
+        return rs;
+    }
 }

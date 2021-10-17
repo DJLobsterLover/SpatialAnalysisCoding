@@ -114,4 +114,26 @@ public interface SpatialRelation {
      * 伸延率
      */
     double getPolygonElongationRational(MyPolygon polygon);
+
+    /**
+     * @param polygon
+     * @return
+     * 紧凑性比率
+     */
+    double getPolygonCompactness(MyPolygon polygon);
+
+    /**
+     * @param polygon
+     * @return
+     * 形状指数
+     */
+    double getPolygonShapeIndex(MyPolygon polygon);
+
+    /**
+     * @param polygon
+     * @return
+     * RBF相关外接圆
+     */
+    double getPolygonRelateBoundingFigure(MyPolygon polygon);
+
 }
