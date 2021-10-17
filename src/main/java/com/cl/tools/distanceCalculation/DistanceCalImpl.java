@@ -1,5 +1,6 @@
 package com.cl.tools.distanceCalculation;
 
+import Jama.Matrix;
 import com.cl.pojo.MyLine;
 import com.cl.pojo.MyPoint;
 import com.cl.pojo.MyPolygon;
@@ -59,10 +60,39 @@ public class DistanceCalImpl implements DistanceCal{
         return rs;
     }
 
-    public double mahalanobisDistance(MyPoint startPoint, MyPoint endPoint) {
-        double rs = 0.0;
-
-        return rs;
+    public double mahalanobisDistance(ArrayList<MyPoint> points) {
+        double[] His1 = new double[points.size()];
+        double[] His2 = new double[points.size()];
+        double[] u = new double[points.size()];
+        for (int i = 0; i < points.size(); i++) {
+            His1[i] = points.get(i).getX();
+            His2[i] = points.get(i).getY();
+            u[i] = (His1[i] + His2[i]) / 2;
+        }
+        //计算协方差矩阵
+        int temp = points.size();
+        double[][] S = new double[temp][temp];
+        for (int i = 0; i < points.size(); i++) {
+            for (int j = 0; j < points.size(); j++) {
+                S[i][j] = ((His1[i] - u[i]) * (His1[j] - u[j]) + (His2[i] - u[i]) * (His2[j] - u[j])) / 2 ;
+            }
+        }
+        //求S的逆矩阵
+        Matrix S_mat = new Matrix(S);
+        System.out.println(S_mat.rank());
+//        S_mat.rank
+        Matrix S_inverse = S_mat.inverse();
+//        double[][] S_inverse = inverse.getArray();
+//        Hist1 - Hist2
+        double[][] H1rH2 = new double[1][points.size()];
+        for (int i = 0; i < points.size(); i++) {
+            H1rH2[0][i] = His1[i] - His2[i];
+        }
+        Matrix H1rH2_mat = new Matrix(H1rH2);
+        //Hist1 - Hist2倒置
+        Matrix H1rH2_mat_transpose = H1rH2_mat.transpose();
+        double v = H1rH2_mat.times(S_inverse).times(H1rH2_mat_transpose).get(0, 0);
+        return v;
     }
 
     public double sphericalDistance(MyPoint startPoint, MyPoint endPoint, double R) {

@@ -1,5 +1,6 @@
 package com.cl.tools.distanceCalculation;
 
+import Jama.Matrix;
 import com.cl.pojo.MyLine;
 import com.cl.pojo.MyPoint;
 import com.cl.pojo.MyPolygon;
@@ -76,6 +77,19 @@ public class DistanceCalTest {
         System.out.println(dc.getPolygonExternal(polygon).getX());
         System.out.println(dc.getPolygonExternal(polygon).getY());
 
+    }
+
+    @Test
+    public void mahalanobisDistance() {
+        ArrayList<MyPoint> points = new ArrayList<MyPoint>();
+        points.add(new MyPoint(0, 14));
+        points.add(new MyPoint(1, 0));
+        points.add(new MyPoint(2, 1));
+        points.add(new MyPoint(1, 2));
+//        points.add(new MyPoint(1, 3));
+//        System.out.println(dc.mahalanobisDistance(points));
+//        System.out.println(inverse.getArray()[2][1]);
+        System.out.println(dc.mahalanobisDistance(points));
     }
 
 }

@@ -3,6 +3,8 @@ package com.cl.tools.distanceCalculation;
 import com.cl.pojo.MyLine;
 import com.cl.pojo.MyPoint;
 import com.cl.pojo.MyPolygon;
+
+import java.util.ArrayList;
 //import org.locationtech.jts.geom.Point;
 
 /**
@@ -42,12 +44,12 @@ public interface DistanceCal {
     double minkowskiDistance(MyPoint startPoint, MyPoint endPoint, double m);
 
     /**
-     * @param startPoint
-     * @param endPoint
+     * @param
+     * @param
      * @return
      * 马氏距离
      */
-    double mahalanobisDistance(MyPoint startPoint, MyPoint endPoint);
+    double mahalanobisDistance(ArrayList<MyPoint> points);
 
     /**
      * @param startPoint
