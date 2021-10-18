@@ -1,7 +1,9 @@
 package com.cl.tools.spatialRelation;
 
+import com.cl.pojo.MyLine;
 import com.cl.pojo.MyPoint;
 import com.cl.pojo.MyPolygon;
+import com.cl.tools.Constants;
 import com.cl.tools.GeometryBuilder;
 import com.cl.tools.Transform;
 import com.cl.tools.distanceCalculation.DistanceCal;
@@ -54,6 +56,26 @@ public class SpatialRelationImpl implements SpatialRelation{
         }
         System.out.println(angle);
         if (Math.abs(angle - 360) <= 1) {
+            rs = true;
+        }
+        return rs;
+    }
+
+    public boolean pointWithinPolygonRay(MyPoint p, MyPolygon pol) {
+        boolean rs = false;
+        int count = 0;
+        MyLine l = new MyLine(p,new MyPoint(p.getX(), Constants.YMax));
+        LineString lineString = tf.LineTrans(l);
+        int pointsCount = pol.getPolygonPoints().size();
+        for (int i = 0; i < pointsCount; i++) {
+            boolean crosses = tf.LineTrans(new MyLine(pol.getPolygonPoints().get(i), pol.getPolygonPoints().get((i + 1) % pointsCount))).crosses(lineString);
+            if (crosses) {
+                count += 1;
+            }
+        }
+        if ((count % 2) == 0) {
+            rs = false;
+        } else {
             rs = true;
         }
         return rs;

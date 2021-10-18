@@ -42,6 +42,14 @@ public interface SpatialRelation {
     boolean pointWithinPolygonWinding(MyPoint p, MyPolygon pol);
 
     /**
+     * @param p
+     * @param pol
+     * @return
+     * 点在多边形内部，射线法
+     */
+    boolean pointWithinPolygonRay(MyPoint p, MyPolygon pol);
+
+    /**
      * @param
      * @return
      * 道格拉斯扑克——点抽稀

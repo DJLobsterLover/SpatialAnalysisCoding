@@ -88,4 +88,16 @@ public class SpatialRelationTest {
 //        }
 
     }
+
+    @Test
+    public void PointWithPolygon() {
+        ArrayList<MyPoint> points = new ArrayList<MyPoint>();
+        points.add(new MyPoint(0,0));
+        points.add(new MyPoint(0, 1));
+        points.add(new MyPoint(1, 1));
+        points.add(new MyPoint(1, 0));
+        MyPolygon pol = new MyPolygon(points);
+        MyPoint p = new MyPoint(0.5, 0.5);
+        System.out.println(sr.pointWithinPolygonRay(p,pol));
+    }
 }
