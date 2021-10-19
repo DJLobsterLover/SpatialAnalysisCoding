@@ -14,7 +14,8 @@ import java.awt.event.MouseEvent;
 import java.util.Random;
 
 public class DrawListener extends MouseAdapter implements ActionListener {
-    private DistanceCal dc = new DistanceCalImpl();
+    DistanceCal dc = new DistanceCalImpl();
+//    private DistanceCal dc = new DistanceCalImpl();
     private int x1, y1, x2, y2;
     private int newx1, newy1, newx2, newy2;
     private Graphics2D g;
@@ -41,7 +42,6 @@ public class DrawListener extends MouseAdapter implements ActionListener {
         if (shape.equals("测试结果")) {
             g = (Graphics2D) df.getGraphics();
             g.setColor(color);
-
             MyLine l1 = new MyLine(new MyPoint(100,0),new MyPoint(0,100));
             MyPoint p1 = new MyPoint(0,0);
             MyPoint p2 = new MyPoint(200, 200);
@@ -66,6 +66,10 @@ public class DrawListener extends MouseAdapter implements ActionListener {
             g.drawLine((int)p1.getX(), (int)p1.getY(),(int) p2.getX(),(int) p2.getY());
             df.resLabel.setText("结果:" + dc.euclideanDistance(p1,p2));
             System.out.println(dc.euclideanDistance(p1, p2));
+        } else if (shape.equals("清空")) {
+//            g.clearRect(0,0,df.getWidth(),df.getHeight());
+            g.setColor(Color.white);
+            g.fillRect(0,0,df.getWidth(),df.getHeight());
         }
     }
     // 实现画笔
@@ -92,7 +96,8 @@ public class DrawListener extends MouseAdapter implements ActionListener {
             newy2 = y2;
             flag = true;
         } else if (shape.equals("圆")) {
-            g.drawOval(x1, y1, Math.abs(x2 - x1), Math.abs(y2 - y1));
+            int r = (int) Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+            g.drawOval(x1 - r, y1 - r, 2 * r, 2 * r);
         } else if (shape.equals("矩形")) {
             g.drawRect(x1, y1, Math.abs(x2 - x1), Math.abs(y2 - y1));
         } else if (shape.equals("圆角矩形")) {

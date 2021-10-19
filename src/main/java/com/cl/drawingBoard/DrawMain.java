@@ -45,11 +45,15 @@ public class DrawMain extends JPanel {
         resultPanel.setBackground(Color.GRAY);
         resultPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
         JButton test = new JButton("测试结果");
+        JButton remove = new JButton("清空");
+        remove.addActionListener(dl);
         test.setBackground(Color.WHITE);
         test.addActionListener(dl);
         resLabel = new JLabel("显示结果");
+//        resLabel.setSize(100,100);
         resultPanel.add(test);
         resultPanel.add(resLabel);
+        resultPanel.add(remove);
         jf.add(resultPanel, BorderLayout.EAST);
 
         // 实现颜色面板
