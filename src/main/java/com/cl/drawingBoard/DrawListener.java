@@ -56,13 +56,15 @@ public class DrawListener extends MouseAdapter implements ActionListener {
             // 画圆
             int w = (int)p1.getX();
             int h = (int)p1.getY();
-            int r = 2;
-            g.fillOval(w/2 - r, h/2 - r, 2 * r, 2 * r);
-
+            int r = 10;
+            g.setColor(Color.red);
+            g.fillOval(w, h,  r, r);
             int w1 = (int)p2.getX();
             int h1 = (int)p2.getY();
-            g.fillOval(w1/2 - r, h1/2 - r, 2 * r, 2 * r);
+            g.setColor(Color.yellow);
+            g.fillOval(w1, h1, r, r);
             g.drawLine((int)p1.getX(), (int)p1.getY(),(int) p2.getX(),(int) p2.getY());
+            df.resLabel.setText("结果:" + dc.euclideanDistance(p1,p2));
             System.out.println(dc.euclideanDistance(p1, p2));
         }
     }
