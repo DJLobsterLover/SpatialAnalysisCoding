@@ -34,9 +34,9 @@ public class MainFrame {
 
         Object[] Shape = {"直线", "曲线", "圆", "橡皮擦", "矩形", "椭圆",
                 "弧线", "多边形", "三角形", "测试"};
-        JComboBox jb = new JComboBox(Shape);
-        shapePanel.add(jb);
-        shapePanel.add(new JButton("hello"));
+//        JComboBox jb = new JComboBox(Shape);
+//        shapePanel.add(jb);
+//        shapePanel.add(new JButton("hello"));
         for (int i = 0; i < Shape.length; i++) {
             JButton button = new JButton((String) Shape[i]);
             button.setBackground(Color.WHITE);

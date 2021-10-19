@@ -2,8 +2,11 @@ package com.cl.drawingBoard;
 
 import com.cl.pojo.MyLine;
 import com.cl.pojo.MyPoint;
+import com.cl.pojo.MyPolygon;
 import com.cl.tools.distanceCalculation.DistanceCal;
 import com.cl.tools.distanceCalculation.DistanceCalImpl;
+import com.cl.tools.vectorSpaceCal.VectorSpaceCal;
+import com.cl.tools.vectorSpaceCal.VectorSpaceCalImpl;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,11 +14,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Random;
 
 public class DrawListener extends MouseAdapter implements ActionListener {
     DistanceCal dc = new DistanceCalImpl();
-//    private DistanceCal dc = new DistanceCalImpl();
+    VectorSpaceCal vs = new VectorSpaceCalImpl();
+    ArrayList<MyPolygon> polygons;
+    ArrayList<MyPoint> tempPoints;
     private int x1, y1, x2, y2;
     private int newx1, newy1, newx2, newy2;
     private Graphics2D g;
@@ -28,6 +34,8 @@ public class DrawListener extends MouseAdapter implements ActionListener {
     private int temp = 0;
     DrawListener(DrawMain d) {
         df = d;
+        polygons = new ArrayList<MyPolygon>();
+        tempPoints = new ArrayList<MyPoint>();
     }
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("")) {
@@ -70,6 +78,11 @@ public class DrawListener extends MouseAdapter implements ActionListener {
 //            g.clearRect(0,0,df.getWidth(),df.getHeight());
             g.setColor(Color.white);
             g.fillRect(0,0,df.getWidth(),df.getHeight());
+            tempPoints.clear();
+            polygons.clear();
+        } else if (shape.equals("多边形面积")) {
+            System.out.println(vs.vectorSpaceCal(polygons.get(0).getPolygonPoints()));
+            System.out.println(tempPoints);
         }
     }
     // 实现画笔
@@ -108,12 +121,17 @@ public class DrawListener extends MouseAdapter implements ActionListener {
     }
     @Override
     public void mouseClicked(MouseEvent e) {
+        if (e.getClickCount() == 1) {
+            tempPoints.add(new MyPoint(e.getX(), e.getY()));
+        }
         if (shape.equals("多边形") && flag) {
             x2 = e.getX();
             y2 = e.getY();
             if (e.getClickCount() == 2) {
                 g.drawLine(newx1, newy1, newx2, newy2);
                 flag = false;
+                polygons.add(new MyPolygon(tempPoints));
+//                tempPoints.clear();
             }
             g.drawLine(newx2, newy2, x2, y2);
             newx2 = x2;

@@ -21,15 +21,15 @@ public class vectorSpaceTest {
     @Test
     public void vectorSpaceTest(){
         ArrayList<MyPoint> points = new ArrayList<MyPoint>();
-        MyPoint p1 = new MyPoint(0, 0);
-        MyPoint p2 = new MyPoint(0, 2);
-        MyPoint p3 = new MyPoint(2, 2);
-        MyPoint p4 = new MyPoint(1, 1);
-        MyPoint p5 = new MyPoint(2, 0);
+        MyPoint p1 = new MyPoint(46, 46);
+        MyPoint p2 = new MyPoint(49, 199);
+        MyPoint p3 = new MyPoint(219, 186);
+//        MyPoint p4 = new MyPoint(1, 1);
+        MyPoint p5 = new MyPoint(207, 0);
         points.add(p1);
         points.add(p2);
         points.add(p3);
-        points.add(p4);
+//        points.add(p4);
         points.add(p5);
         double r = vs.vectorSpaceCal(points);
         System.out.println(r);
