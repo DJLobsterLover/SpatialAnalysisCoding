@@ -138,4 +138,11 @@ public interface DistanceCal {
      */
     MyPoint getPolygonExternal(MyPolygon polygon);
 
+    /**
+     * @param polygon
+     * @return
+     * 获得多边形最小外接圆半径
+     */
+    double getPolygonExternalCircle(MyPolygon polygon);
+
 }

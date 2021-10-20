@@ -82,6 +82,12 @@ public class DrawListener extends MouseAdapter implements ActionListener {
             polygons.clear();
         } else if (shape.equals("多边形面积")) {
             System.out.println(vs.vectorSpaceCal(polygons.get(0).getPolygonPoints()));
+            //绘制多边形外接圆
+            int r = (int)dc.getPolygonExternalCircle(polygons.get(0));
+            MyPoint p = dc.getPolygonExternal(polygons.get(0));
+            g.setColor(Color.red);
+            g.fillOval((int)p.getX(), (int)p.getY(),  2, 2);
+            g.drawOval((int)p.getX() - r, (int)p.getY() - r, 2 * r, 2 * r);
             System.out.println(tempPoints);
         }
     }

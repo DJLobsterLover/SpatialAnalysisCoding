@@ -241,4 +241,9 @@ public class DistanceCalImpl implements DistanceCal{
         MyPoint myPoint = tf.PointTransBack(gb.createPoint(co.x, co.y));
         return myPoint;
     }
+
+    public double getPolygonExternalCircle(MyPolygon polygon) {
+        MinimumBoundingCircle circle = new MinimumBoundingCircle(tf.PolygonTrans(polygon));
+        return circle.getRadius();
+    }
 }
