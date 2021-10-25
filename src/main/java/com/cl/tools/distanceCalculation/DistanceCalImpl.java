@@ -246,4 +246,18 @@ public class DistanceCalImpl implements DistanceCal{
         MinimumBoundingCircle circle = new MinimumBoundingCircle(tf.PolygonTrans(polygon));
         return circle.getRadius();
     }
+
+    public double hausdorffDistance(MyPolygon p1, MyPolygon p2) {
+        double rs = 0;
+        ArrayList<Double> tempList = new ArrayList<Double>();
+        //计算p1的各个点到p2距离的最小值
+        for (int i = 0; i < p1.getPolygonPoints().size(); i++) {
+            tempList.add(pointToPolygonDistance(p1.getPolygonPoints().get(i), p2, "min"));
+        }
+        //在最小值的集合中找到最大值
+        for (int i = 0; i < tempList.size(); i++) {
+            rs = Math.max(rs, tempList.get(i));
+        }
+        return rs;
+    }
 }

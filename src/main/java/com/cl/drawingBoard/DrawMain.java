@@ -30,7 +30,7 @@ public class DrawMain extends JPanel {
         ShapePanel.setLayout(new FlowLayout(FlowLayout.CENTER));
         ShapePanel.setBackground(Color.gray);
         String[] Shape = { "直线", "圆", "橡皮擦", "矩形", "椭圆",
-                "多边形", "三角形", "测试","多边形面积" };
+                "多边形","圆点", "三角形", "测试","多边形面积","点是否在多边形内" };
         for (int i = 0; i < Shape.length; i++) {
             JButton button = new JButton(Shape[i]);
             button.setBackground(Color.WHITE);

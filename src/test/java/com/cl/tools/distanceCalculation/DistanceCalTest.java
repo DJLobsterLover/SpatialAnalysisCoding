@@ -91,5 +91,20 @@ public class DistanceCalTest {
 //        System.out.println(inverse.getArray()[2][1]);
         System.out.println(dc.mahalanobisDistance(points));
     }
+    @Test
+    public void hausdorffDistance() {
+        ArrayList<MyPoint> points = new ArrayList<MyPoint>();
+        points.add(new MyPoint(0, 1));
+        points.add(new MyPoint(1, 1));
+        points.add(new MyPoint(1, 0));
+        points.add(new MyPoint(0, 0));
+        MyPolygon p1 = new MyPolygon(points);
+        ArrayList<MyPoint> points1 = new ArrayList<MyPoint>();
+        points1.add(new MyPoint(-1, 0));
+        points1.add(new MyPoint(-1, 0));
+        points1.add(new MyPoint(0, -1));
+        MyPolygon p2 = new MyPolygon(points1);
+        System.out.println(dc.hausdorffDistance(p1,p2));
+    }
 
 }

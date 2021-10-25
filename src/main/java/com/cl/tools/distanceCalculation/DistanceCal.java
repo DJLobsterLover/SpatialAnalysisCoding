@@ -145,4 +145,12 @@ public interface DistanceCal {
      */
     double getPolygonExternalCircle(MyPolygon polygon);
 
+    /**
+     * @param p1
+     * @param p2
+     * @return
+     * Hausdorff距离计算
+     */
+    double hausdorffDistance(MyPolygon p1,MyPolygon p2);
+
 }

@@ -5,6 +5,8 @@ import com.cl.pojo.MyPoint;
 import com.cl.pojo.MyPolygon;
 import com.cl.tools.distanceCalculation.DistanceCal;
 import com.cl.tools.distanceCalculation.DistanceCalImpl;
+import com.cl.tools.spatialRelation.SpatialRelation;
+import com.cl.tools.spatialRelation.SpatialRelationImpl;
 import com.cl.tools.vectorSpaceCal.VectorSpaceCal;
 import com.cl.tools.vectorSpaceCal.VectorSpaceCalImpl;
 
@@ -19,9 +21,12 @@ import java.util.Random;
 
 public class DrawListener extends MouseAdapter implements ActionListener {
     DistanceCal dc = new DistanceCalImpl();
+    SpatialRelation sp = new SpatialRelationImpl();
     VectorSpaceCal vs = new VectorSpaceCalImpl();
     ArrayList<MyPolygon> polygons;
     ArrayList<MyPoint> tempPoints;
+    ArrayList<MyLine> lines;
+    ArrayList<MyPoint> points;
     private int x1, y1, x2, y2;
     private int newx1, newy1, newx2, newy2;
     private Graphics2D g;
@@ -36,6 +41,8 @@ public class DrawListener extends MouseAdapter implements ActionListener {
         df = d;
         polygons = new ArrayList<MyPolygon>();
         tempPoints = new ArrayList<MyPoint>();
+        lines = new ArrayList<MyLine>();
+        points = new ArrayList<MyPoint>();
     }
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("")) {
@@ -75,11 +82,11 @@ public class DrawListener extends MouseAdapter implements ActionListener {
             df.resLabel.setText("结果:" + dc.euclideanDistance(p1,p2));
             System.out.println(dc.euclideanDistance(p1, p2));
         } else if (shape.equals("清空")) {
-//            g.clearRect(0,0,df.getWidth(),df.getHeight());
             g.setColor(Color.white);
             g.fillRect(0,0,df.getWidth(),df.getHeight());
             tempPoints.clear();
             polygons.clear();
+            points.clear();
         } else if (shape.equals("多边形面积")) {
             System.out.println(vs.vectorSpaceCal(polygons.get(0).getPolygonPoints()));
             //绘制多边形外接圆
@@ -89,6 +96,23 @@ public class DrawListener extends MouseAdapter implements ActionListener {
             g.fillOval((int)p.getX(), (int)p.getY(),  2, 2);
             g.drawOval((int)p.getX() - r, (int)p.getY() - r, 2 * r, 2 * r);
             System.out.println(tempPoints);
+        } else if (shape.equals("点是否在多边形内")) {
+            if (polygons == null) {
+                System.out.println("请先创建一个多边形");
+            } else if (points == null) {
+                System.out.println("请先拆创建一个点");
+            } else {
+                for (int i = 0; i < points.size(); i++) {
+                    for (int j = 0; j < polygons.size(); j++) {
+                        if (sp.pointWithinPolygonRay(points.get(i), polygons.get(j))) {
+                            System.out.println("该点在多边形内部");
+                        } else {
+                            System.out.println("该店不在多边形内部");
+                        }
+                    }
+                }
+            }
+
         }
     }
     // 实现画笔
@@ -105,8 +129,6 @@ public class DrawListener extends MouseAdapter implements ActionListener {
         y2 = e.getY();
         if (shape.equals("直线")) {
             g.drawLine(x1, y1, x2, y2);
-        } else if (shape.equals("弧线")) {
-            g.drawArc(x1, y1, Math.abs(x2 - x1), Math.abs(y2 - y1), 0, 180);
         } else if (shape.equals("多边形") && !flag) {
             g.drawLine(x1, y1, x2, y2);
             newx1 = x1;
@@ -119,8 +141,6 @@ public class DrawListener extends MouseAdapter implements ActionListener {
             g.drawOval(x1 - r, y1 - r, 2 * r, 2 * r);
         } else if (shape.equals("矩形")) {
             g.drawRect(x1, y1, Math.abs(x2 - x1), Math.abs(y2 - y1));
-        } else if (shape.equals("圆角矩形")) {
-            g.drawRoundRect(x1, y1, Math.abs(x2 - x1), Math.abs(y2 - y1), 2, 10);
         } else if (shape.equals("椭圆")) {
             g.drawOval(x1, y1, Math.abs(x2 - x1), Math.abs(y2 - y1));
         }
@@ -158,29 +178,6 @@ public class DrawListener extends MouseAdapter implements ActionListener {
                 }
                 temp = 0;
             }
-        } else if (shape.equals("立体圆")) {
-            // double a=-2,b=-2,c=-1.2,d=2;
-            double a = 1.40, b = 1.56, c = 1.40, d = -6.56;
-            double x = 0, xo = 0;
-            double y = 0, yo = 0;
-            Color[] Col = { Color.BLUE, Color.cyan, Color.green, Color.magenta,
-                    Color.red, Color.yellow };
-            for (int i = 0; i <= 90000; i++) {
-                Random r = new Random();
-                // 增加颜色
-                int R = r.nextInt(Col.length);
-                g.setColor(Col[R]);
-                // x=Math.sin(a*yo)-Math.cos(b*xo);
-                // y=Math.sin(c*xo)-Math.cos(d*yo);
-                x = d * Math.sin(a * xo) - Math.sin(b * yo);
-                y = c * Math.cos(a * xo) + Math.cos(b * yo);
-                int temp_x = (int) (x * 50);
-                int temp_y = (int) (y * 50);
-                g.drawLine(temp_x + 500, temp_y + 300, temp_x + 500,
-                        temp_y + 300);
-                xo = x;
-                yo = y;
-            }
         } else if (shape.equals("三角形")) {
             double a = -2, b = -2, c = -1.2, d = 2;
             double x = 0, xo = 0;
@@ -188,7 +185,8 @@ public class DrawListener extends MouseAdapter implements ActionListener {
             Color[] Col = { Color.BLUE, Color.cyan, Color.green, Color.magenta,
                     Color.red, Color.yellow };
             for (int i = 0; i <= 90000; i++) {
-                Random r = new Random(); // 增加颜色
+                Random r = new Random();
+                // 增加颜色
                 int R = r.nextInt(Col.length);
                 g.setColor(Col[R]);
                 x = Math.sin(a * yo) - Math.cos(b * xo);
@@ -209,19 +207,16 @@ public class DrawListener extends MouseAdapter implements ActionListener {
             int x2 = (int) l1.getEndPoint().getX();
             int y2 = (int) l1.getEndPoint().getY();
             g.drawLine(x1,y1,x2,y2);
+        } else if (shape.equals("圆点")) {
+            g = (Graphics2D) df.getGraphics();
+            g.fillOval(e.getX(), e.getY(), 5, 5);
+            points.add(new MyPoint(e.getX(), e.getY()));
         }
     }
     public void mouseDragged(MouseEvent e) {
         x2 = e.getX();
         y2 = e.getY();
-        if (shape.equals("曲线")) {
-            // g.setStroke(new BasicStroke(10));
-            // g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-            // RenderingHints.VALUE_ANTIALIAS_ON);
-            g.drawLine(x1, y1, x2, y2);
-            x1 = x2;
-            y1 = y2;
-        } else if (shape.equals("橡皮擦")) {
+        if (shape.equals("橡皮擦")) {
             g.setStroke(new BasicStroke(80));
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                     RenderingHints.VALUE_ANTIALIAS_ON);
@@ -229,16 +224,6 @@ public class DrawListener extends MouseAdapter implements ActionListener {
             g.drawLine(x1, y1, x2, y2);
             x1 = x2;
             y1 = y2;
-        } else if (shape.equals("喷枪")) {
-            // g.setStroke(new BasicStroke(2)); //不用加粗
-            // g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-            // RenderingHints.VALUE_ANTIALIAS_ON);
-            for (int k = 0; k < 20; k++) {
-                Random i = new Random();
-                int a = i.nextInt(8);
-                int b = i.nextInt(10);
-                g.drawLine(x2 + a, y2 + b, x2 + a, y2 + b);
-            }
         }
     }
 }
