@@ -15,8 +15,8 @@ class Pond extends JPanel {
     private BufferedImage bimg;
     private Vector turtles;
 
-    private static final int WIDTH = 400;
-    private static final int HEIGHT = 400;
+    private static final int WIDTH = 800;
+    private static final int HEIGHT = 800;
 
     private Rectangle clipRegion;
 
@@ -108,10 +108,10 @@ class Pond extends JPanel {
 
 class Turtle {
     static final int TURTLE_SIZE = 5;
-    static final int SLOW_INTERVAL = 100;
+    static final int SLOW_INTERVAL = 60;
     static int interval = SLOW_INTERVAL;
 
-    private static final double STRIDE = 5.0;
+    private static final double STRIDE = 9.0;
     private static Pond pond = null;
 
     private Graphics pen;

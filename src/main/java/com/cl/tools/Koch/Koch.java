@@ -6,9 +6,9 @@ package com.cl.tools.Koch;
 public class Koch {
     public void draw(int n) {
         Turtle t = new Turtle();
-        t.move(10, 200);
+        t.move(10, 400);
         t.penDown();
-        drawKoch(t, 300, n);
+        drawKoch(t, 600, n);
 
     }
 
