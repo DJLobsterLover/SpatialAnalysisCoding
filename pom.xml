@@ -58,6 +58,25 @@
             <artifactId>jts-core</artifactId>
             <version>1.16.1</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>3.14</version>
+        </dependency>
+
+        <!-- poi-ooxml XSSF is our port of the Microsoft Excel XML (2007+) file format (OOXML) to pure Java -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>3.14</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml-schemas</artifactId>
+            <version>3.14</version>
+        </dependency>
     </dependencies>
 
 </project>
