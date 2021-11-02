@@ -1,15 +1,18 @@
-package com.cl.tools.Koch;
+package com.cl.tools.fractalTree;
 /* Turtle.java
  *
  * Copyright (C) 2004 by Shigeru Chiba,  All rights reserved.
  */
-import java.awt.*;
-import java.awt.event.*;
+
 import javax.swing.*;
-import java.awt.Rectangle;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.util.Vector;
 import java.util.Iterator;
+import java.util.Vector;
 
 class Pond extends JPanel {
     private BufferedImage bimg;

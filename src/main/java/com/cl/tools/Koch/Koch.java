@@ -9,7 +9,6 @@ public class Koch {
         t.move(10, 400);
         t.penDown();
         drawKoch(t, 600, n);
-
     }
 
     public void drawKoch(Turtle t, double len, int n) {
