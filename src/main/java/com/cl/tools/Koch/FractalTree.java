@@ -1,6 +1,8 @@
-package com.cl.tools.fractalTree;
+package com.cl.tools.Koch;
 
 //import com.cl.tools.Koch.Turtle;
+
+import com.cl.tools.Koch.Turtle;
 
 import java.awt.*;
 
@@ -17,7 +19,7 @@ public class FractalTree {
         drawTree(t,100,20);
     }
 
-    public void drawTree(Turtle t,double len,double angle) {
+    public void drawTree(Turtle t, double len, double angle) {
         if (len >= 3) {
             t.go(len);
             //向左转
@@ -34,21 +36,10 @@ public class FractalTree {
             if (len > 30) {
                 t.setColor(Color.black);
             }
-
             t.rotate(180);
             t.go(len);
             t.rotate(180);
         }
-//        t.go(len);
-//        t.rotate(-angle);
-//        t.go(len);
-//        t.rotate(2*angle);
-//        t.go(len);
-//        t.rotate(180);
-//        t.go(len);
-//        t.rotate(180-2*angle);
-//        t.go(len);
-
     }
 
     public static void main(String[] args) {
