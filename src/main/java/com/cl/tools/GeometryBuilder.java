@@ -43,6 +43,21 @@ public class GeometryBuilder {
         return polygon;
     }
 
+    public Polygon createCircle(double x, double y, final double RADIUS) {
+        final int SIDES = 32; // 确定边数
+        Coordinate coords[] = new Coordinate[SIDES + 1];
+        for (int i = 0; i < SIDES; i++) {
+            double angle = ((double) i / (double) SIDES) * Math.PI * 2.0;
+            double dx = Math.cos(angle) * RADIUS;
+            double dy = Math.sin(angle) * RADIUS;
+            coords[i] = new Coordinate((double) x + dx, (double) y + dy);
+        }
+        coords[SIDES] = coords[0];
+        LinearRing ring = geomFactory.createLinearRing(coords); // 画一个环线
+        Polygon polygon = geomFactory.createPolygon(ring, null); // 生成一个面
+        return polygon;
+    }
+
     public Geometry createGeometry(ArrayList<MyPoint> points) {
         Coordinate[] coords = new Coordinate[points.size()];
         for (int i = 0; i < coords.length; i++) {
@@ -50,5 +65,14 @@ public class GeometryBuilder {
         }
         Geometry lineString = geomFactory.createLineString(coords);
         return lineString;
+    }
+
+    public Geometry createPointsGeometry(ArrayList<MyPoint> points) {
+        Coordinate[] coords = new Coordinate[points.size()];
+        for (int i = 0; i < coords.length; i++) {
+            coords[i] = new Coordinate(points.get(i).getX(), points.get(i).getY());
+        }
+        Geometry multiPoints = geomFactory.createMultiPointFromCoords(coords);
+        return multiPoints;
     }
 }

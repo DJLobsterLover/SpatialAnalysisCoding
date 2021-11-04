@@ -1,5 +1,7 @@
 package com.cl.pojo;
 
+//import java.util.Objects;
+
 /**
  * @author DJLobster
  */
@@ -37,5 +39,16 @@ public class MyLine {
                 "startPoint=" + startPoint +
                 ", endPoint=" + endPoint +
                 '}';
+    }
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof MyLine) {
+            MyLine s = (MyLine) obj;
+            return ((this.startPoint == s.startPoint && this.endPoint == s.endPoint) ||
+                    (this.startPoint == s.endPoint && this.endPoint == s.startPoint)
+            );
+        } else {
+            return false;
+        }
     }
 }

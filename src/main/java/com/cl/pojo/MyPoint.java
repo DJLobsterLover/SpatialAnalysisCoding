@@ -62,4 +62,14 @@ public class MyPoint {
                 '}';
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof MyPoint) {
+            MyPoint s = (MyPoint) obj;
+            return this.z == s.z && this.x == s.x && this.y == s.y;
+        } else {
+            return false;
+        }
+    }
+
 }

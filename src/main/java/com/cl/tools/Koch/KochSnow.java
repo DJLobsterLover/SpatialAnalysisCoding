@@ -29,6 +29,6 @@ public class KochSnow {
 
     public static void main(String[] args) {
         KochSnow ks = new KochSnow();
-        ks.draw(400,4);
+        ks.draw(400,3);
     }
 }

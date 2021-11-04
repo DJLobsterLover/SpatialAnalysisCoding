@@ -3,6 +3,8 @@ package com.cl.drawingBoard;
 import com.cl.pojo.MyLine;
 import com.cl.pojo.MyPoint;
 import com.cl.pojo.MyPolygon;
+import com.cl.pojo.MyTriangle;
+import com.cl.tools.delaunayTrangle.CreateDelaunay;
 import com.cl.tools.distanceCalculation.DistanceCal;
 import com.cl.tools.distanceCalculation.DistanceCalImpl;
 import com.cl.tools.spatialRelation.SpatialRelation;
@@ -112,7 +114,52 @@ public class DrawListener extends MouseAdapter implements ActionListener {
                     }
                 }
             }
+        } else if (shape.equals("Delaunay")) {
+            ArrayList<MyPoint> points = new ArrayList<MyPoint>();
+//            points.add(new MyPoint(0, 0));
+//            points.add(new MyPoint(100, 0));
+//            points.add(new MyPoint(200, 0));
+//            points.add(new MyPoint(200, 100));
+//            points.add(new MyPoint(200, 200));
+//            points.add(new MyPoint(0, 100));
+//            points.add(new MyPoint(0, 200));
+//
+//            points.add(new MyPoint(321, 251));
+//            points.add(new MyPoint(351, 576));
+//            points.add(new MyPoint(357, 395));
+//            points.add(new MyPoint(453, 195));
+//            points.add(new MyPoint(519, 244));
+//            points.add(new MyPoint(528, 278));
+//            points.add(new MyPoint(562, 261));
+//            points.add(new MyPoint(600, 496));
+            points.add(new MyPoint(766, 456));
+            points.add(new MyPoint(793, 680));
+            points.add(new MyPoint(819, 262));
+            points.add(new MyPoint(839, 477));
+            points.add(new MyPoint(875, 419));
+            points.add(new MyPoint(910, 296));
+            points.add(new MyPoint(915, 459));
+            points.add(new MyPoint(920, 344));
+            points.add(new MyPoint(1006, 275));
+            points.add(new MyPoint(1012, 465));
+            points.add(new MyPoint(1044, 497));
+            points.add(new MyPoint(1048, 645));
+            points.add(new MyPoint(1200, 870));
 
+            CreateDelaunay cd = new CreateDelaunay(points);
+            cd.initDelaunay();
+            g = (Graphics2D) df.getGraphics();
+            g.setColor(color);
+            for (MyPoint point : points) {
+                g.fillOval((int)point.getX(), (int)point.getY(),  4, 4);
+            }
+            for (MyTriangle myTriangle : cd.getTriangle_list()) {
+                ArrayList<MyPoint> points1 = myTriangle.getPoints();
+                g.drawLine((int)points1.get(0).getX(),(int)points1.get(0).getY(),(int)points1.get(1).getX(),(int)points1.get(1).getY());
+                g.drawLine((int)points1.get(1).getX(),(int)points1.get(1).getY(),(int)points1.get(2).getX(),(int)points1.get(2).getY());
+                g.drawLine((int)points1.get(2).getX(),(int)points1.get(2).getY(),(int)points1.get(0).getX(),(int)points1.get(0).getY());
+
+            }
         }
     }
     // 实现画笔
