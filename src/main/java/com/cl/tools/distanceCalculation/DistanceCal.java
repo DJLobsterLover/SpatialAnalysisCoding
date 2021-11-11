@@ -141,9 +141,22 @@ public interface DistanceCal {
     /**
      * @param polygon
      * @return
+     * 获得多边形最大内切圆圆心
+     */
+    MyPoint getMaxInscribed(MyPolygon polygon);
+    /**
+     * @param polygon
+     * @return
      * 获得多边形最小外接圆半径
      */
     double getPolygonExternalCircle(MyPolygon polygon);
+
+    /**
+     * @param polygon
+     * @return
+     * 获得多边形最大外接圆半径
+     */
+    double getMaximumInscribedCircle(MyPolygon polygon);
 
     /**
      * @param p1

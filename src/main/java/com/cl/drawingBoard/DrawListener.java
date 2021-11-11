@@ -4,7 +4,10 @@ import com.cl.pojo.MyLine;
 import com.cl.pojo.MyPoint;
 import com.cl.pojo.MyPolygon;
 import com.cl.pojo.MyTriangle;
+import com.cl.tools.Koch.KochLine;
+import com.cl.tools.Transform;
 import com.cl.tools.delaunayTrangle.CreateDelaunay;
+import com.cl.tools.delaunayTrangle.LineConstraintDelaunay;
 import com.cl.tools.distanceCalculation.DistanceCal;
 import com.cl.tools.distanceCalculation.DistanceCalImpl;
 import com.cl.tools.spatialRelation.SpatialRelation;
@@ -14,21 +17,22 @@ import com.cl.tools.vectorSpaceCal.VectorSpaceCalImpl;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class DrawListener extends MouseAdapter implements ActionListener {
+public class DrawListener extends MouseAdapter implements ActionListener{
     DistanceCal dc = new DistanceCalImpl();
-    SpatialRelation sp = new SpatialRelationImpl();
+    SpatialRelation sr = new SpatialRelationImpl();
     VectorSpaceCal vs = new VectorSpaceCalImpl();
+    Transform tf = new Transform();
     ArrayList<MyPolygon> polygons;
     ArrayList<MyPoint> tempPoints;
-    ArrayList<MyLine> lines;
+    ArrayList<ArrayList> lines;
     ArrayList<MyPoint> points;
+    ArrayList<MyPoint> constraintPoints;
+    ArrayList<MyPoint> linePoints;
+    CreateDelaunay cd;
     private int x1, y1, x2, y2;
     private int newx1, newy1, newx2, newy2;
     private Graphics2D g;
@@ -43,62 +47,278 @@ public class DrawListener extends MouseAdapter implements ActionListener {
         df = d;
         polygons = new ArrayList<MyPolygon>();
         tempPoints = new ArrayList<MyPoint>();
-        lines = new ArrayList<MyLine>();
+        constraintPoints = new ArrayList<MyPoint>();
+        linePoints = new ArrayList<MyPoint>();
+        lines = new ArrayList<ArrayList>();
         points = new ArrayList<MyPoint>();
     }
+
+    public void itemStateChanged(ItemEvent e) {
+//        System.out.println("ues");
+    }
+
     public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equals("")) {
+        if (e.getActionCommand().equals("comboBoxChanged")) {
+            shape = "";
+
+            String content = df.getSelectedComBox();
+            if (content.equals("Koch曲线")) {
+                KochLine a = new KochLine();
+                a.draw(3);
+            }
+            else if(content.equals("生成三角网")){
+                System.out.println("生成三角网");
+                ArrayList<MyPoint> points = new ArrayList<MyPoint>();
+//            points.add(new MyPoint(10, 10));
+//            points.add(new MyPoint(100, 100));
+//            points.add(new MyPoint(200, 50));
+//            points.add(new MyPoint(0, 100));
+//            points.add(new MyPoint(0, 200));
+//            points.add(new MyPoint(200, 220));
+//            points.add(new MyPoint(100, 220));
+//
+                points.add(new MyPoint(321, 251));
+                points.add(new MyPoint(351, 576));
+                points.add(new MyPoint(357, 395));
+                points.add(new MyPoint(453, 195));
+                points.add(new MyPoint(519, 244));
+                points.add(new MyPoint(528, 278));
+                points.add(new MyPoint(562, 261));
+                points.add(new MyPoint(600, 496));
+                points.add(new MyPoint(766, 456));
+                points.add(new MyPoint(793, 680));
+                points.add(new MyPoint(819, 262));
+                points.add(new MyPoint(839, 477));
+                points.add(new MyPoint(875, 419));
+                points.add(new MyPoint(910, 296));
+                points.add(new MyPoint(915, 459));
+                points.add(new MyPoint(920, 344));
+                points.add(new MyPoint(1006, 275));
+                points.add(new MyPoint(1012, 465));
+                points.add(new MyPoint(1044, 497));
+                points.add(new MyPoint(1048, 645));
+
+
+                cd = new CreateDelaunay(points);
+                cd.initDelaunay();
+
+                //线限制
+                ArrayList<MyPoint> constraints = new ArrayList<MyPoint>();
+                constraints.add(new MyPoint(55, 85));
+                constraints.add(new MyPoint(55, 125));
+//            constraints.add(new MyPoint(55, 125));
+                constraints.add(new MyPoint(55, 180));
+//            constraints.add(new MyPoint(99, 100));
+                g = (Graphics2D) df.getGraphics();
+                g.setColor(color);
+                for (MyPoint point : points) {
+                    g.fillOval((int)point.getX(), (int)point.getY(),  4, 4);
+                }
+                for (MyTriangle myTriangle : cd.getTriangle_list()) {
+                    ArrayList<MyPoint> points1 = myTriangle.getPoints();
+                    g.drawLine((int)points1.get(0).getX(),(int)points1.get(0).getY(),(int)points1.get(1).getX(),(int)points1.get(1).getY());
+                    g.drawLine((int)points1.get(1).getX(),(int)points1.get(1).getY(),(int)points1.get(2).getX(),(int)points1.get(2).getY());
+                    g.drawLine((int)points1.get(2).getX(),(int)points1.get(2).getY(),(int)points1.get(0).getX(),(int)points1.get(0).getY());
+                }
+            }
+            else if (content.equals("线约束")) {
+                g = (Graphics2D) df.getGraphics();
+                g.setColor(Color.white);
+                g.fillRect(0,0,df.getWidth(),df.getHeight());
+                g.setColor(Color.red);
+                System.out.println("线约束");
+                LineConstraintDelaunay LCD = new LineConstraintDelaunay();
+                ArrayList<MyTriangle> myTriangles = LCD.LineConstraint(cd, constraintPoints);
+
+                for (MyPoint point : cd.getPoints()) {
+                    g.fillOval((int)point.getX(), (int)point.getY(),  4, 4);
+                }
+                for (MyTriangle myTriangle : myTriangles) {
+                    ArrayList<MyPoint> points1 = myTriangle.getPoints();
+                    g.drawLine((int)points1.get(0).getX(),(int)points1.get(0).getY(),(int)points1.get(1).getX(),(int)points1.get(1).getY());
+                    g.drawLine((int)points1.get(1).getX(),(int)points1.get(1).getY(),(int)points1.get(2).getX(),(int)points1.get(2).getY());
+                    g.drawLine((int)points1.get(2).getX(),(int)points1.get(2).getY(),(int)points1.get(0).getX(),(int)points1.get(0).getY());
+                }
+            } else if (content.equals("点抽稀")) {
+                System.out.println("点抽稀");
+                if(linePoints.size() != 0){
+                    ArrayList<MyPoint> myPoints = sr.pointWeedingDouglas(linePoints, 100);
+                    //绘制结果
+                    g = (Graphics2D) df.getGraphics();
+                    g.setColor(Color.RED);
+                    for (int i = 0; i < myPoints.size() - 1; i++) {
+                        g.drawLine((int)myPoints.get(i).getX(), (int)myPoints.get(i).getY(), (int)myPoints.get(i + 1).getX(), (int)myPoints.get(i + 1).getY());
+                    }
+                }else{
+                    System.out.println("请先输入一条线段");
+                }
+            }else if(content.equals("点平滑")){
+                if (linePoints.size() != 0) {
+                    ArrayList<MyPoint> myPoints = sr.simpleGeometrySmooth(linePoints, 2000);
+                    g = (Graphics2D) df.getGraphics();
+                    g.setColor(Color.RED);
+                    for (int i = 0; i < myPoints.size() - 1; i++) {
+                        g.drawLine((int)myPoints.get(i).getX(), (int)myPoints.get(i).getY(), (int)myPoints.get(i + 1).getX(), (int)myPoints.get(i + 1).getY());
+                    }
+                }else{
+                    System.out.println("请先输入一条线段");
+                }
+            }else if(content.equals("多边形最小外接圆")){
+                //绘制多边形外接圆
+                if(polygons.size()!=0){
+                    for (int i = 0; i < polygons.size(); i++) {
+                        int r = (int)dc.getPolygonExternalCircle(polygons.get(i));
+                        MyPoint p = dc.getPolygonExternal(polygons.get(i));
+                        g.setColor(Color.red);
+                        g.fillOval((int)p.getX(), (int)p.getY(),  2, 2);
+                        g.drawOval((int)p.getX() - r, (int)p.getY() - r, 2 * r, 2 * r);
+                    }
+                }
+                else{
+                    System.out.println("请先输入一个多边形");
+                }
+            }
+            else if(content.equals("多边形最大内切圆")){
+                if(polygons.size()!=0){
+                    for (int i = 0; i < polygons.size(); i++) {
+                        int r = (int)dc.getMaximumInscribedCircle(polygons.get(i));
+                        MyPoint p = dc.getMaxInscribed(polygons.get(i));
+                        g.setColor(Color.BLUE);
+                        g.fillOval((int)p.getX(), (int)p.getY(),  2, 2);
+                        g.drawOval((int)p.getX() - r, (int)p.getY() - r, 2 * r, 2 * r);
+                    }
+                }
+                else{
+                    System.out.println("请先输入一个多边形");
+                }
+            }
+            else if(content.equals("点在多边形内判断")){
+                if (polygons.size() == 0) {
+                    System.out.println("请先创建一个多边形");
+                } else if (points.size() == 0) {
+                    System.out.println("请先拆创建一个点");
+                } else {
+                    for (int i = 0; i < points.size(); i++) {
+                        for (int j = 0; j < polygons.size(); j++) {
+                            if (sr.pointWithinPolygonRay(points.get(i), polygons.get(j))) {
+                                System.out.println("点" + i + "该点在多边形内部");
+                            } else {
+                                System.out.println("该店不在多边形内部");
+                            }
+                        }
+                    }
+                }
+            }
+            else if(content.equals("欧式距离"))
+            {
+                if (points.size() != 2) {
+                    System.out.println("请先插入两个点");
+                }else{
+                    System.out.println(dc.euclideanDistance(points.get(0),points.get(1)));
+                }
+            } else if (content.equals("点到线距离")) {
+                if (points.size() != 1) {
+                    System.out.println("请先插入一个点");
+                }else if (linePoints.size() != 2) {
+                    System.out.println("请先插入一条直线");
+                }else {
+                    System.out.println("=====================================");
+                    System.out.println("点到直线的最大距离:" + dc.pointToLineDistance(points.get(0), new MyLine(linePoints.get(0), linePoints.get(1)), "max"));
+                    System.out.println("点到直线的最小距离:" + dc.pointToLineDistance(points.get(0), new MyLine(linePoints.get(0), linePoints.get(1)), "min"));
+                    System.out.println("点到直线的垂直距离:"+ sr.pointToLine(tf.PointTrans(points.get(0)),tf.LineTrans(new MyLine(linePoints.get(0),linePoints.get(1)))));
+                }
+            } else if (content.equals("点与面距离")) {
+                if (points.size() != 1) {
+                    System.out.println("请先插入一个点");
+                }else if(polygons.size() != 1) {
+                    System.out.println("请先插入一个多边形");
+                }else{
+                    System.out.println("=====================================");
+                    System.out.println("点到多边形的最大距离:" + dc.pointToPolygonDistance(points.get(0), polygons.get(0), "max"));
+                    System.out.println("点到多边形的最小距离:" + dc.pointToPolygonDistance(points.get(0), polygons.get(0), "min"));
+                }
+            } else if (content.equals("线与线距离")) {
+                if (lines.size() != 2) {
+                    System.out.println("请先输入两条线");
+                }else{
+                    System.out.println("=====================================");
+                    System.out.println("线与线之间的距离:" + dc.lineToLineDistance(new MyLine((MyPoint) lines.get(0).get(0), (MyPoint) lines.get(0).get(1)),
+                            new MyLine((MyPoint) lines.get(1).get(0), (MyPoint) lines.get(1).get(1))));
+                }
+            } else if (content.equals("线与面距离")) {
+                if (lines.size() < 0) {
+                    System.out.println("请先输入一条线");
+                } else if (polygons.size() < 0) {
+                    System.out.println("请先输入一个多边形");
+                }else {
+                    System.out.println("=====================================");
+                    System.out.println("线到多边形的距离是:" + dc.lineToPolygonDistance(new MyLine((MyPoint) lines.get(0).get(0), (MyPoint) lines.get(0).get(1)), polygons.get(0)));
+                }
+            } else if (content.equals("生成点击凸包")) {
+                if(points.size() < 0) {
+                    System.out.println("请先插入一个点集");
+                }else{
+                    //绘制凸包
+                    g = (Graphics2D) df.getGraphics();
+                    g.setColor(Color.GREEN);
+                    ArrayList<MyPoint> polygonConvexHull = sr.getPolygonConvexHull(new MyPolygon(points));
+                    if (polygonConvexHull.size() > 4) {
+                        for (int i = 0; i < polygonConvexHull.size(); i++) {
+                            g.fillOval((int)polygonConvexHull.get(i).getX(), (int)polygonConvexHull.get(i).getY(),  3, 3);
+                        }
+                        for (int i = 0; i < polygonConvexHull.size() - 1; i++) {
+                            g.drawLine((int) polygonConvexHull.get(i).getX(), (int) polygonConvexHull.get(i).getY(), (int) polygonConvexHull.get(i + 1).getX(), (int) polygonConvexHull.get(i + 1).getY());
+                        }
+                    }
+                    else{
+                        System.out.println("无法形成一个闭合多边形");
+                    }
+                }
+            } else if (content.equals("面状地物量测")) {
+                if (polygons.size() < 0) {
+                    System.out.println("请先输入一个多边形");
+                }else{
+                    System.out.println("=====================================");
+                    System.out.println("多边形的Perimeter/Area ratio:" + sr.getP1A(polygons.get(0)));
+                    System.out.println("多边形Perimeter2/Area ratio:" + sr.getP2A(polygons.get(0)));
+                    System.out.println("多边形最长轴:" + sr.getPolygonMaxAxis(polygons.get(0)));
+                    System.out.println("多边形最短轴:" + sr.getPolygonMinAxis(polygons.get(0)));
+                    System.out.println("多边形形状比:" + sr.getPolygonFormRatio(polygons.get(0)));
+                    System.out.println("多边形伸延率:" + sr.getPolygonElongationRational(polygons.get(0)));
+                    System.out.println("多边形紧凑性比率:" + sr.getPolygonCompactness(polygons.get(0)));
+                    System.out.println("多边形形状指数:" + sr.getPolygonShapeIndex(polygons.get(0)));
+                    System.out.println("多边形RBF相关外接圆:" + sr.getPolygonRelateBoundingFigure(polygons.get(0)));
+                }
+            } else if (content.equals("多边形各个心")) {
+                if (polygons.size() < 0) {
+                    System.out.println("请先输入一个多边形");
+                }else{
+                    System.out.println("多边形外心坐标:(" + dc.getPolygonExternal(polygons.get(0)).getX() + "," + dc.getPolygonExternal(polygons.get(0)).getY() + ")");
+                    System.out.println("多边形质心坐标:("+ dc.getPolygonCentroid(polygons.get(0)).getX() + "," + dc.getPolygonCentroid(polygons.get(0)).getY() + ")");
+                    System.out.println("多边形内心坐标:("+ dc.getPolygonInteriorPoint(polygons.get(0)).getX() + "," + dc.getPolygonInteriorPoint(polygons.get(0)).getY() + ")");
+                    System.out.println("多边形中心坐标:("+ dc.getPolygonCenter(polygons.get(0)).getX() + "," + dc.getPolygonCenter(polygons.get(0)).getY() + ")");
+                }
+            } else {
+                System.out.println("请选择");
+            }
+
+        }
+        else if (e.getActionCommand().equals("")) {
             JButton button = (JButton) e.getSource();
             color = button.getBackground();
             System.out.println("color = " + color);
-        } else {
+        }else {
             JButton button = (JButton) e.getSource();
             shape = button.getActionCommand();
             System.out.println("String = " + shape);
         }
-        if (shape.equals("测试结果")) {
-            g = (Graphics2D) df.getGraphics();
-            g.setColor(color);
-            MyLine l1 = new MyLine(new MyPoint(100,0),new MyPoint(0,100));
-            MyPoint p1 = new MyPoint(0,0);
-            MyPoint p2 = new MyPoint(200, 200);
-            int x1 = (int) l1.getStartPoint().getX();
-            int y1 = (int) l1.getStartPoint().getY();
-            int x2 = (int) l1.getEndPoint().getX();
-            int y2 = (int) l1.getEndPoint().getY();
-            //设置线的粗细
-            BasicStroke bs_1=new BasicStroke(2,BasicStroke.CAP_BUTT,BasicStroke.JOIN_BEVEL);
-            g.setStroke(bs_1);
-//            g.drawLine(x1,y1,x2,y2);
-            // 画圆
-            int w = (int)p1.getX();
-            int h = (int)p1.getY();
-            int r = 10;
-            g.setColor(Color.red);
-            g.fillOval(w, h,  r, r);
-            int w1 = (int)p2.getX();
-            int h1 = (int)p2.getY();
-            g.setColor(Color.yellow);
-            g.fillOval(w1, h1, r, r);
-            g.drawLine((int)p1.getX(), (int)p1.getY(),(int) p2.getX(),(int) p2.getY());
-            df.resLabel.setText("结果:" + dc.euclideanDistance(p1,p2));
-            System.out.println(dc.euclideanDistance(p1, p2));
-        } else if (shape.equals("清空")) {
+        if (shape.equals("清空")) {
             g.setColor(Color.white);
             g.fillRect(0,0,df.getWidth(),df.getHeight());
             tempPoints.clear();
             polygons.clear();
             points.clear();
-        } else if (shape.equals("多边形面积")) {
-            System.out.println(vs.vectorSpaceCal(polygons.get(0).getPolygonPoints()));
-            //绘制多边形外接圆
-            int r = (int)dc.getPolygonExternalCircle(polygons.get(0));
-            MyPoint p = dc.getPolygonExternal(polygons.get(0));
-            g.setColor(Color.red);
-            g.fillOval((int)p.getX(), (int)p.getY(),  2, 2);
-            g.drawOval((int)p.getX() - r, (int)p.getY() - r, 2 * r, 2 * r);
-            System.out.println(tempPoints);
-        } else if (shape.equals("点是否在多边形内")) {
+        }else if (shape.equals("点是否在多边形内")) {
             if (polygons == null) {
                 System.out.println("请先创建一个多边形");
             } else if (points == null) {
@@ -106,59 +326,13 @@ public class DrawListener extends MouseAdapter implements ActionListener {
             } else {
                 for (int i = 0; i < points.size(); i++) {
                     for (int j = 0; j < polygons.size(); j++) {
-                        if (sp.pointWithinPolygonRay(points.get(i), polygons.get(j))) {
+                        if (sr.pointWithinPolygonRay(points.get(i), polygons.get(j))) {
                             System.out.println("该点在多边形内部");
                         } else {
                             System.out.println("该店不在多边形内部");
                         }
                     }
                 }
-            }
-        } else if (shape.equals("Delaunay")) {
-            ArrayList<MyPoint> points = new ArrayList<MyPoint>();
-//            points.add(new MyPoint(0, 0));
-//            points.add(new MyPoint(100, 0));
-//            points.add(new MyPoint(200, 0));
-//            points.add(new MyPoint(200, 100));
-//            points.add(new MyPoint(200, 200));
-//            points.add(new MyPoint(0, 100));
-//            points.add(new MyPoint(0, 200));
-//
-//            points.add(new MyPoint(321, 251));
-//            points.add(new MyPoint(351, 576));
-//            points.add(new MyPoint(357, 395));
-//            points.add(new MyPoint(453, 195));
-//            points.add(new MyPoint(519, 244));
-//            points.add(new MyPoint(528, 278));
-//            points.add(new MyPoint(562, 261));
-//            points.add(new MyPoint(600, 496));
-            points.add(new MyPoint(766, 456));
-            points.add(new MyPoint(793, 680));
-            points.add(new MyPoint(819, 262));
-            points.add(new MyPoint(839, 477));
-            points.add(new MyPoint(875, 419));
-            points.add(new MyPoint(910, 296));
-            points.add(new MyPoint(915, 459));
-            points.add(new MyPoint(920, 344));
-            points.add(new MyPoint(1006, 275));
-            points.add(new MyPoint(1012, 465));
-            points.add(new MyPoint(1044, 497));
-            points.add(new MyPoint(1048, 645));
-            points.add(new MyPoint(1200, 870));
-
-            CreateDelaunay cd = new CreateDelaunay(points);
-            cd.initDelaunay();
-            g = (Graphics2D) df.getGraphics();
-            g.setColor(color);
-            for (MyPoint point : points) {
-                g.fillOval((int)point.getX(), (int)point.getY(),  4, 4);
-            }
-            for (MyTriangle myTriangle : cd.getTriangle_list()) {
-                ArrayList<MyPoint> points1 = myTriangle.getPoints();
-                g.drawLine((int)points1.get(0).getX(),(int)points1.get(0).getY(),(int)points1.get(1).getX(),(int)points1.get(1).getY());
-                g.drawLine((int)points1.get(1).getX(),(int)points1.get(1).getY(),(int)points1.get(2).getX(),(int)points1.get(2).getY());
-                g.drawLine((int)points1.get(2).getX(),(int)points1.get(2).getY(),(int)points1.get(0).getX(),(int)points1.get(0).getY());
-
             }
         }
     }
@@ -174,9 +348,7 @@ public class DrawListener extends MouseAdapter implements ActionListener {
     public void mouseReleased(MouseEvent e) {
         x2 = e.getX();
         y2 = e.getY();
-        if (shape.equals("直线")) {
-            g.drawLine(x1, y1, x2, y2);
-        } else if (shape.equals("多边形") && !flag) {
+        if ((shape.equals("多边形")||shape.equals("直线")) && !flag) {
             g.drawLine(x1, y1, x2, y2);
             newx1 = x1;
             newy1 = y1;
@@ -188,8 +360,6 @@ public class DrawListener extends MouseAdapter implements ActionListener {
             g.drawOval(x1 - r, y1 - r, 2 * r, 2 * r);
         } else if (shape.equals("矩形")) {
             g.drawRect(x1, y1, Math.abs(x2 - x1), Math.abs(y2 - y1));
-        } else if (shape.equals("椭圆")) {
-            g.drawOval(x1, y1, Math.abs(x2 - x1), Math.abs(y2 - y1));
         }
     }
     @Override
@@ -197,64 +367,30 @@ public class DrawListener extends MouseAdapter implements ActionListener {
         if (e.getClickCount() == 1) {
             tempPoints.add(new MyPoint(e.getX(), e.getY()));
         }
-        if (shape.equals("多边形") && flag) {
+        if ((shape.equals("多边形")|| shape.equals("直线")) && flag) {
             x2 = e.getX();
             y2 = e.getY();
             if (e.getClickCount() == 2) {
-                g.drawLine(newx1, newy1, newx2, newy2);
-                flag = false;
-                polygons.add(new MyPolygon(tempPoints));
+                if(shape.equals("多边形")){
+//                    tempPoints.add(new MyPoint(e.getX(), e.getY()));
+                    g.drawLine(newx1, newy1, newx2, newy2);
+                    flag = false;
+                    polygons.add(new MyPolygon(new ArrayList<MyPoint>(tempPoints)));
+                    tempPoints.clear();
+                }else{
+                    flag = false;
+                    constraintPoints = new ArrayList<MyPoint>(tempPoints);
+                    linePoints = new ArrayList<MyPoint>(tempPoints);
+                    lines.add(linePoints);
+                    tempPoints.clear();
+
+                }
 //                tempPoints.clear();
             }
             g.drawLine(newx2, newy2, x2, y2);
             newx2 = x2;
             newy2 = y2;
-        } else if (shape.equals("图形")) {
-            arrx[temp] = e.getX();
-            arry[temp] = e.getY();
-            temp++;
-            if (temp == 4) {
-                int x = arrx[3];
-                int y = arry[3];
-                for (int i = 0; i <= 10000; i++) {
-                    Random ran = new Random();
-                    int k = ran.nextInt(3);
-                    x = (x + arrx[k]) / 2;
-                    y = (y + arry[k]) / 2;
-                    g.drawLine(x, y, x, y);
-                }
-                temp = 0;
-            }
-        } else if (shape.equals("三角形")) {
-            double a = -2, b = -2, c = -1.2, d = 2;
-            double x = 0, xo = 0;
-            double y = 0, yo = 0;
-            Color[] Col = { Color.BLUE, Color.cyan, Color.green, Color.magenta,
-                    Color.red, Color.yellow };
-            for (int i = 0; i <= 90000; i++) {
-                Random r = new Random();
-                // 增加颜色
-                int R = r.nextInt(Col.length);
-                g.setColor(Col[R]);
-                x = Math.sin(a * yo) - Math.cos(b * xo);
-                y = Math.sin(c * xo) - Math.cos(d * yo);
-                int temp_x = (int) (x * 50);
-                int temp_y = (int) (y * 50);
-                g.drawLine(temp_x + 500, temp_y + 300, temp_x + 500,
-                        temp_y + 300);
-                xo = x;
-                yo = y;
-            }
-        } else if (shape.equals("测试")) {
-            g = (Graphics2D) df.getGraphics();
-            g.setColor(color);
-            MyLine l1 = new MyLine(new MyPoint(0,0),new MyPoint(100,100));
-            int x1 = (int) l1.getStartPoint().getX();
-            int y1 = (int) l1.getStartPoint().getY();
-            int x2 = (int) l1.getEndPoint().getX();
-            int y2 = (int) l1.getEndPoint().getY();
-            g.drawLine(x1,y1,x2,y2);
-        } else if (shape.equals("圆点")) {
+        }else if (shape.equals("圆点")) {
             g = (Graphics2D) df.getGraphics();
             g.fillOval(e.getX(), e.getY(), 5, 5);
             points.add(new MyPoint(e.getX(), e.getY()));
@@ -273,4 +409,6 @@ public class DrawListener extends MouseAdapter implements ActionListener {
             y1 = y2;
         }
     }
+
+
 }

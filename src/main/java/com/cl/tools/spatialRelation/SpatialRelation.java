@@ -81,6 +81,7 @@ public interface SpatialRelation {
      */
     ArrayList<MyPoint> getPolygonConvexHull(MyPolygon polygon);
 
+    ArrayList<MyPoint> getPolygonConvexHull2(ArrayList<MyPoint> points);
     /**
      * @param polygon
      * @return

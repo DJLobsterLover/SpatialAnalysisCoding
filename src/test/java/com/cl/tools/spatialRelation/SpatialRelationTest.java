@@ -100,4 +100,18 @@ public class SpatialRelationTest {
         MyPoint p = new MyPoint(0.5, 0.5);
         System.out.println(sr.pointWithinPolygonRay(p,pol));
     }
+
+    @Test
+    public void convexHull() {
+        ArrayList<MyPoint> points = new ArrayList<MyPoint>();
+        points.add(new MyPoint(0,0));
+        points.add(new MyPoint(0, 1));
+        points.add(new MyPoint(1, 1));
+        points.add(new MyPoint(1, 0));
+        points.add(new MyPoint(0.5, 0.5));
+        ArrayList<MyPoint> polygonConvexHull2 = sr.getPolygonConvexHull2(points);
+        for (MyPoint myPoint : polygonConvexHull2) {
+            System.out.println(myPoint.getX() + "  "  + myPoint.getY());
+        }
+    }
 }

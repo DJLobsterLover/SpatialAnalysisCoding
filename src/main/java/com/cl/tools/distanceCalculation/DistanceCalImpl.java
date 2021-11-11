@@ -6,11 +6,15 @@ import com.cl.pojo.MyPoint;
 import com.cl.pojo.MyPolygon;
 import com.cl.tools.GeometryBuilder;
 import com.cl.tools.Transform;
+import com.cl.tools.spatialRelation.SpatialRelation;
+import com.cl.tools.spatialRelation.SpatialRelationImpl;
 import com.mysql.jdbc.StringUtils;
 import org.locationtech.jts.algorithm.MinimumBoundingCircle;
+import org.locationtech.jts.algorithm.construct.MaximumInscribedCircle;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
+
 //import org.locationtech.jts.geom.Point;
 
 import java.util.ArrayList;
@@ -21,6 +25,7 @@ import java.util.ArrayList;
 public class DistanceCalImpl implements DistanceCal{
     private Transform tf = new Transform();
     private GeometryBuilder gb = new GeometryBuilder();
+//    private SpatialRelation sr = new SpatialRelationImpl();
 
     public double euclideanDistance(MyPoint startPoint, MyPoint endPoint) {
         double rs = 0.0;
@@ -242,9 +247,23 @@ public class DistanceCalImpl implements DistanceCal{
         return myPoint;
     }
 
+    public MyPoint getMaxInscribed(MyPolygon polygon) {
+        MaximumInscribedCircle circle = new MaximumInscribedCircle(tf.PolygonTrans(polygon), 10);
+        return tf.PointTransBack(circle.getCenter());
+    }
+
     public double getPolygonExternalCircle(MyPolygon polygon) {
         MinimumBoundingCircle circle = new MinimumBoundingCircle(tf.PolygonTrans(polygon));
         return circle.getRadius();
+    }
+
+    public double getMaximumInscribedCircle(MyPolygon polygon) {
+
+        double rs=0;
+        SpatialRelation sr = new SpatialRelationImpl();
+        MaximumInscribedCircle circle = new MaximumInscribedCircle(tf.PolygonTrans(polygon), 5);
+        rs = circle.getRadiusPoint().distance(circle.getCenter());
+        return rs;
     }
 
     public double hausdorffDistance(MyPolygon p1, MyPolygon p2) {

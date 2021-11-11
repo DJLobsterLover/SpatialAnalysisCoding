@@ -58,28 +58,29 @@ public class Test {
 
     @org.junit.Test
     public void Test1() {
-        ArrayList<MyPoint> points = new ArrayList<MyPoint>();
-        points.add(new MyPoint(0, 1));
-        points.add(new MyPoint(1, 0));
-        points.add(new MyPoint(2, 1));
-        points.add(new MyPoint(1, 3));
-        points.add(new MyPoint(1, 1));
-        points.add(new MyPoint(2, 0));
-        points.add(new MyPoint(1, 0.5));
-        CreateDelaunay cd = new CreateDelaunay(points);
-        cd.initDelaunay();
-        System.out.println(cd.getHullPoints().size());
-        System.out.println(cd.getTriangle_list().size());
-//        for (MyTriangle myTriangle : cd.getTriangle_list()) {
-//            System.out.println(myTriangle.getPoints().get(0).getX()+" "+myTriangle.getPoints().get(0).getY());
-//            System.out.println(myTriangle.getPoints().get(1).getX()+" "+myTriangle.getPoints().get(1).getY());
-//            System.out.println(myTriangle.getPoints().get(2).getX() + " " + myTriangle.getPoints().get(2).getY());
-//            System.out.println("=========================");
+//        ArrayList<MyPoint> points = new ArrayList<MyPoint>();
+//        points.add(new MyPoint(0, 1));
+//        points.add(new MyPoint(1, 0));
+//        points.add(new MyPoint(2, 1));
+//        points.add(new MyPoint(1, 3));
+//        points.add(new MyPoint(1, 1));
+//        points.add(new MyPoint(2, 0));
+//        points.add(new MyPoint(1, 0.5));
+//        CreateDelaunay cd = new CreateDelaunay(points);
+//        cd.initDelaunay();
+//        System.out.println(cd.getHullPoints().size());
+//        System.out.println(cd.getTriangle_list().size());
+////        for (MyTriangle myTriangle : cd.getTriangle_list()) {
+////            System.out.println(myTriangle.getPoints().get(0).getX()+" "+myTriangle.getPoints().get(0).getY());
+////            System.out.println(myTriangle.getPoints().get(1).getX()+" "+myTriangle.getPoints().get(1).getY());
+////            System.out.println(myTriangle.getPoints().get(2).getX() + " " + myTriangle.getPoints().get(2).getY());
+////            System.out.println("=========================");
+////        }
+//        for (MyPoint hullPoint : cd.getHullPoints()) {
+//            System.out.println(hullPoint.getX() + "  " + hullPoint.getY());
 //        }
-        for (MyPoint hullPoint : cd.getHullPoints()) {
-            System.out.println(hullPoint.getX() + "  " + hullPoint.getY());
-        }
-
+        double a = 3;
+        System.out.println(Math.toDegrees(3));
     }
 }
 

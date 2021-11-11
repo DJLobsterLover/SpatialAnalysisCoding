@@ -3,6 +3,7 @@ package com.cl.tools;
 import com.cl.pojo.MyLine;
 import com.cl.pojo.MyPoint;
 import com.cl.pojo.MyPolygon;
+import com.cl.pojo.MyTriangle;
 import org.locationtech.jts.geom.*;
 
 /**
@@ -33,6 +34,17 @@ public class Transform {
         Polygon polygon1 = gf.createPolygon(coordinates);
         return polygon1;
     }
+
+    public Polygon PolygonTrans(MyTriangle polygon) {
+        Coordinate[] coordinates = new Coordinate[polygon.getPoints().size() + 1];
+        for (int i = 0; i < polygon.getPoints().size(); i++) {
+            coordinates[i] = new Coordinate(polygon.getPoints().get(i).getX(), polygon.getPoints().get(i).getY());
+        }
+        coordinates[coordinates.length - 1] = new Coordinate(polygon.getPoints().get(0).getX(), polygon.getPoints().get(0).getY());
+        Polygon polygon1 = gf.createPolygon(coordinates);
+        return polygon1;
+    }
+
 
     public MyPoint PointTransBack(Point p) {
         MyPoint p1 = new MyPoint(p.getX(), p.getY());

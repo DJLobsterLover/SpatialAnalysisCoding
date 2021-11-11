@@ -8,10 +8,12 @@ import com.cl.tools.GeometryBuilder;
 import com.cl.tools.Transform;
 import com.cl.tools.distanceCalculation.DistanceCal;
 import com.cl.tools.distanceCalculation.DistanceCalImpl;
+import com.cl.tools.vectorSpaceCal.VectorSpaceCal;
+import com.cl.tools.vectorSpaceCal.VectorSpaceCalImpl;
 import org.locationtech.jts.geom.*;
 import org.geotools.geometry.jts.JTS;
 
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * @author DJLobster
@@ -19,7 +21,8 @@ import java.util.ArrayList;
 public class SpatialRelationImpl implements SpatialRelation{
     private Transform tf = new Transform();
     private GeometryBuilder gb = new GeometryBuilder();
-    DistanceCal dc = new DistanceCalImpl();
+    private DistanceCal dc = new DistanceCalImpl();
+    VectorSpaceCal vc = new VectorSpaceCalImpl();
 
     public double pointToLine(Point p, LineString l) {
         double rs = 0;
@@ -149,6 +152,81 @@ public class SpatialRelationImpl implements SpatialRelation{
         ArrayList<MyPoint> rs = new ArrayList<MyPoint>();
         for (int i = 0; i < convexHull.getCoordinates().length; i++) {
             rs.add(new MyPoint(convexHull.getCoordinates()[i].x, convexHull.getCoordinates()[i].y));
+        }
+        return rs;
+    }
+
+    public ArrayList<MyPoint> getPolygonConvexHull2(ArrayList<MyPoint> points) {
+        ArrayList<MyPoint> rs = new ArrayList<MyPoint>();
+        //最大y的点
+        MyPoint maxYPoint = points.get(0);
+        for (int i = 1; i < points.size(); i++) {
+            if (points.get(i).getY() > maxYPoint.getY()) {
+                maxYPoint = points.get(i);
+            }
+        }
+        ArrayList<MyPoint> _points = new ArrayList<MyPoint>(points);
+        _points.remove(maxYPoint);
+        //坐标点余弦值点集
+        Map<Double, MyPoint> cosMap = new HashMap<Double, MyPoint>();
+        List<Double> tempCos = new ArrayList<Double>();
+        for (MyPoint point : _points) {
+            double c = dc.euclideanDistance(maxYPoint, point);
+            double b = maxYPoint.getY() - point.getY();
+            double a = Math.sqrt(c * c - b * b);
+            double t = (a * a + c * c - b * b) / (2 * a * c);
+            double cos = Math.toDegrees(Math.acos(t));
+            if (point.getX() < maxYPoint.getX()) {
+                cos = 180 - cos;
+            }
+            cosMap.put(cos, point);
+            tempCos.add(cos);
+        }
+        //采用冒泡排序对余弦值cos排序
+        for (int i = 0; i < tempCos.size() - 1; i++) {
+            for (int j = 0; j < tempCos.size() - i - 1; j++) {
+                if (tempCos.get(j) > tempCos.get(j + 1)) {
+                    Collections.swap(tempCos, j, j + 1);
+                }
+            }
+        }
+        //排序后的点集
+        ArrayList<MyPoint> sortPoints = new ArrayList<MyPoint>();
+        for (Double tempCo : tempCos) {
+            sortPoints.add(cosMap.get(tempCo));
+        }
+        rs.add(maxYPoint);
+        //Graham扫描法
+        for (int i = 0; i < sortPoints.size(); i++) {
+            if (i == 0 || i == 1) {
+                rs.add(sortPoints.get(i));
+            } else {
+                MyPoint point = sortPoints.get(i);
+                ArrayList<MyPoint> tempList = new ArrayList<MyPoint>();
+                tempList.add(point);
+                tempList.add(rs.get(rs.size()-2));
+                tempList.add(rs.get(rs.size()-1));
+                double area = vc.vectorSpaceCal(tempList);
+                if (area > 0) {
+                    rs.remove(rs.get(rs.size() - 1));
+                    rs.add(point);
+                } else {
+                    rs.add(point);
+                }
+            }
+            while (rs.size()>=3) {
+                ArrayList<MyPoint> tempList = new ArrayList<MyPoint>();
+                tempList.add(rs.get(rs.size() - 1));
+                tempList.add(rs.get(rs.size() - 2));
+                tempList.add(rs.get(rs.size() - 3));
+                double area = vc.vectorSpaceCal(tempList);
+                if (area > 0) {
+                    rs.remove(rs.get(rs.size() - 2));
+                } else {
+                    break;
+                }
+            }
+
         }
         return rs;
     }
