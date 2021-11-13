@@ -41,7 +41,7 @@ public class DrawMain extends JPanel implements ItemListener{
         ShapePanel.setBackground(Color.black);
         ShapePanel.setLayout(new FlowLayout(FlowLayout.CENTER));
         ShapePanel.setBackground(Color.gray);
-        String[] Shape = { "直线", "圆", "橡皮擦", "矩形", "椭圆",
+        String[] Shape = { "直线", "圆", "橡皮擦", "矩形",
                 "多边形","圆点"};
         for (int i = 0; i < Shape.length; i++) {
             JButton button = new JButton(Shape[i]);
@@ -63,6 +63,8 @@ public class DrawMain extends JPanel implements ItemListener{
         JComboBox delaunayBox = new JComboBox();
         delaunayBox.addItem("--delaunay--");
         delaunayBox.addItem("生成三角网");
+        delaunayBox.addItem("生成三角网2");
+        delaunayBox.addItem("生成三角网3");
         delaunayBox.addItem("线约束");
         delaunayBox.addActionListener(dl);
         delaunayBox.addItemListener(this);
@@ -84,7 +86,7 @@ public class DrawMain extends JPanel implements ItemListener{
         //添加距离关系下拉框
         JComboBox distanceBox = new JComboBox();
         distanceBox.addItem("--距离关系");
-        distanceBox.addItem("欧式距离");
+        distanceBox.addItem("两点距离");
         distanceBox.addItem("点到线距离");
         distanceBox.addItem("点与面距离");
         distanceBox.addItem("线与线距离");
@@ -93,6 +95,21 @@ public class DrawMain extends JPanel implements ItemListener{
         distanceBox.addItemListener(this);
         ShapePanel.add(distanceBox);
 
+        //添加面积下拉框
+        JComboBox vectorBox = new JComboBox();
+        vectorBox.addItem("--面积计算--");
+        vectorBox.addItem("多边形面积");
+        vectorBox.addItemListener(this);
+        vectorBox.addActionListener(dl);
+        ShapePanel.add(vectorBox);
+
+        //添加栅格下拉框
+        JComboBox rasterBox = new JComboBox();
+        rasterBox.addItem("--栅格关系--");
+        rasterBox.addItem("栅格路径");
+        rasterBox.addActionListener(dl);
+        rasterBox.addItemListener(this);
+        ShapePanel.add(rasterBox);
         //清空按键
         JButton remove = new JButton("清空");
         remove.addActionListener(dl);
