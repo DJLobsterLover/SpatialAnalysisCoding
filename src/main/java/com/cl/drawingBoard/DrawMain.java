@@ -106,7 +106,8 @@ public class DrawMain extends JPanel implements ItemListener{
         //添加栅格下拉框
         JComboBox rasterBox = new JComboBox();
         rasterBox.addItem("--栅格关系--");
-        rasterBox.addItem("栅格路径");
+        rasterBox.addItem("生成栅格");
+        rasterBox.addItem("最短路径");
         rasterBox.addActionListener(dl);
         rasterBox.addItemListener(this);
         ShapePanel.add(rasterBox);

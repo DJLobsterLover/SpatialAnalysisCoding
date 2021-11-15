@@ -11,6 +11,7 @@ import com.cl.tools.Transform;
 import com.cl.tools.delaunayTrangle.CreateDelaunay;
 import com.cl.tools.delaunayTrangle.CreateDelaunay2;
 import com.cl.tools.delaunayTrangle.LineConstraintDelaunay;
+import com.cl.tools.distanceCalculation.DijstraAlgorithm;
 import com.cl.tools.distanceCalculation.DistanceCal;
 import com.cl.tools.distanceCalculation.DistanceCalImpl;
 import com.cl.tools.spatialRelation.SpatialRelation;
@@ -25,6 +26,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 public class DrawListener extends MouseAdapter implements ActionListener{
@@ -39,7 +41,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
     ArrayList<MyPoint> points;
     ArrayList<MyPoint> constraintPoints;
     ArrayList<MyPoint> linePoints;
-
+    int [][] matrixWeight;
     CreateDelaunay cd;
     private int x1, y1, x2, y2;
     private int newx1, newy1, newx2, newy2;
@@ -393,7 +395,8 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                         System.out.println("多边形" + i + "面积" + vs.vectorSpaceCal(polygons.get(i).getPolygonPoints()));
                     }
                 }
-            } else if (content.equals("栅格路径")) {
+            } else if (content.equals("生成栅格")) {
+                matrixWeight = new int[C.rasterSize][C.rasterSize];
                 g = (Graphics2D) df.getGraphics();
                 g.fillRect(0, 0, 30, 30);
                 //生成12*12的格网
@@ -401,10 +404,100 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                     for (int j = 0; j < C.rasterSize; j++) {
                         Random rd = new Random();
                         int col = rd.nextInt(255);
+                        matrixWeight[i][j] = col;
                         g.setColor(new Color(col, col, col));
-                        g.fillRect(i * 30, j * 30, 30, 30);
+                        g.fillRect(i * C.netSize, j * C.netSize, C.netSize, C.netSize);
                     }
                 }
+            } else if (content.equals("最短路径")) {
+                if (matrixWeight != null) {
+                    int size = C.rasterSize;
+                    //顶点数
+                    int vertex = size * size;
+                    int[][] matrix = new int[vertex][vertex];
+                    //初始化邻接矩阵
+                    for (int i = 0; i < vertex; i++) {
+                        for (int j = 0; j < vertex; j++) {
+                            matrix[i][j] = 999999999;
+                        }
+                    }
+                    //初始化邻接矩阵
+                    //1、从四个顶点开始
+                    //左上
+                    matrix[0][1] = matrixWeight[0][0] + matrixWeight[0][1];
+                    matrix[0][size] = matrixWeight[0][0] + matrixWeight[1][0];
+                    //左下
+                    matrix[size * (size - 1)][size * (size - 1) + 1] = matrixWeight[size - 1][0] + matrixWeight[size - 1][1];
+                    matrix[size * (size - 1)][size * (size - 2)] = matrixWeight[size - 1][0] + matrixWeight[size - 2][0];
+                    //右上
+                    matrix[size - 1][size - 2] = matrixWeight[0][size - 1] + matrixWeight[0][size - 2];
+                    matrix[size - 1][2 * size - 1] = matrixWeight[0][size - 1] + matrixWeight[1][size - 1];
+                    //右下
+                    matrix[size * size - 1][size * size - 2] = matrixWeight[size - 1][size - 1] + matrixWeight[size - 1][size - 2];
+                    matrix[size * size - 1][size * (size - 1)] = matrixWeight[size - 1][size - 1] + matrixWeight[size - 2][size - 1];
+                    //2、四条边
+                    //上边
+                    for (int i = 1; i < size - 1; i++) {
+                        matrix[i][i - 1] = matrixWeight[0][i] + matrixWeight[0][i - 1];
+                        matrix[i][i + 1] = matrixWeight[0][i] + matrixWeight[0][i + 1];
+                        matrix[i][i + size] = matrixWeight[0][i] + matrixWeight[1][i];
+                    }
+                    //下边
+                    for (int i = 1; i<size -1; i++) {
+                        matrix[(size - 1) * size + i][(size - 1) * size + i - 1] = matrixWeight[size - 1][i] + matrixWeight[size - 1][i - 1];
+                        matrix[(size - 1) * size + i][(size - 1) * size + i + 1] = matrixWeight[size - 1][i] + matrixWeight[size - 1][i + 1];
+                        matrix[(size - 1) * size + i][(size - 1) * size + i] = matrixWeight[size - 1][i] + matrixWeight[size - 2][i];
+                    }
+                    //左边
+                    for (int i = 1; i < size - 1; i++) {
+                        matrix[i * size][(i - 1) * size] = matrixWeight[i][0] + matrixWeight[i - 1][0];
+                        matrix[i * size][(i + 1) * size] = matrixWeight[i][0] + matrixWeight[i + 1][0];
+                        matrix[i * size][i * size + 1] = matrixWeight[i][0] + matrixWeight[i][1];
+                    }
+                    //右边
+                    for (int i = 1; i < size - 1; i++) {
+                        matrix[(i + 1) * size - 1][i * size - 1] = matrixWeight[i][size - 1] + matrixWeight[i - 1][size - 1];
+                        matrix[(i + 1) * size - 1][(i + 2) * size - 1] = matrixWeight[i][size - 1] + matrixWeight[i + 1][size - 1];
+                        matrix[(i + 1) * size - 1][(i + 1) * size - 2] = matrixWeight[i][size - 1] + matrixWeight[i][size - 2];
+                    }
+                    //内部
+                    for (int i = 1; i < size - 1; i++) {
+                        for (int j = 1; j < size - 1; j++) {
+                            matrix[i * size + j][(i - 1) * size + j] = matrixWeight[i][j] + matrixWeight[i - 1][j];
+                            matrix[i * size + j][(i + 1) * size + j] = matrixWeight[i][j] + matrixWeight[i + 1][j];
+                            matrix[i * size + j][i * size + j - 1] = matrixWeight[i][j] + matrixWeight[i][j - 1];
+                            matrix[i * size + j][i * size + j + 1] = matrixWeight[i][j] + matrixWeight[i][j + 1];
+
+                        }
+                    }
+                    //拆分字符串，将数字提取出来
+                    if (points.size() >= 2) {
+                        int source = (int) points.get(0).getX() / C.netSize + (int) points.get(0).getY() / C.netSize * C.rasterSize;
+                        int end = (int) points.get(1).getX() / C.netSize + (int) points.get(1).getY() / C.netSize * C.rasterSize;
+                        DijstraAlgorithm dj =new DijstraAlgorithm();
+                        dj.dijstra(matrix, source);
+                        String s = dj.getPath()[end];
+                        String regex = "\\D+";
+                        String[] words = s.split(regex);
+                        //绘制最短路线网格
+                        g = (Graphics2D) df.getGraphics();
+                        g.setColor(Color.RED);
+                        for (String word : words) {
+                            int i = Integer.parseInt(word);
+                            int row = i / size;
+                            int col = i % size;
+                            g.fillRect(col * C.netSize, row * C.netSize, C.netSize, C.netSize);
+                        }
+                    }else{
+                        System.out.println("请输入两个点");
+                    }
+                }else{
+                    System.out.println("请先生成矩阵");
+                }
+
+
+
+
             } else {
                 System.out.println("请选择");
             }
