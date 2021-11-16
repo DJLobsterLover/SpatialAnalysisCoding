@@ -140,6 +140,12 @@ public interface DistanceCal {
 
     /**
      * @param polygon
+     * @return获得多边形重心
+     */
+    MyPoint getPolygonGravityPoint(MyPolygon polygon);
+
+    /**
+     * @param polygon
      * @return
      * 获得多边形最大内切圆圆心
      */

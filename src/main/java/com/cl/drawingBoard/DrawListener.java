@@ -1,13 +1,11 @@
 package com.cl.drawingBoard;
 
-import com.cl.pojo.MyLine;
-import com.cl.pojo.MyPoint;
-import com.cl.pojo.MyPolygon;
-import com.cl.pojo.MyTriangle;
+import com.cl.pojo.*;
 import com.cl.tools.Constants;
 import com.cl.tools.Koch.KochLine;
 import com.cl.tools.Koch.KochSnow;
 import com.cl.tools.Transform;
+import com.cl.tools.clustering.KCluster;
 import com.cl.tools.delaunayTrangle.CreateDelaunay;
 import com.cl.tools.delaunayTrangle.CreateDelaunay2;
 import com.cl.tools.delaunayTrangle.LineConstraintDelaunay;
@@ -41,6 +39,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
     ArrayList<MyPoint> points;
     ArrayList<MyPoint> constraintPoints;
     ArrayList<MyPoint> linePoints;
+    ArrayList<MyClusterPoint> clusterList;
     int [][] matrixWeight;
     CreateDelaunay cd;
     private int x1, y1, x2, y2;
@@ -62,6 +61,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
         linePoints = new ArrayList<MyPoint>();
         lines = new ArrayList<ArrayList>();
         points = new ArrayList<MyPoint>();
+        clusterList = new ArrayList<MyClusterPoint>();
     }
 
     public void itemStateChanged(ItemEvent e) {
@@ -242,7 +242,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                         g.drawLine((int) myPoints.get(i).getX(), (int) myPoints.get(i).getY(), (int) myPoints.get(i + 1).getX(), (int) myPoints.get(i + 1).getY());
                     }
                 } else {
-                    System.out.println("请先输入一条线段");
+                    JOptionPane.showMessageDialog(null, "请先输入一条线段");
                 }
             } else if (content.equals("点平滑")) {
                 if (linePoints.size() != 0) {
@@ -253,7 +253,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                         g.drawLine((int) myPoints.get(i).getX(), (int) myPoints.get(i).getY(), (int) myPoints.get(i + 1).getX(), (int) myPoints.get(i + 1).getY());
                     }
                 } else {
-                    System.out.println("请先输入一条线段");
+                    JOptionPane.showMessageDialog(null, "请先输入一条线段");
                 }
             } else if (content.equals("多边形最小外接圆")) {
                 //绘制多边形外接圆
@@ -266,7 +266,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                         g.drawOval((int) p.getX() - r, (int) p.getY() - r, 2 * r, 2 * r);
                     }
                 } else {
-                    System.out.println("请先输入一个多边形");
+                    JOptionPane.showMessageDialog(null, "请先输入一个多边形");
                 }
             } else if (content.equals("多边形最大内切圆")) {
                 if (polygons.size() != 0) {
@@ -278,75 +278,81 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                         g.drawOval((int) p.getX() - r, (int) p.getY() - r, 2 * r, 2 * r);
                     }
                 } else {
-                    System.out.println("请先输入一个多边形");
+                    JOptionPane.showMessageDialog(null, "请先输入一个多边形");
                 }
             } else if (content.equals("点在多边形内判断")) {
                 if (polygons.size() == 0) {
-                    System.out.println("请先创建一个多边形");
+                    JOptionPane.showMessageDialog(null, "请先输入一个多边形");
                 } else if (points.size() == 0) {
-                    System.out.println("请先拆创建一个点");
+                    JOptionPane.showMessageDialog(null, "请先拆创建一个点");
                 } else {
+                    String res = "";
                     for (int i = 0; i < points.size(); i++) {
                         for (int j = 0; j < polygons.size(); j++) {
                             if (sr.pointWithinPolygonRay(points.get(i), polygons.get(j))) {
-                                System.out.println("点" + i + "该点在多边形内部");
+                                res += "点" + String.valueOf(i) + "在多边形内部\n";
                             } else {
-                                System.out.println("该店不在多边形内部");
+                                res += "点" + String.valueOf(i) + "不在多边形内部\n";
                             }
                         }
                     }
+                    JOptionPane.showMessageDialog(null, res);
                 }
             } else if (content.equals("两点距离")) {
                 if (points.size() != 2) {
-                    System.out.println("请先插入两个点");
+                    JOptionPane.showMessageDialog(null, "请先插入两个点");
                 } else {
-                    System.out.println("=====================================");
-                    System.out.println("两点间欧式距离:" + dc.euclideanDistance(points.get(0), points.get(1)));
-                    System.out.println("两点间曼哈顿距离:" + dc.manhattanDistance(points.get(0), points.get(1)));
-                    System.out.println("两点间切比雪夫距离:" + dc.chebyshevDistance(points.get(0), points.get(1)));
-                    System.out.println("两点间明氏距离:" + dc.minkowskiDistance(points.get(0), points.get(1), 3));
+                    String res = "";
+                    res += "两点间欧式距离:" + String.valueOf(dc.euclideanDistance(points.get(0), points.get(1))) + "\n";
+                    res += "两点间曼哈顿距离:" + String.valueOf(dc.manhattanDistance(points.get(0), points.get(1))) + "\n";
+                    res += "两点间切比雪夫距离:" + String.valueOf(dc.chebyshevDistance(points.get(0), points.get(1))) + "\n";
+                    res += "两点间明氏距离:" + String.valueOf(dc.minkowskiDistance(points.get(0), points.get(1),3)) + "\n";
+                    JOptionPane.showMessageDialog(null, res);
                 }
             } else if (content.equals("点到线距离")) {
                 if (points.size() != 1) {
-                    System.out.println("请先插入一个点");
+                    JOptionPane.showMessageDialog(null, "请先插入一个点");
                 } else if (linePoints.size() != 2) {
-                    System.out.println("请先插入一条直线");
+                    JOptionPane.showMessageDialog(null, "请先插入一条直线");
                 } else {
-                    System.out.println("=====================================");
-                    System.out.println("点到直线的最大距离:" + dc.pointToLineDistance(points.get(0), new MyLine(linePoints.get(0), linePoints.get(1)), "max"));
-                    System.out.println("点到直线的最小距离:" + dc.pointToLineDistance(points.get(0), new MyLine(linePoints.get(0), linePoints.get(1)), "min"));
-                    System.out.println("点到直线的垂直距离:" + sr.pointToLine(tf.PointTrans(points.get(0)), tf.LineTrans(new MyLine(linePoints.get(0), linePoints.get(1)))));
+                    String res = "";
+                    res += "点到直线的最大距离:" + String.valueOf(dc.pointToLineDistance(points.get(0), new MyLine(linePoints.get(0), linePoints.get(1)), "max")) + "\n";
+                    res += "点到直线的最小距离:" + String.valueOf(dc.pointToLineDistance(points.get(0), new MyLine(linePoints.get(0), linePoints.get(1)), "min")) + "\n";
+                    res += "点到直线的垂直距离:" + String.valueOf(sr.pointToLine(tf.PointTrans(points.get(0)), tf.LineTrans(new MyLine(linePoints.get(0), linePoints.get(1))))) + "\n";
+                    JOptionPane.showMessageDialog(null, res);
                 }
             } else if (content.equals("点与面距离")) {
                 if (points.size() != 1) {
-                    System.out.println("请先插入一个点");
+                    JOptionPane.showMessageDialog(null, "请先插入一个点");
                 } else if (polygons.size() != 1) {
-                    System.out.println("请先插入一个多边形");
+                    JOptionPane.showMessageDialog(null, "请先插入一个多边形");
                 } else {
-                    System.out.println("=====================================");
-                    System.out.println("点到多边形的最大距离:" + dc.pointToPolygonDistance(points.get(0), polygons.get(0), "max"));
-                    System.out.println("点到多边形的最小距离:" + dc.pointToPolygonDistance(points.get(0), polygons.get(0), "min"));
+                    String res = "";
+                    res += "点到多边形的最大距离:" + String.valueOf(dc.pointToPolygonDistance(points.get(0), polygons.get(0), "max")) + "\n";
+                    res += "点到多边形的最小距离" + String.valueOf(dc.pointToPolygonDistance(points.get(0), polygons.get(0), "min"));
+                    JOptionPane.showMessageDialog(null, res);
                 }
             } else if (content.equals("线与线距离")) {
                 if (lines.size() != 2) {
-                    System.out.println("请先输入两条线");
+                    JOptionPane.showMessageDialog(null, "请先输入两条线");
                 } else {
-                    System.out.println("=====================================");
-                    System.out.println("线与线之间的距离:" + dc.lineToLineDistance(new MyLine((MyPoint) lines.get(0).get(0), (MyPoint) lines.get(0).get(1)),
+                    String res = "";
+                    res += "线与线之间的距离:" + String.valueOf(dc.lineToLineDistance(new MyLine((MyPoint) lines.get(0).get(0), (MyPoint) lines.get(0).get(1)),
                             new MyLine((MyPoint) lines.get(1).get(0), (MyPoint) lines.get(1).get(1))));
+                    JOptionPane.showMessageDialog(null, res);
                 }
             } else if (content.equals("线与面距离")) {
                 if (lines.size() < 0) {
-                    System.out.println("请先输入一条线");
+                    JOptionPane.showMessageDialog(null, "请先输入一条线");
                 } else if (polygons.size() < 0) {
-                    System.out.println("请先输入一个多边形");
+                    JOptionPane.showMessageDialog(null, "请先输入一个多边形");
                 } else {
-                    System.out.println("=====================================");
-                    System.out.println("线到多边形的距离是:" + dc.lineToPolygonDistance(new MyLine((MyPoint) lines.get(0).get(0), (MyPoint) lines.get(0).get(1)), polygons.get(0)));
+                    String res = "线到多边形的距离是:" + String.valueOf(dc.lineToPolygonDistance(new MyLine((MyPoint) lines.get(0).get(0), (MyPoint) lines.get(0).get(1)), polygons.get(0)));
+                    JOptionPane.showMessageDialog(null, res);
                 }
             } else if (content.equals("生成点击凸包")) {
                 if (points.size() < 0) {
-                    System.out.println("请先插入一个点集");
+                    JOptionPane.showMessageDialog(null, "请先插入一个点集");
                 } else {
                     //绘制凸包
                     g = (Graphics2D) df.getGraphics();
@@ -354,46 +360,53 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                     ArrayList<MyPoint> polygonConvexHull = sr.getPolygonConvexHull(new MyPolygon(points));
                     if (polygonConvexHull.size() > 4) {
                         for (int i = 0; i < polygonConvexHull.size(); i++) {
-                            g.fillOval((int) polygonConvexHull.get(i).getX(), (int) polygonConvexHull.get(i).getY(), 3, 3);
+                            g.setColor(Color.RED);
+                            g.fillOval((int) polygonConvexHull.get(i).getX(), (int) polygonConvexHull.get(i).getY(), 4, 4);
                         }
+                        g.setColor(Color.YELLOW);
                         for (int i = 0; i < polygonConvexHull.size() - 1; i++) {
                             g.drawLine((int) polygonConvexHull.get(i).getX(), (int) polygonConvexHull.get(i).getY(), (int) polygonConvexHull.get(i + 1).getX(), (int) polygonConvexHull.get(i + 1).getY());
                         }
                     } else {
-                        System.out.println("无法形成一个闭合多边形");
+                        JOptionPane.showMessageDialog(null, "无法形成一个闭合多边形");
                     }
                 }
             } else if (content.equals("面状地物量测")) {
                 if (polygons.size() < 0) {
-                    System.out.println("请先输入一个多边形");
+                    JOptionPane.showMessageDialog(null, "请先输入一个多边形");
                 } else {
-                    System.out.println("=====================================");
-                    System.out.println("多边形的Perimeter/Area ratio:" + sr.getP1A(polygons.get(0)));
-                    System.out.println("多边形Perimeter2/Area ratio:" + sr.getP2A(polygons.get(0)));
-                    System.out.println("多边形最长轴:" + sr.getPolygonMaxAxis(polygons.get(0)));
-                    System.out.println("多边形最短轴:" + sr.getPolygonMinAxis(polygons.get(0)));
-                    System.out.println("多边形形状比:" + sr.getPolygonFormRatio(polygons.get(0)));
-                    System.out.println("多边形伸延率:" + sr.getPolygonElongationRational(polygons.get(0)));
-                    System.out.println("多边形紧凑性比率:" + sr.getPolygonCompactness(polygons.get(0)));
-                    System.out.println("多边形形状指数:" + sr.getPolygonShapeIndex(polygons.get(0)));
-                    System.out.println("多边形RBF相关外接圆:" + sr.getPolygonRelateBoundingFigure(polygons.get(0)));
+                    String res = "";
+                    res += "多边形的Perimeter/Area ratio:" + String.valueOf(sr.getP1A(polygons.get(0))) + "\n";
+                    res += "多边形Perimeter2/Area ratio:" + String.valueOf(sr.getP2A(polygons.get(0))) + "\n";
+                    res += "多边形最长轴:" + String.valueOf(sr.getPolygonMaxAxis(polygons.get(0))) + "\n";
+                    res += "多边形最短轴:" + String.valueOf(sr.getPolygonMinAxis(polygons.get(0))) + "\n";
+                    res += "多边形形状比:" + String.valueOf(sr.getPolygonFormRatio(polygons.get(0))) + "\n";
+                    res += "多边形伸延率:" + String.valueOf(sr.getPolygonElongationRational(polygons.get(0))) + "\n";
+                    res += "多边形紧凑性比率:" + String.valueOf(sr.getPolygonCompactness(polygons.get(0))) + "\n";
+                    res += "多边形形状指数:" + String.valueOf(sr.getPolygonShapeIndex(polygons.get(0))) + "\n";
+                    res += "多边形RBF相关外接圆:" + String.valueOf(sr.getPolygonRelateBoundingFigure(polygons.get(0)));
+                    JOptionPane.showMessageDialog(null, res);
                 }
             } else if (content.equals("多边形各个心")) {
                 if (polygons.size() < 0) {
-                    System.out.println("请先输入一个多边形");
+                    JOptionPane.showMessageDialog(null, "请先输入一个多边形");
                 } else {
-                    System.out.println("多边形外心坐标:(" + dc.getPolygonExternal(polygons.get(0)).getX() + "," + dc.getPolygonExternal(polygons.get(0)).getY() + ")");
-                    System.out.println("多边形质心坐标:(" + dc.getPolygonCentroid(polygons.get(0)).getX() + "," + dc.getPolygonCentroid(polygons.get(0)).getY() + ")");
-                    System.out.println("多边形内心坐标:(" + dc.getPolygonInteriorPoint(polygons.get(0)).getX() + "," + dc.getPolygonInteriorPoint(polygons.get(0)).getY() + ")");
-                    System.out.println("多边形中心坐标:(" + dc.getPolygonCenter(polygons.get(0)).getX() + "," + dc.getPolygonCenter(polygons.get(0)).getY() + ")");
+                    String res = "";
+                    res += "多边形外心坐标:(" + String.valueOf(dc.getPolygonExternal(polygons.get(0)).getX()) + "," + String.valueOf(dc.getPolygonExternal(polygons.get(0)).getY()) + ")" + "\n";
+                    res += "多边形质心坐标:(" + String.valueOf(dc.getPolygonCentroid(polygons.get(0)).getX()) + "," + String.valueOf(dc.getPolygonCentroid(polygons.get(0)).getY()) + ")" + "\n";
+                    res += "多边形内心坐标:(" + String.valueOf(dc.getPolygonInteriorPoint(polygons.get(0)).getX()) + "," + String.valueOf(dc.getPolygonInteriorPoint(polygons.get(0)).getY()) + ")" + "\n";
+                    res += "多边形中心坐标:(" + String.valueOf(dc.getPolygonCenter(polygons.get(0)).getX()) + "," + String.valueOf(dc.getPolygonCenter(polygons.get(0)).getY()) + ")" + "\n";
+                    JOptionPane.showMessageDialog(null, res);
                 }
             } else if (content.equals("多边形面积")) {
                 if (polygons.size() <= 0) {
-                    System.out.println("请输入至少一个多边形");
+                    JOptionPane.showMessageDialog(null, "请输入至少一个多边形");
                 } else {
+                    String res = "";
                     for (int i = 0; i < polygons.size(); i++) {
-                        System.out.println("多边形" + i + "面积" + vs.vectorSpaceCal(polygons.get(i).getPolygonPoints()));
+                        res += "多边形" + String.valueOf(i) + "面积" + String.valueOf(vs.vectorSpaceCal(polygons.get(i).getPolygonPoints())) + "\n";
                     }
+                    JOptionPane.showMessageDialog(null, res);
                 }
             } else if (content.equals("生成栅格")) {
                 matrixWeight = new int[C.rasterSize][C.rasterSize];
@@ -489,17 +502,64 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                             g.fillRect(col * C.netSize, row * C.netSize, C.netSize, C.netSize);
                         }
                     }else{
-                        System.out.println("请输入两个点");
+                        JOptionPane.showMessageDialog(null, "请先输入两个点");
                     }
                 }else{
-                    System.out.println("请先生成矩阵");
+                    JOptionPane.showMessageDialog(null, "请先生成矩阵");
                 }
+            } else if (content.equals("聚类生成")) {
 
+                if (points.size() == 0) {
+                    String s = String.valueOf(points.size());
+                    JOptionPane.showMessageDialog(null, s);
+                }
+                else{
+                    KCluster kc = new KCluster(points, C.clusterNum);
+                    kc.productPoint();
+                    kc.moveCore();
+                    //将同类的点添加进同一数组
+                    for (int i = 0; i < C.clusterNum; i++) {
+                        ArrayList<MyPoint>tempPoints = new ArrayList<MyPoint>();
+                        for (int j = 0; j < points.size(); j++) {
+                            if (points.get(j).getFlage() == (i + 1)) {
+                                tempPoints.add(points.get(j));
+                            }
+                        }
+                        clusterList.add(new MyClusterPoint(tempPoints));
+                    }
+                    //绘制
+                    Color[] colors = new Color[]{Color.RED,Color.CYAN,Color.YELLOW,Color.pink};
 
+                    for (int i = 0; i < clusterList.size(); i++) {
+                        g = (Graphics2D) df.getGraphics();
+                        g.setColor(colors[i]);
+                        for (int j = 0; j < clusterList.get(i).getClusterPoints().size(); j++) {
+                            g.fillOval((int) clusterList.get(i).getClusterPoints().get(j).getX(), (int) clusterList.get(i).getClusterPoints().get(j).getY(), 5, 5);
+                        }
+                    }
+                }
+            } else if (content.equals("聚类距离")) {
+                String res = "";
+                if (clusterList.size() == 0) {
+                    JOptionPane.showMessageDialog(null, "请先生成聚类");
+                }else{
+                    for (int i = 0; i < clusterList.size() - 1; i++) {
+                        for (int j = i + 1; j < clusterList.size(); j++) {
+                            res += "聚类" + String.valueOf(i) + "到聚类" + String.valueOf(j) + "的最小距离:" + String.valueOf(clusterList.get(i).MinDistance(clusterList.get(j))) + "\n";
+                            res += "聚类" + String.valueOf(i) + "到聚类" + String.valueOf(j) + "的最大距离:" + String.valueOf(clusterList.get(i).MinDistance(clusterList.get(j))) + "\n";
+                            res += "聚类" + String.valueOf(i) + "到聚类" + String.valueOf(j) + "的中间距离:" + String.valueOf(clusterList.get(i).CenterDistance(clusterList.get(j))) + "\n";
+                            res += "聚类" + String.valueOf(i) + "到聚类" + String.valueOf(j) + "的重心距离:" + String.valueOf(clusterList.get(i).CentroidDistance(clusterList.get(j))) + "\n";
+                            res += "聚类" + String.valueOf(i) + "到聚类" + String.valueOf(j) + "的平均距离:" + String.valueOf(clusterList.get(i).AverageDistance(clusterList.get(j))) + "\n";
+                            res += "聚类" + String.valueOf(i) + "到聚类" + String.valueOf(j) + "的Ward距离:" + String.valueOf(clusterList.get(i).WardDistance(clusterList.get(j))) + "\n";
 
+                            res += "=========================================\n";
+                        }
 
+                    }
+                    JOptionPane.showMessageDialog(null, res);
+                }
             } else {
-                System.out.println("请选择");
+                JOptionPane.showMessageDialog(null, "请选择一项操作");
             }
 
         }
@@ -519,6 +579,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
             polygons.clear();
             points.clear();
             content = "";
+            clusterList.clear();
         }else if (shape.equals("点是否在多边形内")) {
             if (polygons == null) {
                 System.out.println("请先创建一个多边形");

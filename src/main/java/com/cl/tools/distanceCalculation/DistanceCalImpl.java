@@ -247,6 +247,24 @@ public class DistanceCalImpl implements DistanceCal{
         return myPoint;
     }
 
+    public MyPoint getPolygonGravityPoint(MyPolygon polygon) {
+        double area = 0.0;//多边形面积
+        double Gx = 0.0, Gy = 0.0;// 重心的x、y
+        for (int i = 1; i <= polygon.getPolygonPoints().size(); i++) {
+            double iLat = polygon.getPolygonPoints().get(i % polygon.getPolygonPoints().size()).getX();
+            double iLng = polygon.getPolygonPoints().get(i % polygon.getPolygonPoints().size()).getY();
+            double nextLat = polygon.getPolygonPoints().get(i - 1).getX();
+            double nextLng = polygon.getPolygonPoints().get(i - 1).getY();
+            double temp = (iLat * nextLng - iLng * nextLat) / 2.0;
+            area += temp;
+            Gx += temp * (iLat + nextLat) / 3.0;
+            Gy += temp * (iLng + nextLng) / 3.0;
+        }
+        Gx = Gx / area;
+        Gy = Gy / area;
+        return new MyPoint(Gx, Gy);
+    }
+
     public MyPoint getMaxInscribed(MyPolygon polygon) {
         MaximumInscribedCircle circle = new MaximumInscribedCircle(tf.PolygonTrans(polygon), 10);
         return tf.PointTransBack(circle.getCenter());

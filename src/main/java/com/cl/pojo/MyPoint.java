@@ -7,26 +7,34 @@ public class MyPoint {
     private double x;
     private double y;
     private double z;
+    private int flage;
 
     public MyPoint(double x) {
         this.x = x;
         this.y = 0;
         this.z = 0;
+        this.flage = -1;
     }
 
     public MyPoint(double x, double y) {
         this.x = x;
         this.y = y;
         this.z = 0;
+        this.flage = -1;
     }
 
     public MyPoint(double x, double y, double z) {
         this.x = x;
         this.y = y;
         this.z = z;
+        this.flage = -1;
     }
 
     public MyPoint() {
+        this.x = 0;
+        this.y = 0;
+        this.z = 0;
+        this.flage = -1;
     }
 
     public double getX() {
@@ -51,6 +59,14 @@ public class MyPoint {
 
     public void setZ(double z) {
         this.z = z;
+    }
+
+    public int getFlage() {
+        return flage;
+    }
+
+    public void setFlage(int flage) {
+        this.flage = flage;
     }
 
     @Override

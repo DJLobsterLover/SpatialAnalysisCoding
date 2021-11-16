@@ -26,7 +26,7 @@ public class DrawMain extends JPanel implements ItemListener{
     }
     public void InitUI() {
         JFrame jf = new JFrame();
-        jf.setSize(1200, 900);
+        jf.setSize(1200, 800);
         jf.setTitle("超级画板");
         jf.setDefaultCloseOperation(3);
         jf.setLocationRelativeTo(null);
@@ -111,6 +111,16 @@ public class DrawMain extends JPanel implements ItemListener{
         rasterBox.addActionListener(dl);
         rasterBox.addItemListener(this);
         ShapePanel.add(rasterBox);
+
+        //添加聚类下拉框
+        JComboBox clusterBox = new JComboBox();
+        clusterBox.addItem("--点聚类--");
+        clusterBox.addItem("聚类生成");
+        clusterBox.addItem("聚类距离");
+        clusterBox.addItemListener(this);
+        clusterBox.addActionListener(dl);
+        ShapePanel.add(clusterBox);
+
         //清空按键
         JButton remove = new JButton("清空");
         remove.addActionListener(dl);
