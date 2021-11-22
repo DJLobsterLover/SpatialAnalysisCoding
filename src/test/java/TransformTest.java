@@ -100,5 +100,6 @@ public class TransformTest {
         for (MyLine allLine : allLines) {
             System.out.println(allLine);
         }
+
     }
 }

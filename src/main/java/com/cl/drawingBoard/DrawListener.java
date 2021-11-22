@@ -21,8 +21,10 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.triangulate.DelaunayTriangulationBuilder;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
@@ -551,12 +553,81 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                             res += "聚类" + String.valueOf(i) + "到聚类" + String.valueOf(j) + "的重心距离:" + String.valueOf(clusterList.get(i).CentroidDistance(clusterList.get(j))) + "\n";
                             res += "聚类" + String.valueOf(i) + "到聚类" + String.valueOf(j) + "的平均距离:" + String.valueOf(clusterList.get(i).AverageDistance(clusterList.get(j))) + "\n";
                             res += "聚类" + String.valueOf(i) + "到聚类" + String.valueOf(j) + "的Ward距离:" + String.valueOf(clusterList.get(i).WardDistance(clusterList.get(j))) + "\n";
-
                             res += "=========================================\n";
                         }
 
                     }
                     JOptionPane.showMessageDialog(null, res);
+                }
+            } else if (content.equals("导入DEM")) {
+                String filePath = "";
+                //选择文件
+                JFileChooser chooser = new JFileChooser();
+                FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                        "DEM_text", "txt", "gif");
+                chooser.setFileFilter(filter);
+                int returnVal = chooser.showOpenDialog(chooser);
+                if(returnVal == JFileChooser.APPROVE_OPTION) {
+                    System.out.println("你选择的路径是: " +
+                            chooser.getSelectedFile().getPath());
+                    filePath = chooser.getSelectedFile().getPath();
+                }
+                //文件流载入DEM数据
+                MyDEM dem = new MyDEM();
+                File file = new File(filePath);
+                BufferedReader reader = null;
+                String tempString = null;
+                int line =1;
+                try {
+                    System.out.println("以行为单位读取文件内容，一次读一整行：");
+                    reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "utf-8"));
+                    while ((tempString = reader.readLine()) != null) {
+                        String regex = "\\D+";
+                        if (line == 1) {
+                            //字符拆分
+                            String[] words = tempString.split(regex);
+                            //写入列
+                            dem.setNcols(Integer.parseInt(words[1]));
+                        }else if(line == 2) {
+                            String[] words = tempString.split(regex);
+                            //写入行
+                            dem.setNrows(Integer.parseInt(words[1]));
+                        }else if(line == 3) {
+                            String[] words = tempString.split(regex);
+                            dem.setXllcorner(Double.parseDouble(words[1]));
+                        }else if(line == 4) {
+                            String[] words = tempString.split(regex);
+                            dem.setYllcorner(Double.parseDouble(words[1]));
+                        }else if(line == 5) {
+                            String[] words = tempString.split(regex);
+                            dem.setCellsize(Double.parseDouble(words[1]));
+                        } else if (line == 6) {
+                            String[] words = tempString.split(regex);
+                            dem.setNODATA_value(Double.parseDouble(words[1]));
+                            dem.points = new MyPoint[dem.getNrows()][dem.getNcols()];
+                        } else {
+                            String[] words = tempString.split(regex);
+                            for (int i = 0; i < dem.getNcols(); i++) {
+                                dem.points[line - 7][i] = new MyPoint(dem.getXllcorner() + (line - 7) * dem.getCellsize(), dem.getYllcorner() + i * dem.getCellsize(), Double.parseDouble(words[i]));
+                            }
+                        }
+                        line ++ ;
+                    }
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                //高度赋值
+                dem.SetHeight();
+                dem.setSlopeAndAspect();
+                System.out.println(dem.height.toString());
+
+                //绘制点集
+                g = (Graphics2D) df.getGraphics();
+                g.setColor(Color.RED);
+                for (int i = 0; i < dem.getNrows(); i++) {
+                    for (int j = 0; j < dem.getNcols(); j++) {
+                        g.fillOval((int)dem.points[i][j].getX(), (int)dem.points[i][j].getY(), 3, 3);
+                    }
                 }
             } else {
                 JOptionPane.showMessageDialog(null, "请选择一项操作");
