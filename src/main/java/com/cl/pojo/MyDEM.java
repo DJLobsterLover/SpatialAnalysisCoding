@@ -15,6 +15,7 @@ public class MyDEM {
     private double NODATA_value;
 
     public MyPoint[][] points;
+    public double[][] pFactors;//宏观坡向因子
     public double[][] height;//存储高度
     public double[][] slopes;//存储坡度
     public double[][] aspects;//存储坡向
@@ -22,6 +23,7 @@ public class MyDEM {
     public double[][] qMatrix;//q值矩阵
     public double[][] Kv;//剖面曲率
     public double[][] Kh;//平面曲率
+    public double[][] R;//地表粗糙度
 
     public void SetHeight() {
         if (nrows > 0 && ncols > 0 && points != null) {
@@ -94,7 +96,12 @@ public class MyDEM {
         Kv = new double[nrows][ncols];
         Kh = new double[nrows][ncols];
 
-
+        for (int i = 1; i < nrows + 1; i++) {
+            for (int j = 1; j < ncols + 1; j++) {
+                Kv[i - 1][j - 1] = ((pMatrix[i - 1][j - 1] + 2 * pMatrix[i][j - 1] + pMatrix[i + 1][j - 1]) - (pMatrix[i - 1][j + 1] + 2 * pMatrix[i][j + 1] + pMatrix[i + 1][j + 1])) / (8 * cellsize);
+                Kh[i - 1][j - 1] = ((qMatrix[i - 1][j - 1] + 2 * qMatrix[i - 1][j] + qMatrix[i - 1][j + 1]) - (qMatrix[i + 1][j - 1] + 2 * qMatrix[i + 1][j] + qMatrix[i + 1][j + 1])) / (8 * cellsize);
+            }
+        }
 
     }
 
@@ -109,6 +116,31 @@ public class MyDEM {
                     double slope = Math.sqrt(Math.pow(slopeWe, 2) + Math.pow(slopeSn, 2));
                     slopes[i - 1][j - 1] = slope;
                     aspects[i - 1][j - 1] = slopeSn / slopeWe;
+                }
+            }
+        }
+    }
+
+    //设置宏观波形因子
+    public void setPFactor() {
+        if (height != null) {
+            pFactors = new double[nrows][ncols];
+            for (int i = 1; i < nrows + 1; i++) {
+                for (int j = 1; j < ncols + 1; j++) {
+                    double temp = (height[i - 1][j - 1] + height[i - 1][j] + height[i - 1][j + 1] + height[i][j - 1] + height[i][j + 1] + height[i + 1][j - 1] + height[i + 1][j] + height[i + 1][j + 1]) / 8;
+                    pFactors[i - 1][j - 1] = height[i][j] - temp;
+                }
+            }
+        }
+    }
+
+    //计算坡面复杂度因子
+    public void setSlopeComplexityFactor() {
+        if (height != null) {
+            R = new double[nrows][ncols];
+            for (int i = 1; i < nrows + 1; i++) {
+                for (int j = 1; j < ncols + 1; j++) {
+                    R[i - 1][j - 1] = 1 / Math.cos(slopes[i - 1][j - 1]);
                 }
             }
         }

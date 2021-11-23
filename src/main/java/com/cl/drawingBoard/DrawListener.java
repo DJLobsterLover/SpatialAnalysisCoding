@@ -35,6 +35,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
     VectorSpaceCal vs = new VectorSpaceCalImpl();
     Transform tf = new Transform();
     Constants C = new Constants();
+    MyDEM dem;
     ArrayList<MyPolygon> polygons;
     ArrayList<MyPoint> tempPoints;
     ArrayList<ArrayList> lines;
@@ -55,6 +56,10 @@ public class DrawListener extends MouseAdapter implements ActionListener{
     private int[] arrx = new int[4];
     private int[] arry = new int[4];
     private int temp = 0;
+    boolean chooseDem = false;
+    double chooseDemY;
+    double chooseDemX;
+
     DrawListener(DrawMain d) {
         df = d;
         polygons = new ArrayList<MyPolygon>();
@@ -110,6 +115,8 @@ public class DrawListener extends MouseAdapter implements ActionListener{
 //                points.add(new MyPoint(1012, 465));
 //                points.add(new MyPoint(1044, 497));
 //                points.add(new MyPoint(1048, 645));
+
+
                 cd = new CreateDelaunay(points);
                 cd.initDelaunay();
 
@@ -134,14 +141,13 @@ public class DrawListener extends MouseAdapter implements ActionListener{
             } else if (content.equals("生成三角网2")) {
                 System.out.println(content);
                 ArrayList<MyPoint> points = new ArrayList<MyPoint>();
-//            points.add(new MyPoint(10, 10));
-//            points.add(new MyPoint(100, 100));
-//            points.add(new MyPoint(200, 50));
-//            points.add(new MyPoint(0, 100));
-//            points.add(new MyPoint(0, 200));
-//            points.add(new MyPoint(200, 220));
-//            points.add(new MyPoint(100, 220));
-//
+                points.add(new MyPoint(10, 10));
+                points.add(new MyPoint(100, 100));
+                points.add(new MyPoint(200, 50));
+                points.add(new MyPoint(0, 100));
+                points.add(new MyPoint(0, 200));
+                points.add(new MyPoint(200, 220));
+                points.add(new MyPoint(100, 220));
                 points.add(new MyPoint(321, 251));
                 points.add(new MyPoint(351, 576));
                 points.add(new MyPoint(357, 395));
@@ -159,9 +165,6 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                 points.add(new MyPoint(915, 459));
                 points.add(new MyPoint(920, 344));
                 points.add(new MyPoint(1006, 275));
-                points.add(new MyPoint(1012, 465));
-                points.add(new MyPoint(1044, 497));
-                points.add(new MyPoint(1048, 645));
 
                 MyPolygon polygon = new MyPolygon(points);
                 Transform tf = new Transform();
@@ -573,7 +576,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                     filePath = chooser.getSelectedFile().getPath();
                 }
                 //文件流载入DEM数据
-                MyDEM dem = new MyDEM();
+                dem = new MyDEM();
                 File file = new File(filePath);
                 BufferedReader reader = null;
                 String tempString = null;
@@ -619,6 +622,9 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                 //高度赋值
                 dem.SetHeight();
                 dem.setSlopeAndAspect();
+                dem.setKvAndKh();
+                dem.setPFactor();
+                dem.setSlopeComplexityFactor();
                 System.out.println(dem.height.toString());
 
                 //绘制点集
@@ -626,8 +632,18 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                 g.setColor(Color.RED);
                 for (int i = 0; i < dem.getNrows(); i++) {
                     for (int j = 0; j < dem.getNcols(); j++) {
+                        g.drawString(String.valueOf((int)dem.points[i][j].getZ()),(int)dem.points[i][j].getX(),(int)dem.points[i][j].getY());
                         g.fillOval((int)dem.points[i][j].getX(), (int)dem.points[i][j].getY(), 3, 3);
+                        g.drawRect((int) dem.points[i][j].getX() - (int) (0.5 * dem.getCellsize()), (int) dem.points[i][j].getY() - (int) (0.5 * dem.getCellsize()), (int) dem.getCellsize(), (int) dem.getCellsize());
+                        points.add(dem.points[i][j]);
                     }
+                }
+            } else if (content.equals("DEM各数据")) {
+                if (dem != null) {
+                    chooseDem = true;
+                    System.out.println(chooseDemX+" "+chooseDemY);
+                } else {
+                    JOptionPane.showMessageDialog(null, "请先导入一个DEM数据");
                 }
             } else {
                 JOptionPane.showMessageDialog(null, "请选择一项操作");
@@ -651,6 +667,8 @@ public class DrawListener extends MouseAdapter implements ActionListener{
             points.clear();
             content = "";
             clusterList.clear();
+            chooseDem = false;
+            dem = null;
         }else if (shape.equals("点是否在多边形内")) {
             if (polygons == null) {
                 System.out.println("请先创建一个多边形");
@@ -697,6 +715,23 @@ public class DrawListener extends MouseAdapter implements ActionListener{
     }
     @Override
     public void mouseClicked(MouseEvent e) {
+        if (e.getClickCount() == 1 && chooseDem) {
+            chooseDemX = (e.getX() - dem.getXllcorner()) / dem.getCellsize();
+            chooseDemY = (e.getY() - dem.getYllcorner()) / dem.getCellsize();
+            int i = (int) chooseDemX;
+            int j = (int) chooseDemY;
+            String res = "";
+            res += "点" + "[" + String.valueOf((int)chooseDemX) + "][" + String.valueOf((int)chooseDemY) + "]\n";
+            res += "=========================================\n";
+            res += "坡度:" + String.valueOf(dem.slopes[i][j]) + "\n";
+            res += "坡向:" + String.valueOf(dem.aspects[i][j]) + "\n";
+            res += "剖面曲率:" + String.valueOf(dem.Kv[i][j]) + "\n";
+            res += "平面曲率:" + String.valueOf(dem.Kh[i][j]) + "\n";
+            res += "宏观坡向因子:" + String.valueOf(dem.pFactors[i][j]) + "\n";
+            res += "地表粗糙度:" + String.valueOf(dem.R[i][j]) + "\n";
+            JOptionPane.showMessageDialog(null, res);
+
+        }
         if (e.getClickCount() == 1) {
             tempPoints.add(new MyPoint(e.getX(), e.getY()));
         }

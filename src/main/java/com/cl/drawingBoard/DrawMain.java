@@ -109,6 +109,7 @@ public class DrawMain extends JPanel implements ItemListener{
         rasterBox.addItem("生成栅格");
         rasterBox.addItem("最短路径");
         rasterBox.addItem("导入DEM");
+        rasterBox.addItem("DEM各数据");
         rasterBox.addActionListener(dl);
         rasterBox.addItemListener(this);
         ShapePanel.add(rasterBox);

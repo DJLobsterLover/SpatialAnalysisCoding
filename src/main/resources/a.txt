@@ -1,0 +1,11 @@
+ncols         4
+nrows         5
+xllcorner     120.09704589845
+yllcorner     35.992064077102
+cellsize      20
+NODATA_value  -9999
+40 20 102 120
+12 13 124 124
+13 16 22 12
+13 16 22 12
+13 16 22 12
