@@ -111,6 +111,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                         g.drawLine((int)points1.get(1).getX(),(int)points1.get(1).getY(),(int)points1.get(2).getX(),(int)points1.get(2).getY());
                         g.drawLine((int)points1.get(2).getX(),(int)points1.get(2).getY(),(int)points1.get(0).getX(),(int)points1.get(0).getY());
                     }
+
                 }
 
             } else if (content.equals("生成三角网2")) {
