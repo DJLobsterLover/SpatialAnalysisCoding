@@ -13,20 +13,12 @@ import org.junit.Test;
 import org.locationtech.jts.triangulate.DelaunayTriangulationBuilder;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class TransformTest {
     @Test
     public void Transform() {
-        Transform tf = new Transform();
-        ArrayList points = new ArrayList();
-        points.add(new MyPoint(0,75));
-        points.add(new MyPoint(200,75));
-        points.add(new MyPoint(200,300));
-        MyTriangle mPolygon = new MyTriangle(points);
-        MyLine mLine = new MyLine(new MyPoint(100, 50), new MyPoint(100, 150));
-        LineString lineString = tf.LineTrans(mLine);
-        Polygon polygon = tf.PolygonTrans(mPolygon);
-        System.out.println(lineString.crosses(polygon));
+
     }
 
     @Test
@@ -102,4 +94,5 @@ public class TransformTest {
         }
 
     }
+
 }

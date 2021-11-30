@@ -11,6 +11,7 @@ import java.awt.event.ItemListener;
  */
 public class DrawMain extends JPanel implements ItemListener{
     private String selectedComBox;
+    private String text = "3";
 
     public String getSelectedComBox() {
         return selectedComBox;
@@ -18,6 +19,14 @@ public class DrawMain extends JPanel implements ItemListener{
 
     public void setSelectedComBox(String selectedComBox) {
         this.selectedComBox = selectedComBox;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 
     public static void main(String[] args) {
@@ -109,6 +118,7 @@ public class DrawMain extends JPanel implements ItemListener{
         rasterBox.addItem("生成栅格");
         rasterBox.addItem("最短路径");
         rasterBox.addItem("导入DEM");
+        rasterBox.addItem("选择范围");
         rasterBox.addItem("DEM各数据");
         rasterBox.addActionListener(dl);
         rasterBox.addItemListener(this);

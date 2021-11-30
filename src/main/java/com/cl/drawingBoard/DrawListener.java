@@ -25,9 +25,10 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.text.Normalizer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
+import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 public class DrawListener extends MouseAdapter implements ActionListener{
     DistanceCal dc = new DistanceCalImpl();
@@ -85,87 +86,43 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                 a.draw(3);
             }
             else if(content.equals("生成三角网")){
-                System.out.println("生成三角网");
-//                ArrayList<MyPoint> points = new ArrayList<MyPoint>();
-////            points.add(new MyPoint(10, 10));
-////            points.add(new MyPoint(100, 100));
-////            points.add(new MyPoint(200, 50));
-////            points.add(new MyPoint(0, 100));
-////            points.add(new MyPoint(0, 200));
-////            points.add(new MyPoint(200, 220));
-////            points.add(new MyPoint(100, 220));
-////
-//                points.add(new MyPoint(321, 251));
-//                points.add(new MyPoint(351, 576));
-//                points.add(new MyPoint(357, 395));
-//                points.add(new MyPoint(453, 195));
-//                points.add(new MyPoint(519, 244));
-//                points.add(new MyPoint(528, 278));
-//                points.add(new MyPoint(562, 261));
-//                points.add(new MyPoint(600, 496));
-//                points.add(new MyPoint(766, 456));
-//                points.add(new MyPoint(793, 680));
-//                points.add(new MyPoint(819, 262));
-//                points.add(new MyPoint(839, 477));
-//                points.add(new MyPoint(875, 419));
-//                points.add(new MyPoint(910, 296));
-//                points.add(new MyPoint(915, 459));
-//                points.add(new MyPoint(920, 344));
-//                points.add(new MyPoint(1006, 275));
-//                points.add(new MyPoint(1012, 465));
-//                points.add(new MyPoint(1044, 497));
-//                points.add(new MyPoint(1048, 645));
-
-
-                cd = new CreateDelaunay(points);
-                cd.initDelaunay();
-
-                //线限制
-                ArrayList<MyPoint> constraints = new ArrayList<MyPoint>();
-                constraints.add(new MyPoint(55, 85));
-                constraints.add(new MyPoint(55, 125));
+                if (points.size() == 0) {
+                    JOptionPane.showMessageDialog(null, "请先输入一个点集");
+                }else{
+                    tempPoints.clear();
+                    System.out.println("生成三角网");
+                    cd = new CreateDelaunay(points);
+                    cd.initDelaunay();
+                    //线限制
+                    ArrayList<MyPoint> constraints = new ArrayList<MyPoint>(constraintPoints);
+//                constraints.add(new MyPoint(55, 85));
+//                constraints.add(new MyPoint(55, 125));
 //            constraints.add(new MyPoint(55, 125));
-                constraints.add(new MyPoint(55, 180));
+//                constraints.add(new MyPoint(55, 180));
 //            constraints.add(new MyPoint(99, 100));
-                g = (Graphics2D) df.getGraphics();
-                g.setColor(color);
-                for (MyPoint point : points) {
-                    g.fillOval((int)point.getX(), (int)point.getY(),  3, 3);
+                    g = (Graphics2D) df.getGraphics();
+                    g.setColor(color);
+                    for (MyPoint point : points) {
+                        g.fillOval((int)point.getX(), (int)point.getY(),  3, 3);
+                    }
+                    for (MyTriangle myTriangle : cd.getTriangle_list()) {
+                        ArrayList<MyPoint> points1 = myTriangle.getPoints();
+                        g.drawLine((int)points1.get(0).getX(),(int)points1.get(0).getY(),(int)points1.get(1).getX(),(int)points1.get(1).getY());
+                        g.drawLine((int)points1.get(1).getX(),(int)points1.get(1).getY(),(int)points1.get(2).getX(),(int)points1.get(2).getY());
+                        g.drawLine((int)points1.get(2).getX(),(int)points1.get(2).getY(),(int)points1.get(0).getX(),(int)points1.get(0).getY());
+                    }
                 }
-                for (MyTriangle myTriangle : cd.getTriangle_list()) {
-                    ArrayList<MyPoint> points1 = myTriangle.getPoints();
-                    g.drawLine((int)points1.get(0).getX(),(int)points1.get(0).getY(),(int)points1.get(1).getX(),(int)points1.get(1).getY());
-                    g.drawLine((int)points1.get(1).getX(),(int)points1.get(1).getY(),(int)points1.get(2).getX(),(int)points1.get(2).getY());
-                    g.drawLine((int)points1.get(2).getX(),(int)points1.get(2).getY(),(int)points1.get(0).getX(),(int)points1.get(0).getY());
-                }
-            } else if (content.equals("生成三角网2")) {
-                System.out.println(content);
-                ArrayList<MyPoint> points = new ArrayList<MyPoint>();
-                points.add(new MyPoint(10, 10));
-                points.add(new MyPoint(100, 100));
-                points.add(new MyPoint(200, 50));
-                points.add(new MyPoint(0, 100));
-                points.add(new MyPoint(0, 200));
-                points.add(new MyPoint(200, 220));
-                points.add(new MyPoint(100, 220));
-                points.add(new MyPoint(321, 251));
-                points.add(new MyPoint(351, 576));
-                points.add(new MyPoint(357, 395));
-                points.add(new MyPoint(453, 195));
-                points.add(new MyPoint(519, 244));
-                points.add(new MyPoint(528, 278));
-                points.add(new MyPoint(562, 261));
-                points.add(new MyPoint(600, 496));
-                points.add(new MyPoint(766, 456));
-                points.add(new MyPoint(793, 680));
-                points.add(new MyPoint(819, 262));
-                points.add(new MyPoint(839, 477));
-                points.add(new MyPoint(875, 419));
-                points.add(new MyPoint(910, 296));
-                points.add(new MyPoint(915, 459));
-                points.add(new MyPoint(920, 344));
-                points.add(new MyPoint(1006, 275));
 
+            } else if (content.equals("生成三角网2")) {
+                if (g != null) {
+                    clear(g);
+                }
+                System.out.println(content);
+                Random rand = new Random();
+                ArrayList<MyPoint> points = new ArrayList<MyPoint>();
+                for (int i = 0; i < 50; i++) {
+                    points.add(new MyPoint(rand.nextInt(500)+200, rand.nextInt(400)+200));
+                }
                 MyPolygon polygon = new MyPolygon(points);
                 Transform tf = new Transform();
                 Polygon polygon1 = tf.PolygonTrans(polygon);
@@ -185,29 +142,15 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                     g.drawLine((int)coordinates[2].getX(), (int)coordinates[2].getY(),(int)coordinates[3].getX(), (int)coordinates[3].getY());
                 }
             } else if (content.equals("生成三角网3")) {
+                if (g != null) {
+                    clear(g);
+                }
                 System.out.println(content);
                 ArrayList<MyPoint> points = new ArrayList<MyPoint>();
-                points.add(new MyPoint(321, 251));
-                points.add(new MyPoint(351, 576));
-                points.add(new MyPoint(357, 395));
-                points.add(new MyPoint(453, 195));
-                points.add(new MyPoint(519, 244));
-                points.add(new MyPoint(528, 278));
-                points.add(new MyPoint(562, 261));
-                points.add(new MyPoint(600, 496));
-                points.add(new MyPoint(766, 456));
-                points.add(new MyPoint(793, 680));
-                points.add(new MyPoint(819, 262));
-                points.add(new MyPoint(839, 477));
-                points.add(new MyPoint(875, 419));
-                points.add(new MyPoint(910, 296));
-                points.add(new MyPoint(915, 459));
-                points.add(new MyPoint(920, 344));
-                points.add(new MyPoint(1006, 275));
-                points.add(new MyPoint(1012, 465));
-                points.add(new MyPoint(1044, 497));
-                points.add(new MyPoint(1048, 645));
-                MyPolygon polygon = new MyPolygon(points);
+                Random rand = new Random();
+                for (int i = 0; i < 50; i++) {
+                    points.add(new MyPoint(rand.nextInt(500)+200, rand.nextInt(400)+200));
+                }
                 CreateDelaunay2 cd = new CreateDelaunay2(points);
                 cd.initDelaunay();
                 ArrayList<MyLine> allLines = cd.getAllLines();
@@ -251,7 +194,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                 }
             } else if (content.equals("点平滑")) {
                 if (linePoints.size() != 0) {
-                    ArrayList<MyPoint> myPoints = sr.simpleGeometrySmooth(linePoints, 1);
+                    ArrayList<MyPoint> myPoints = sr.simpleGeometrySmooth(linePoints, 100);
                     g = (Graphics2D) df.getGraphics();
                     g.setColor(Color.RED);
                     for (int i = 0; i < myPoints.size() - 1; i++) {
@@ -513,36 +456,48 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                     JOptionPane.showMessageDialog(null, "请先生成矩阵");
                 }
             } else if (content.equals("聚类生成")) {
-
-                if (points.size() == 0) {
-                    String s = String.valueOf(points.size());
-                    JOptionPane.showMessageDialog(null, s);
+//                if (points.size() == 0) {
+//                    String s = String.valueOf(points.size());
+//                    JOptionPane.showMessageDialog(null, s);
+//                }
+                if (g != null) {
+                    clear(g);
                 }
-                else{
-                    KCluster kc = new KCluster(points, C.clusterNum);
-                    kc.productPoint();
-                    kc.moveCore();
-                    //将同类的点添加进同一数组
-                    for (int i = 0; i < C.clusterNum; i++) {
-                        ArrayList<MyPoint>tempPoints = new ArrayList<MyPoint>();
-                        for (int j = 0; j < points.size(); j++) {
-                            if (points.get(j).getFlage() == (i + 1)) {
-                                tempPoints.add(points.get(j));
-                            }
-                        }
-                        clusterList.add(new MyClusterPoint(tempPoints));
-                    }
-                    //绘制
-                    Color[] colors = new Color[]{Color.RED,Color.CYAN,Color.YELLOW,Color.pink};
-
-                    for (int i = 0; i < clusterList.size(); i++) {
-                        g = (Graphics2D) df.getGraphics();
-                        g.setColor(colors[i]);
-                        for (int j = 0; j < clusterList.get(i).getClusterPoints().size(); j++) {
-                            g.fillOval((int) clusterList.get(i).getClusterPoints().get(j).getX(), (int) clusterList.get(i).getClusterPoints().get(j).getY(), 5, 5);
+                //生成一个随机点集
+                ArrayList<MyPoint> randPoints = new ArrayList<MyPoint>();
+                Random rand = new Random();
+                for (int i = 0; i < 200; i++) {
+                    randPoints.add(new MyPoint(rand.nextInt(1000), rand.nextInt(600)));
+                }
+                KCluster kc = new KCluster(randPoints, C.clusterNum);
+                kc.productPoint();
+                kc.moveCore();
+                //将同类的点添加进同一数组
+                for (int i = 0; i < C.clusterNum; i++) {
+                    ArrayList<MyPoint>tempPoints = new ArrayList<MyPoint>();
+                    for (int j = 0; j < randPoints.size(); j++) {
+                        if (randPoints.get(j).getFlage() == (i + 1)) {
+                            tempPoints.add(randPoints.get(j));
                         }
                     }
+                    clusterList.add(new MyClusterPoint(tempPoints));
                 }
+                //绘制
+                Color[] colors = new Color[]{Color.RED,Color.BLUE,Color.BLACK,Color.MAGENTA,Color.ORANGE,Color.GREEN};
+
+                for (int i = 0; i < clusterList.size(); i++) {
+                    g = (Graphics2D) df.getGraphics();
+                    g.setColor(colors[i]);
+                    for (int j = 0; j < clusterList.get(i).getClusterPoints().size(); j++) {
+                        g.fillOval((int) clusterList.get(i).getClusterPoints().get(j).getX(), (int) clusterList.get(i).getClusterPoints().get(j).getY(), 5, 5);
+                    }
+                    //绘制凸包
+                    ArrayList<MyPoint> polygonConvexHull = sr.getPolygonConvexHull(new MyPolygon(clusterList.get(i).getClusterPoints()));
+                    for (int j = 0; j < polygonConvexHull.size() - 1; j++) {
+                        g.drawLine((int) polygonConvexHull.get(j).getX(), (int) polygonConvexHull.get(j).getY(), (int) polygonConvexHull.get(j + 1).getX(), (int) polygonConvexHull.get(j + 1).getY());
+                    }
+                }
+
             } else if (content.equals("聚类距离")) {
                 String res = "";
                 if (clusterList.size() == 0) {
@@ -558,7 +513,6 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                             res += "聚类" + String.valueOf(i) + "到聚类" + String.valueOf(j) + "的Ward距离:" + String.valueOf(clusterList.get(i).WardDistance(clusterList.get(j))) + "\n";
                             res += "=========================================\n";
                         }
-
                     }
                     JOptionPane.showMessageDialog(null, res);
                 }
@@ -619,22 +573,17 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
-                //高度赋值
-                dem.SetHeight();
-                dem.setSlopeAndAspect();
-                dem.setKvAndKh();
-                dem.setPFactor();
-                dem.setSlopeComplexityFactor();
-                System.out.println(dem.height.toString());
-
+                //dem各数据初始化
+                dem.init();
                 //绘制点集
                 g = (Graphics2D) df.getGraphics();
                 g.setColor(Color.RED);
                 for (int i = 0; i < dem.getNrows(); i++) {
                     for (int j = 0; j < dem.getNcols(); j++) {
-                        g.drawString(String.valueOf((int)dem.points[i][j].getZ()),(int)dem.points[i][j].getX(),(int)dem.points[i][j].getY());
-                        g.fillOval((int)dem.points[i][j].getX(), (int)dem.points[i][j].getY(), 3, 3);
-                        g.drawRect((int) dem.points[i][j].getX() - (int) (0.5 * dem.getCellsize()), (int) dem.points[i][j].getY() - (int) (0.5 * dem.getCellsize()), (int) dem.getCellsize(), (int) dem.getCellsize());
+//                        g.drawString(String.valueOf((int)dem.points[i][j].getZ()),(int)dem.points[i][j].getX(),(int)dem.points[i][j].getY());
+//                        g.fillOval((int)dem.points[i][j].getX(), (int)dem.points[i][j].getY(), 3, 3);
+                        g.setColor(new Color((int)dem.colors[i][j], (int)dem.colors[i][j], (int)dem.colors[i][j]));
+                        g.fillRect((int) dem.points[i][j].getX() - (int) (0.5 * dem.getCellsize()), (int) dem.points[i][j].getY() - (int) (0.5 * dem.getCellsize()), (int) dem.getCellsize(), (int) dem.getCellsize());
                         points.add(dem.points[i][j]);
                     }
                 }
@@ -645,10 +594,13 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                 } else {
                     JOptionPane.showMessageDialog(null, "请先导入一个DEM数据");
                 }
+            } else if (content.equals("选择范围")) {
+                oneArgsFrame f = new oneArgsFrame(df);
+                f.init();
             } else {
                 JOptionPane.showMessageDialog(null, "请选择一项操作");
+                System.out.println(df.getText());
             }
-
         }
         else if (e.getActionCommand().equals("")) {
             JButton button = (JButton) e.getSource();
@@ -660,15 +612,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
             System.out.println("String = " + shape);
         }
         if (shape.equals("清空")) {
-            g.setColor(Color.white);
-            g.fillRect(0,0,df.getWidth(),df.getHeight());
-            tempPoints.clear();
-            polygons.clear();
-            points.clear();
-            content = "";
-            clusterList.clear();
-            chooseDem = false;
-            dem = null;
+            clear(g);
         }else if (shape.equals("点是否在多边形内")) {
             if (polygons == null) {
                 System.out.println("请先创建一个多边形");
@@ -720,6 +664,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
             chooseDemY = (e.getY() - dem.getYllcorner()) / dem.getCellsize();
             int i = (int) chooseDemX;
             int j = (int) chooseDemY;
+            double[] relativeRelief = dem.getRelativeRelief(i, j, Integer.parseInt(df.getText()));
             String res = "";
             res += "点" + "[" + String.valueOf((int)chooseDemX) + "][" + String.valueOf((int)chooseDemY) + "]\n";
             res += "=========================================\n";
@@ -729,6 +674,9 @@ public class DrawListener extends MouseAdapter implements ActionListener{
             res += "平面曲率:" + String.valueOf(dem.Kh[i][j]) + "\n";
             res += "宏观坡向因子:" + String.valueOf(dem.pFactors[i][j]) + "\n";
             res += "地表粗糙度:" + String.valueOf(dem.R[i][j]) + "\n";
+            res += "地形起伏度" + String.valueOf(relativeRelief[0]) + "\n";
+            res += "地表切割深度" + String.valueOf(relativeRelief[1]) + "\n";
+            res += "高程变异系数" + String.valueOf(dem.getElevationVariation(i, j)) + "\n";
             JOptionPane.showMessageDialog(null, res);
 
         }
@@ -744,6 +692,8 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                     g.drawLine(newx1, newy1, newx2, newy2);
                     flag = false;
                     polygons.add(new MyPolygon(new ArrayList<MyPoint>(tempPoints)));
+
+
                     tempPoints.clear();
                 }else{
                     flag = false;
@@ -778,5 +728,15 @@ public class DrawListener extends MouseAdapter implements ActionListener{
         }
     }
 
-
+    public void clear(Graphics2D g) {
+        g.setColor(Color.white);
+        g.fillRect(0,0,df.getWidth(),df.getHeight());
+        tempPoints.clear();
+        polygons.clear();
+        points.clear();
+        content = "";
+        clusterList.clear();
+        chooseDem = false;
+        dem = null;
+    }
 }

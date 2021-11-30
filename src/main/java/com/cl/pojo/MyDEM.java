@@ -1,9 +1,16 @@
 package com.cl.pojo;
 
 
+import com.cl.tools.GeometryBuilder;
+import com.cl.tools.Transform;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
+
+import java.awt.*;
+import java.util.ArrayList;
 
 
 public class MyDEM {
@@ -15,6 +22,7 @@ public class MyDEM {
     private double NODATA_value;
 
     public MyPoint[][] points;
+    public float[][] colors;//颜色数值
     public double[][] pFactors;//宏观坡向因子
     public double[][] height;//存储高度
     public double[][] slopes;//存储坡度
@@ -24,6 +32,15 @@ public class MyDEM {
     public double[][] Kv;//剖面曲率
     public double[][] Kh;//平面曲率
     public double[][] R;//地表粗糙度
+
+    public void init() {
+        SetHeight();
+        setSlopeAndAspect();
+        setKvAndKh();
+        setPFactor();
+        setSlopeComplexityFactor();
+        setColorsMatrix();
+    }
 
     public void SetHeight() {
         if (nrows > 0 && ncols > 0 && points != null) {
@@ -145,6 +162,91 @@ public class MyDEM {
             }
         }
     }
+
+    //设置颜色矩阵
+    public void setColorsMatrix() {
+        double maxValue = 0;
+        double minValue = 999999999;
+        //找到高程数值中的最大值和最小值
+        for (int i = 0; i < nrows; i++) {
+            for (int j = 0; j < ncols; j++) {
+                if (points[i][j].getZ() != NODATA_value) {
+                    if (points[i][j].getZ() < minValue) {
+                        minValue = points[i][j].getZ();
+                    }
+                    if (points[i][j].getZ() > maxValue) {
+                        maxValue = points[i][j].getZ();
+                    }
+                }
+            }
+        }
+        System.out.println(maxValue);
+        System.out.println(minValue);
+        double range = maxValue - minValue;
+        colors = new float[nrows][ncols];
+        for (int i = 0; i < nrows; i++) {
+            for (int j = 0; j < ncols; j++) {
+                if (points[i][j].getZ() == NODATA_value) {
+                    colors[i][j] = 0;
+                } else {
+                    colors[i][j] = (float)((points[i][j].getZ() - minValue) * 255 / range);
+                }
+            }
+        }
+    }
+
+    //计算地形起伏度和地表切割深度
+    public double[] getRelativeRelief(int i, int j, int edge) {
+        GeometryBuilder gb = new GeometryBuilder();
+        Transform tf = new Transform();
+        ArrayList<MyPoint> tempList = new ArrayList<MyPoint>();
+        //目标点为圆心，edge为半径做圆
+        Polygon circle = gb.createCircle(points[i][j].getX(), points[i][j].getY(), edge * cellsize);
+        //找到范围圆内的所有点
+        for (int m = 0; m < nrows; m++) {
+            for (int n = 0; n < ncols; n++) {
+                Point tempPoint = tf.PointTrans(points[m][n]);
+                //如果点在范围圆内
+                if (tempPoint.within(circle)) {
+                    tempList.add(points[m][n]);
+                }
+            }
+        }
+        //找到最大值和最小值
+        double maxValue = 0;
+        double minValue = 999999999;
+        double sum = 0;
+        //找到高程数值中的最大值和最小值
+        for (int m = 0; m < tempList.size(); m++) {
+            if (tempList.get(m).getZ() != NODATA_value) {
+                if (tempList.get(m).getZ() < minValue) {
+                    minValue = tempList.get(m).getZ();
+                }
+                if (tempList.get(m).getZ() > maxValue) {
+                    maxValue = tempList.get(m).getZ();
+                }
+                sum += tempList.get(m).getZ();
+            }
+        }
+        //计算区域内高程平均值
+        double avgValue = sum / tempList.size();
+        double[] res = new double[2];
+        res[0] = maxValue - minValue;
+        res[1] = avgValue - minValue;
+        return res;
+    }
+
+    //计算高程变异系数
+    public double getElevationVariation(int i, int j) {
+        //获取平均值
+        double avgValue = (points[i][j].getZ() + points[i][j + 1].getZ() + points[i - 1][j].getZ() + points[i - 1][j + 1].getZ()) / 4;
+        //计算标准差
+        double s = Math.sqrt((Math.pow((points[i][j].getZ() - avgValue), 2) + Math.pow((points[i][j + 1].getZ() - avgValue), 2) + Math.pow((points[i - 1][j].getZ() - avgValue), 2) +
+                Math.pow((points[i - 1][j + 1].getZ() - avgValue), 2)) / 3);
+        return s / avgValue;
+    }
+
+
 
 
     public MyDEM() {
