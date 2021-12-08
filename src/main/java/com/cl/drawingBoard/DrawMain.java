@@ -1,10 +1,13 @@
 package com.cl.drawingBoard;
 
+import com.cl.pojo.MyShape;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
 
 /**
  * @author DJLobster
@@ -12,6 +15,7 @@ import java.awt.event.ItemListener;
 public class DrawMain extends JPanel implements ItemListener{
     private String selectedComBox;
     private String text = "3";
+    private ArrayList<MyShape> shapes = new ArrayList<MyShape>();
 
     public String getSelectedComBox() {
         return selectedComBox;
@@ -33,9 +37,27 @@ public class DrawMain extends JPanel implements ItemListener{
         DrawMain Draw = new DrawMain();
         Draw.InitUI();
     }
+
+    @Override
+    public void paint(Graphics g) {
+        super.paint(g);
+        //将shape中的数据重绘
+//        for (int i = 0; i < shapes.size(); i++) {
+//            g.fillOval((int)shapes.get(i).getX(),(int)shapes.get(i).getY(),5,5);
+//        }
+    }
+
+    public ArrayList<MyShape> getShapes() {
+        return shapes;
+    }
+
+    public void setShapes(ArrayList<MyShape> shapes) {
+        this.shapes = shapes;
+    }
+
     public void InitUI() {
         JFrame jf = new JFrame();
-        jf.setSize(1200, 800);
+        jf.setSize(1250, 800);
         jf.setTitle("超级画板");
         jf.setDefaultCloseOperation(3);
         jf.setLocationRelativeTo(null);
@@ -120,6 +142,7 @@ public class DrawMain extends JPanel implements ItemListener{
         rasterBox.addItem("导入DEM");
         rasterBox.addItem("选择范围");
         rasterBox.addItem("DEM各数据");
+        rasterBox.addItem("坡度");
         rasterBox.addActionListener(dl);
         rasterBox.addItemListener(this);
         ShapePanel.add(rasterBox);
@@ -129,9 +152,19 @@ public class DrawMain extends JPanel implements ItemListener{
         clusterBox.addItem("--点聚类--");
         clusterBox.addItem("聚类生成");
         clusterBox.addItem("聚类距离");
+        clusterBox.addItem("生成图");
+        clusterBox.addItem("Kruskal");
         clusterBox.addItemListener(this);
         clusterBox.addActionListener(dl);
         ShapePanel.add(clusterBox);
+
+        //添加缓冲区下拉框
+        JComboBox bufferBox = new JComboBox();
+        bufferBox.addItem("-缓冲区-");
+        bufferBox.addItem("生成缓冲区");
+        bufferBox.addItemListener(this);
+        bufferBox.addActionListener(dl);
+        ShapePanel.add(bufferBox);
 
         //清空按键
         JButton remove = new JButton("清空");

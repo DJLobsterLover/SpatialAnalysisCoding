@@ -13,12 +13,16 @@ import org.junit.Test;
 import org.locationtech.jts.triangulate.DelaunayTriangulationBuilder;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public class TransformTest {
     @Test
     public void Transform() {
-
+        Map<Character,MyPoint> Map = new HashMap();
+        Map.put('A', new MyPoint(100, 100));
+        System.out.println(Map.get('b'));
     }
 
     @Test

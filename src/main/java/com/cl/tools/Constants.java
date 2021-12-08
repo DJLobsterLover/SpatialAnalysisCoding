@@ -9,4 +9,5 @@ public class Constants {
     public final static int rasterSize = 16;
     public final static int netSize = 25;
     public final static int clusterNum = 5;
+    public final static int INF = Integer.MAX_VALUE;
 }

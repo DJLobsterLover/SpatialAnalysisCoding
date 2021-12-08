@@ -12,6 +12,7 @@ import com.cl.tools.delaunayTrangle.LineConstraintDelaunay;
 import com.cl.tools.distanceCalculation.DijstraAlgorithm;
 import com.cl.tools.distanceCalculation.DistanceCal;
 import com.cl.tools.distanceCalculation.DistanceCalImpl;
+import com.cl.tools.distanceCalculation.KruskalCase;
 import com.cl.tools.spatialRelation.SpatialRelation;
 import com.cl.tools.spatialRelation.SpatialRelationImpl;
 import com.cl.tools.vectorSpaceCal.VectorSpaceCal;
@@ -27,6 +28,8 @@ import java.awt.event.*;
 import java.io.*;
 import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
@@ -60,6 +63,8 @@ public class DrawListener extends MouseAdapter implements ActionListener{
     boolean chooseDem = false;
     double chooseDemY;
     double chooseDemX;
+    int INF = Constants.INF;
+    KruskalCase kruskalCase;
 
     DrawListener(DrawMain d) {
         df = d;
@@ -70,6 +75,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
         lines = new ArrayList<ArrayList>();
         points = new ArrayList<MyPoint>();
         clusterList = new ArrayList<MyClusterPoint>();
+
     }
 
     public void itemStateChanged(ItemEvent e) {
@@ -595,9 +601,92 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                 } else {
                     JOptionPane.showMessageDialog(null, "请先导入一个DEM数据");
                 }
+            } else if (content.equals("坡度")) {
+                if (dem != null) {
+                    Color[] colors = new Color[]{Color.GREEN,Color.YELLOW,Color.ORANGE,Color.RED};
+                    g = (Graphics2D) df.getGraphics();
+                    for (int i = 0; i < dem.getNrows(); i++) {
+                        for (int j = 0; j < dem.getNcols(); j++) {
+                            if (dem.slopes[i][j] <= 10) {
+                                g.setColor(colors[0]);
+                            } else if (dem.slopes[i][j] < 20) {
+                                g.setColor(colors[1]);
+                            } else if (dem.slopes[i][j] < 40) {
+                                g.setColor(colors[2]);
+                            } else{
+                                g.setColor(colors[3]);
+                            }
+                            g.fillRect((int) dem.points[i][j].getX() - (int) (0.5 * dem.getCellsize()), (int) dem.points[i][j].getY() - (int) (0.5 * dem.getCellsize()), (int) dem.getCellsize(), (int) dem.getCellsize());
+                        }
+                    }
+                }
             } else if (content.equals("选择范围")) {
                 oneArgsFrame f = new oneArgsFrame(df);
                 f.init();
+            } else if (content.equals("生成图")) {
+                char[] vartex={'A','B','C','D','E','F','G'};
+                Map<Character,MyPoint> map = new HashMap();
+                map.put('A', new MyPoint(200, 200));
+                map.put('B', new MyPoint(300,100));
+                map.put('C', new MyPoint(400,100));
+                map.put('D', new MyPoint(500, 200));
+                map.put('E', new MyPoint(350, 300));
+                map.put('F', new MyPoint(300, 200));
+                map.put('G', new MyPoint(300, 300));
+                //绘制点
+                for (int i = 0; i < vartex.length; i++) {
+                    MyPoint myPoint = map.get(vartex[i]);
+                    g = (Graphics2D) df.getGraphics();
+                    g.fillOval((int)myPoint.getX(),(int)myPoint.getY(),25,25);
+                    g.setColor(Color.white);
+                    g.drawString(String.valueOf(vartex[i]), (int) myPoint.getX() + 10, (int) myPoint.getY() + 10);
+                }
+                int matrix[][]={
+                        {0,12,INF,INF,INF,16,14},
+                        {12,0,10,INF,INF,7,INF},
+                        {INF,10,0,3,5,6,INF},
+                        {INF,INF,3,0,4,INF,INF},
+                        {INF,INF,5,4,0,2,8},
+                        {16,7,6,INF,2,0,9},
+                        {14,INF,INF,INF,8,9,0}
+                };
+                kruskalCase = new KruskalCase(vartex, matrix);
+                for (KruskalCase.EData edge : kruskalCase.getEdges()) {
+                    g.setColor(Color.RED);
+                    MyPoint start = map.get(edge.getStart());
+                    MyPoint end = map.get(edge.getEnd());
+                    g.drawLine((int) start.getX()+ 10, (int) start.getY()+ 10, (int) end.getX()+ 10, (int) end.getY()+ 10);
+                }
+            } else if (content.equals("Kruskal")) {
+                clear(g);
+                char[] vartex={'A','B','C','D','E','F','G'};
+                Map<Character,MyPoint> map = new HashMap();
+                map.put('A', new MyPoint(200, 200));
+                map.put('B', new MyPoint(300,100));
+                map.put('C', new MyPoint(400,100));
+                map.put('D', new MyPoint(500, 200));
+                map.put('E', new MyPoint(350, 300));
+                map.put('F', new MyPoint(300, 200));
+                map.put('G', new MyPoint(300, 300));
+                //绘制点
+                for (int i = 0; i < vartex.length; i++) {
+                    MyPoint myPoint = map.get(vartex[i]);
+                    g = (Graphics2D) df.getGraphics();
+                    g.fillOval((int)myPoint.getX(),(int)myPoint.getY(),25,25);
+                    g.setColor(Color.white);
+                    g.drawString(String.valueOf(vartex[i]), (int) myPoint.getX() + 10, (int) myPoint.getY() + 10);
+                }
+                kruskalCase.kruskal();
+                KruskalCase.EData[] rets = kruskalCase.getRets();
+                for (int i = 0; i < rets.length; i++) {
+                    if (rets[i] != null) {
+                        MyPoint start = map.get(rets[i].getStart());
+                        MyPoint end = map.get(rets[i].getEnd());
+                        g.setColor(Color.GREEN);
+                        g.drawLine((int) start.getX()+ 10, (int) start.getY()+ 10, (int) end.getX()+ 10, (int) end.getY()+ 10);
+                    }
+                }
+
             } else {
                 JOptionPane.showMessageDialog(null, "请选择一项操作");
                 System.out.println(df.getText());
@@ -740,4 +829,5 @@ public class DrawListener extends MouseAdapter implements ActionListener{
         chooseDem = false;
         dem = null;
     }
+
 }
