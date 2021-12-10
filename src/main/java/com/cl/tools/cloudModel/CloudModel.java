@@ -25,6 +25,30 @@ public class CloudModel {
     private List<Double> y;
     private Random random = new Random();
 
+    public List<Double> getX() {
+        return x;
+    }
+
+    public void setX(List<Double> x) {
+        this.x = x;
+    }
+
+    public List<Double> getY() {
+        return y;
+    }
+
+    public void setY(List<Double> y) {
+        this.y = y;
+    }
+
+    public void setN(int n) {
+        N = n;
+    }
+
+    public int getN() {
+        return N;
+    }
+
     public CloudModel(double ex, double en, double he, int n) {
         Ex = ex;
         En = en;
