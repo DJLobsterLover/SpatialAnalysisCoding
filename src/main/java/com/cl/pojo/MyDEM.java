@@ -32,6 +32,14 @@ public class MyDEM {
     public double[][] Kv;//剖面曲率
     public double[][] Kh;//平面曲率
     public double[][] R;//地表粗糙度
+    public ArrayList<MyPoint> peaks;//山顶点
+    public ArrayList<MyPoint> pits;//凹陷点
+    public ArrayList<MyPoint> ridges;//山脊点
+    public ArrayList<MyPoint> channels;///山谷点
+    public ArrayList<MyPoint> pass;//鞍点
+    public ArrayList<MyPoint> plane;//平地点
+
+
 
     public void init() {
         SetHeight();
@@ -40,6 +48,8 @@ public class MyDEM {
         setPFactor();
         setSlopeComplexityFactor();
         setColorsMatrix();
+        setPeakAndPit();
+        setRidgesChannelPass();
     }
 
     public void SetHeight() {
@@ -244,6 +254,141 @@ public class MyDEM {
         double s = Math.sqrt((Math.pow((points[i][j].getZ() - avgValue), 2) + Math.pow((points[i][j + 1].getZ() - avgValue), 2) + Math.pow((points[i - 1][j].getZ() - avgValue), 2) +
                 Math.pow((points[i - 1][j + 1].getZ() - avgValue), 2)) / 3);
         return s / avgValue;
+    }
+
+    //计算山顶点和凹陷点
+    public void setPeakAndPit() {
+        if (height != null) {
+            peaks = new ArrayList<MyPoint>();
+            pits = new ArrayList<MyPoint>();
+            plane = new ArrayList<MyPoint>();
+            for (int i = 1; i < nrows + 1; i++) {
+                for (int j = 1; j < ncols + 1; j++) {
+                    if (height[i][j] != NODATA_value) {
+                        //如果此点高程大于领域内所有，即为山顶点
+                        if (height[i][j] > height[i][j-1]) {
+                            if (height[i][j] > height[i][j+1]) {
+                                if (height[i][j] > height[i - 1][j - 1]) {
+                                    if (height[i][j] > height[i - 1][j]) {
+                                        if (height[i][j] > height[i - 1][j + 1]) {
+                                            if (height[i][j] > height[i + 1][j - 1]) {
+                                                if (height[i][j] > height[i + 1][j]) {
+                                                    if (height[i][j] > height[i + 1][j + 1]) {
+                                                        peaks.add(points[i-1][j-1]);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        //如果此点高程小于领域内所有，即为凹陷点
+                        if (height[i][j] != NODATA_value) {
+                            if (height[i][j] < height[i][j+1]) {
+                                if (height[i][j] < height[i - 1][j - 1]) {
+                                    if (height[i][j] < height[i - 1][j]) {
+                                        if (height[i][j] < height[i - 1][j + 1]) {
+                                            if (height[i][j] < height[i + 1][j - 1]) {
+                                                if (height[i][j] < height[i + 1][j]) {
+                                                    if (height[i][j] < height[i + 1][j + 1]) {
+                                                        pits.add(points[i - 1][j - 1]);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        //如果此点高程等于领域所有，平地点
+                        if (height[i][j] == height[i][j-1]) {
+                            if (height[i][j] == height[i][j+1]) {
+                                if (height[i][j] == height[i - 1][j - 1]) {
+                                    if (height[i][j] == height[i - 1][j]) {
+                                        if (height[i][j] == height[i - 1][j + 1]) {
+                                            if (height[i][j] == height[i + 1][j - 1]) {
+                                                if (height[i][j] == height[i + 1][j]) {
+                                                    if (height[i][j] == height[i + 1][j + 1]) {
+                                                        plane.add(points[i-1][j-1]);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+
+    //就算山脊山谷鞍点
+    public void setRidgesChannelPass() {
+        if (height != null) {
+            ridges = new ArrayList<MyPoint>();
+            channels = new ArrayList<MyPoint>();
+            pass = new ArrayList<MyPoint>();
+            for (int i = 1; i < nrows + 1; i++) {
+                for (int j = 1; j < ncols + 1; j++) {
+                    int rs = 0;
+                    boolean b1 = false;
+                    boolean b2 = false;
+                    boolean b3 = false;
+                    boolean b4 = false;
+                    if ((height[i][j - 1] - height[i][j]) * (height[i][j + 1] - height[i][j]) > 0) {
+                        if (height[i][j + 1] > height[i][j]) {
+                            rs = -1;
+                            b1 = true;
+                        }
+                        if (height[i][j + 1] < height[i][j]) {
+                            rs = 1;
+                            b2 = true;
+                        }
+                    }
+                    if ((height[i - 1][j] - height[i][j]) * (height[i + 1][j] - height[i][j]) > 0) {
+                        if (height[i - 1][j] > height[i][j]) {
+                            rs = -1;
+                            b3 = true;
+                        }
+                        if (height[i + 1][j] < height[i][j]) {
+                            rs = 1;
+                            b4 = true;
+                        }
+                    }
+
+                    if ((b1 && b4) || (b2 && b3)) {
+                        rs = 2;
+                    }
+
+                    if (rs == -1) {
+                        //表示谷点
+                        channels.add(points[i - 1][j - 1]);
+                    } else if (rs == 1) {
+                        //表示山脊点
+                        ridges.add(points[i - 1][j - 1]);
+                    } else if (rs == 2) {
+                        //表示鞍点
+                        pass.add(points[i - 1][j - 1]);
+                    }
+                }
+            }
+        }
+    }
+
+    //重绘
+    public void reDraw(Graphics g,MyDEM dem) {
+        for (int i = 0; i < dem.getNrows(); i++) {
+            for (int j = 0; j < dem.getNcols(); j++) {
+                g.setColor(new Color((int) dem.colors[i][j], (int) dem.colors[i][j], (int) dem.colors[i][j]));
+                g.fillRect((int) dem.points[i][j].getX() - (int) (0.5 * dem.getCellsize()), (int) dem.points[i][j].getY() - (int) (0.5 * dem.getCellsize()), (int) dem.getCellsize(), (int) dem.getCellsize());
+            }
+        }
     }
 
 

@@ -9,6 +9,8 @@ import com.cl.tools.distanceCalculation.DistanceCal;
 import com.cl.tools.distanceCalculation.DistanceCalImpl;
 import com.cl.tools.spatialRelation.SpatialRelation;
 import com.cl.tools.spatialRelation.SpatialRelationImpl;
+import com.cl.tools.vectorSpaceCal.VectorSpaceCal;
+import com.cl.tools.vectorSpaceCal.VectorSpaceCalImpl;
 import org.locationtech.jts.algorithm.MinimumBoundingCircle;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -200,6 +202,17 @@ public class CreateDelaunay {
                 2.0 * ((y3 - y1) * (x2 - x1) - (y2 - y1) * (x3 - x1)));
         double r = Math.sqrt((x1 - a) * (x1 - a) + (y1 - b) * (y1 - b));
         double[] rs = {a, b, r};
+        return rs;
+    }
+
+    public double getDemArea() {
+        double rs = 0;
+        VectorSpaceCal vs = new VectorSpaceCalImpl();
+        if (triangle_list != null) {
+            for (MyTriangle myTriangle : triangle_list) {
+                rs += vs.vectorSpaceCal(myTriangle.getPoints());
+            }
+        }
         return rs;
     }
 

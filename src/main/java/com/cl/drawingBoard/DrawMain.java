@@ -15,7 +15,7 @@ import java.util.Vector;
 public class DrawMain extends JPanel implements ItemListener{
     private BufferedImage bimg;
     private Vector turtles;
-    private static final int WIDTH = 1250;
+    private static final int WIDTH = 1300;
     private static final int HEIGHT = 800;
     private Rectangle clipRegion;
 
@@ -138,6 +138,9 @@ public class DrawMain extends JPanel implements ItemListener{
         spatialBox.addItem("多边形最小外接圆");
         spatialBox.addItem("多边形最大内切圆");
         spatialBox.addItem("点在多边形内判断");
+        spatialBox.addItem("线线相交关系");
+        spatialBox.addItem("线面相交关系");
+        spatialBox.addItem("面面相交关系");
         spatialBox.addItem("生成点击凸包");
         spatialBox.addItem("面状地物量测");
         spatialBox.addActionListener(dl);
@@ -171,7 +174,14 @@ public class DrawMain extends JPanel implements ItemListener{
         rasterBox.addItem("导入DEM");
         rasterBox.addItem("选择范围");
         rasterBox.addItem("DEM各数据");
+        rasterBox.addItem("DEM面积");
         rasterBox.addItem("坡度");
+        rasterBox.addItem("平地点");
+        rasterBox.addItem("山顶点");
+        rasterBox.addItem("凹陷点");
+        rasterBox.addItem("山谷点");
+        rasterBox.addItem("山脊点");
+        rasterBox.addItem("鞍点");
         rasterBox.addActionListener(dl);
         rasterBox.addItemListener(this);
         ShapePanel.add(rasterBox);
