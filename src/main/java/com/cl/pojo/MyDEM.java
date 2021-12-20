@@ -22,7 +22,9 @@ public class MyDEM {
     private double NODATA_value;
 
     public MyPoint[][] points;
+    public ArrayList<MyPoint> demPoints;
     public float[][] colors;//颜色数值
+    public float[][] changeColors;//叠加分析后的颜色数值
     public double[][] pFactors;//宏观坡向因子
     public double[][] height;//存储高度
     public double[][] slopes;//存储坡度
@@ -38,6 +40,7 @@ public class MyDEM {
     public ArrayList<MyPoint> channels;///山谷点
     public ArrayList<MyPoint> pass;//鞍点
     public ArrayList<MyPoint> plane;//平地点
+    public int[][] changeHeight;//叠加分析后的高度矩阵
 
 
 
@@ -50,6 +53,7 @@ public class MyDEM {
         setColorsMatrix();
         setPeakAndPit();
         setRidgesChannelPass();
+        pointsToArray();
     }
 
     public void SetHeight() {
@@ -200,6 +204,38 @@ public class MyDEM {
                     colors[i][j] = 0;
                 } else {
                     colors[i][j] = (float)((points[i][j].getZ() - minValue) * 255 / range);
+                }
+            }
+        }
+    }
+
+    //生成叠加分析后的颜色矩阵
+    public void setChangeColor() {
+        if (changeHeight != null) {
+            double maxValue = 0;
+            double minValue = 999999999;
+            //找到高程数值中的最大值和最小值
+            for (int i = 0; i < nrows; i++) {
+                for (int j = 0; j < ncols; j++) {
+                    if (changeHeight[i][j] != NODATA_value) {
+                        if (changeHeight[i][j] < minValue) {
+                            minValue = changeHeight[i][j];
+                        }
+                        if (changeHeight[i][j] > maxValue) {
+                            maxValue = changeHeight[i][j];
+                        }
+                    }
+                }
+            }
+            double range = maxValue - minValue;
+            changeColors = new float[nrows][ncols];
+            for (int i = 0; i < nrows; i++) {
+                for (int j = 0; j < ncols; j++) {
+                    if (changeHeight[i][j] == NODATA_value) {
+                        changeColors[i][j] = 0;
+                    } else {
+                        changeColors[i][j] = (float)((changeHeight[i][j] - minValue) * 200 / range);
+                    }
                 }
             }
         }
@@ -382,11 +418,29 @@ public class MyDEM {
     }
 
     //重绘
+    public void reDraw(Graphics g,MyDEM dem,int x,int y,float[][] colors) {
+        for (int i = 0; i < dem.getNrows(); i++) {
+            for (int j = 0; j < dem.getNcols(); j++) {
+                g.setColor(new Color((int) colors[i][j], (int) colors[i][j], (int) colors[i][j]));
+                g.fillRect((int) dem.points[i][j].getX() - (int) (0.5 * dem.getCellsize()) + x, (int) dem.points[i][j].getY() - (int) (0.5 * dem.getCellsize()) + y, (int) dem.getCellsize(), (int) dem.getCellsize());
+            }
+        }
+    }
+
     public void reDraw(Graphics g,MyDEM dem) {
         for (int i = 0; i < dem.getNrows(); i++) {
             for (int j = 0; j < dem.getNcols(); j++) {
                 g.setColor(new Color((int) dem.colors[i][j], (int) dem.colors[i][j], (int) dem.colors[i][j]));
                 g.fillRect((int) dem.points[i][j].getX() - (int) (0.5 * dem.getCellsize()), (int) dem.points[i][j].getY() - (int) (0.5 * dem.getCellsize()), (int) dem.getCellsize(), (int) dem.getCellsize());
+            }
+        }
+    }
+
+    public void pointsToArray() {
+        demPoints = new ArrayList<MyPoint>();
+        for (int i = 0; i < nrows; i++) {
+            for (int j = 0; j < ncols; j++) {
+                demPoints.add(points[i][j]);
             }
         }
     }
@@ -443,5 +497,9 @@ public class MyDEM {
 
     public void setNODATA_value(double NODATA_value) {
         this.NODATA_value = NODATA_value;
+    }
+
+    public void setChangeHeight(int[][] changeHeight) {
+        this.changeHeight = changeHeight;
     }
 }

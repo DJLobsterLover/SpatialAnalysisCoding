@@ -4,7 +4,7 @@ package com.cl.pojo;
  * @author DJLobster
  */
 public class MyPoint {
-    private double x;
+    public double x;
     private double y;
     private double z;
     private int flage;

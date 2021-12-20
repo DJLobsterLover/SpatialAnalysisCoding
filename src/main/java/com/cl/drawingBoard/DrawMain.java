@@ -100,8 +100,7 @@ public class DrawMain extends JPanel implements ItemListener{
         ShapePanel.setBackground(Color.black);
         ShapePanel.setLayout(new FlowLayout(FlowLayout.CENTER));
         ShapePanel.setBackground(Color.gray);
-        String[] Shape = { "直线", "圆", "橡皮擦", "矩形",
-                "多边形","圆点"};
+        String[] Shape = { "直线", "圆", "橡皮擦", "多边形","圆点"};
         for (int i = 0; i < Shape.length; i++) {
             JButton button = new JButton(Shape[i]);
             button.setBackground(Color.WHITE);
@@ -137,6 +136,7 @@ public class DrawMain extends JPanel implements ItemListener{
         spatialBox.addItem("多边形各个心");
         spatialBox.addItem("多边形最小外接圆");
         spatialBox.addItem("多边形最大内切圆");
+        spatialBox.addItem("多边形面积");
         spatialBox.addItem("点在多边形内判断");
         spatialBox.addItem("线线相交关系");
         spatialBox.addItem("线面相交关系");
@@ -159,12 +159,12 @@ public class DrawMain extends JPanel implements ItemListener{
         ShapePanel.add(distanceBox);
 
         //添加面积下拉框
-        JComboBox vectorBox = new JComboBox();
-        vectorBox.addItem("--面积计算--");
-        vectorBox.addItem("多边形面积");
-        vectorBox.addItemListener(this);
-        vectorBox.addActionListener(dl);
-        ShapePanel.add(vectorBox);
+//        JComboBox vectorBox = new JComboBox();
+//        vectorBox.addItem("--面积计算--");
+//        vectorBox.addItem("多边形面积");
+//        vectorBox.addItemListener(this);
+//        vectorBox.addActionListener(dl);
+//        ShapePanel.add(vectorBox);
 
         //添加栅格下拉框
         JComboBox rasterBox = new JComboBox();
@@ -172,8 +172,11 @@ public class DrawMain extends JPanel implements ItemListener{
         rasterBox.addItem("生成栅格");
         rasterBox.addItem("最短路径");
         rasterBox.addItem("导入DEM");
+        rasterBox.addItem("导入DEM2");
         rasterBox.addItem("选择范围");
         rasterBox.addItem("DEM各数据");
+        rasterBox.addItem("栅格计算器");
+        rasterBox.addItem("计算栅格结果");
         rasterBox.addItem("DEM面积");
         rasterBox.addItem("坡度");
         rasterBox.addItem("平地点");

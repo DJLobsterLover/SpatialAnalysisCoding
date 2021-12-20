@@ -10,6 +10,7 @@ import com.cl.tools.clustering.KCluster;
 import com.cl.tools.delaunayTrangle.CreateDelaunay;
 import com.cl.tools.delaunayTrangle.CreateDelaunay2;
 import com.cl.tools.delaunayTrangle.LineConstraintDelaunay;
+import com.cl.tools.demAnalysis.DemCal;
 import com.cl.tools.distanceCalculation.DijstraAlgorithm;
 import com.cl.tools.distanceCalculation.DistanceCal;
 import com.cl.tools.distanceCalculation.DistanceCalImpl;
@@ -44,6 +45,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
     Transform tf = new Transform();
     Constants C = new Constants();
     MyDEM dem;
+    MyDEM dem2;
     ArrayList<MyPolygon> polygons;
     ArrayList<MyPoint> tempPoints;
     ArrayList<ArrayList<MyPoint>> lines;
@@ -561,148 +563,169 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                 }
             }
             else if (content.equals("导入DEM")) {
-                String filePath = "";
-                //选择文件
-                JFileChooser chooser = new JFileChooser();
-                FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                        "DEM_text", "txt", "gif");
-                chooser.setFileFilter(filter);
-                int returnVal = chooser.showOpenDialog(chooser);
-                if (returnVal == JFileChooser.APPROVE_OPTION) {
-                    System.out.println("你选择的路径是: " +
-                            chooser.getSelectedFile().getPath());
-                    filePath = chooser.getSelectedFile().getPath();
-                }
-                //文件流载入DEM数据
-                dem = new MyDEM();
-                File file = new File(filePath);
-                BufferedReader reader = null;
-                String tempString = null;
-                int line = 1;
-                try {
-                    System.out.println("以行为单位读取文件内容，一次读一整行：");
-                    reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "utf-8"));
-                    while ((tempString = reader.readLine()) != null) {
-                        String regex = "\\D+";
-                        if (line == 1) {
-                            //字符拆分
-                            String[] words = tempString.split(regex);
-                            //写入列
-                            dem.setNcols(Integer.parseInt(words[1]));
-                        } else if (line == 2) {
-                            String[] words = tempString.split(regex);
-                            //写入行
-                            dem.setNrows(Integer.parseInt(words[1]));
-                        } else if (line == 3) {
-                            String[] words = tempString.split(regex);
-                            dem.setXllcorner(Double.parseDouble(words[1]));
-                        } else if (line == 4) {
-                            String[] words = tempString.split(regex);
-                            dem.setYllcorner(Double.parseDouble(words[1]));
-                        } else if (line == 5) {
-                            String[] words = tempString.split(regex);
-                            dem.setCellsize(Double.parseDouble(words[1]));
-                        } else if (line == 6) {
-                            String[] words = tempString.split(regex);
-                            dem.setNODATA_value(Double.parseDouble(words[1]));
-                            dem.points = new MyPoint[dem.getNrows()][dem.getNcols()];
-                        } else {
-                            String[] words = tempString.split(regex);
-                            for (int i = 0; i < dem.getNcols(); i++) {
-                                dem.points[line - 7][i] = new MyPoint(dem.getXllcorner() + (line - 7) * dem.getCellsize(), dem.getYllcorner() + i * dem.getCellsize(), Double.parseDouble(words[i]));
-                            }
-                        }
-                        line++;
-                    }
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
+//                String filePath = "";
+//                //选择文件
+//                JFileChooser chooser = new JFileChooser();
+//                FileNameExtensionFilter filter = new FileNameExtensionFilter(
+//                        "DEM_text", "txt", "gif");
+//                chooser.setFileFilter(filter);
+//                int returnVal = chooser.showOpenDialog(chooser);
+//                if (returnVal == JFileChooser.APPROVE_OPTION) {
+//                    System.out.println("你选择的路径是: " +
+//                            chooser.getSelectedFile().getPath());
+//                    filePath = chooser.getSelectedFile().getPath();
+//                }
+//                //文件流载入DEM数据
+//                dem = new MyDEM();
+//                File file = new File(filePath);
+//                BufferedReader reader = null;
+//                String tempString = null;
+//                int line = 1;
+//                try {
+//                    System.out.println("以行为单位读取文件内容，一次读一整行：");
+//                    reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "utf-8"));
+//                    while ((tempString = reader.readLine()) != null) {
+//                        String regex = "\\D+";
+//                        if (line == 1) {
+//                            //字符拆分
+//                            String[] words = tempString.split(regex);
+//                            //写入列
+//                            dem.setNcols(Integer.parseInt(words[1]));
+//                        } else if (line == 2) {
+//                            String[] words = tempString.split(regex);
+//                            //写入行
+//                            dem.setNrows(Integer.parseInt(words[1]));
+//                        } else if (line == 3) {
+//                            String[] words = tempString.split(regex);
+//                            dem.setXllcorner(Double.parseDouble(words[1]));
+//                        } else if (line == 4) {
+//                            String[] words = tempString.split(regex);
+//                            dem.setYllcorner(Double.parseDouble(words[1]));
+//                        } else if (line == 5) {
+//                            String[] words = tempString.split(regex);
+//                            dem.setCellsize(Double.parseDouble(words[1]));
+//                        } else if (line == 6) {
+//                            String[] words = tempString.split(regex);
+//                            dem.setNODATA_value(Double.parseDouble(words[1]));
+//                            dem.points = new MyPoint[dem.getNrows()][dem.getNcols()];
+//                        } else {
+//                            String[] words = tempString.split(regex);
+//                            for (int i = 0; i < dem.getNcols(); i++) {
+//                                dem.points[line - 7][i] = new MyPoint(dem.getXllcorner() + (line - 7) * dem.getCellsize(), dem.getYllcorner() + i * dem.getCellsize(), Double.parseDouble(words[i]));
+//                            }
+//                        }
+//                        line++;
+//                    }
+//                } catch (IOException ex) {
+//                    ex.printStackTrace();
+//                }
                 //dem各数据初始化
+
+                dem = new MyDEM();
+                importDem(dem);
                 dem.init();
                 //绘制点集
                 g = (Graphics2D) df.getGraphics();
-                g.setColor(Color.RED);
-                ArrayList<MyPoint> demPoints = new ArrayList<MyPoint>();
-                for (int i = 0; i < dem.getNrows(); i++) {
-                    for (int j = 0; j < dem.getNcols(); j++) {
-//                        g.drawString(String.valueOf((int)dem.points[i][j].getZ()),(int)dem.points[i][j].getX(),(int)dem.points[i][j].getY());
-//                        g.fillOval((int)dem.points[i][j].getX(), (int)dem.points[i][j].getY(), 3, 3);
-                        g.setColor(new Color((int) dem.colors[i][j], (int) dem.colors[i][j], (int) dem.colors[i][j]));
-                        g.fillRect((int) dem.points[i][j].getX() - (int) (0.5 * dem.getCellsize()), (int) dem.points[i][j].getY() - (int) (0.5 * dem.getCellsize()), (int) dem.getCellsize(), (int) dem.getCellsize());
-                        points.add(dem.points[i][j]);
-                        demPoints.add(dem.points[i][j]);
-                    }
-                }
+                g.setFont(new Font("TimesRoman", Font.BOLD, 20));
+                g.drawString("第一个DEM", 50, 50);
+                ArrayList<MyPoint> demPoints = new ArrayList<MyPoint>(dem.demPoints);
+                points = demPoints;
+                dem.setYllcorner(200);
+                dem.reDraw(g, dem, (int)dem.getXllcorner(), (int)dem.getYllcorner(), dem.colors);
 //                cd = new CreateDelaunay(demPoints);
 //                cd.initDelaunay();
-            }
-            else if (content.equals("DEM各数据")) {
+            } else if (content.equals("导入DEM2")) {
+                dem2 = new MyDEM();
+                importDem(dem2);
+                dem2.init();
+                g = (Graphics2D) df.getGraphics();
+                g.setFont(new Font("TimesRoman", Font.BOLD, 20));
+                g.drawString("第二个DEM", 550, 50);
+                dem2.setYllcorner(200);
+                dem2.setXllcorner(450);
+                dem2.reDraw(g, dem2, (int) dem2.getXllcorner(), (int) dem2.getYllcorner(), dem2.colors);
+            } else if (content.equals("DEM各数据")) {
                 if (dem != null) {
                     chooseDem = true;
                     System.out.println(chooseDemX + " " + chooseDemY);
                 } else {
                     JOptionPane.showMessageDialog(null, "请先导入一个DEM数据");
                 }
-            }
-            else if (content.equals("DEM面积")) {
-                if(cd != null) {
+            } else if (content.equals("栅格计算器")) {
+                DemCalFrame dcf = new DemCalFrame(df);
+                dcf.init();
+            } else if (content.equals("计算栅格结果")) {
+                g = (Graphics2D) df.getGraphics();
+                g.setFont(new Font("TimesRoman", Font.BOLD, 20));
+                g.drawString("栅格分析结果", 1050, 50);
+                DemCal dc = new DemCal();
+                dc.setDem1(dem);
+                if (dem2 != null) {
+                    dc.setDem2(dem2);
+                }
+                int[][] ints = dc.oneDemCal(df.getText());
+                dem.setChangeHeight(ints);
+                dem.setChangeColor();
+                dem.reDraw(g, dem, 900, 200, dem.changeColors);
+
+            } else if (content.equals("DEM面积")) {
+                if (cd != null) {
                     double demArea = cd.getDemArea();
                     String s = String.valueOf(demArea);
                     JOptionPane.showMessageDialog(null, s);
                 }
-            }
-            else if (content.equals("平地点")) {
+            } else if (content.equals("平地点")) {
                 g = (Graphics2D) df.getGraphics();
-                if(dem != null) {
-                    dem.reDraw(g,dem);
+                if (dem != null) {
+                    dem.reDraw(g, dem, (int) dem.getXllcorner(), (int) dem.getYllcorner(), dem.colors);
                     g.setColor(Color.RED);
                     for (MyPoint p : dem.plane) {
-                        g.fillOval((int) p.getX(), (int) p.getY(), 4, 4);
+                        g.fillOval((int) p.getX() + (int) dem.getXllcorner(), (int) p.getY() + (int) dem.getYllcorner(), 4, 4);
                     }
                 }
             } else if (content.equals("山顶点")) {
                 g = (Graphics2D) df.getGraphics();
-                if(dem != null) {
-                    dem.reDraw(g,dem);
+                if (dem != null) {
+                    dem.reDraw(g, dem, (int) dem.getXllcorner(), (int) dem.getYllcorner(), dem.colors);
                     g.setColor(Color.CYAN);
                     for (MyPoint peak : dem.peaks) {
-                        g.fillOval((int) peak.getX(), (int) peak.getY(), 4, 4);
+                        g.fillOval((int) peak.getX() + (int) dem.getXllcorner(), (int) peak.getY() + (int) dem.getYllcorner(), 4, 4);
                     }
                 }
             } else if (content.equals("凹陷点")) {
                 g = (Graphics2D) df.getGraphics();
-                if(dem != null) {
-                    dem.reDraw(g,dem);
+                if (dem != null) {
+                    dem.reDraw(g, dem, (int) dem.getXllcorner(), (int) dem.getYllcorner(), dem.colors);
                     g.setColor(Color.YELLOW);
                     for (MyPoint pit : dem.pits) {
-                        g.fillOval((int) pit.getX(), (int) pit.getY(), 4, 4);
+                        g.fillOval((int) pit.getX() + (int) dem.getXllcorner(), (int) pit.getY() + (int) dem.getYllcorner(), 4, 4);
                     }
                 }
             } else if (content.equals("山谷点")) {
                 g = (Graphics2D) df.getGraphics();
-                if(dem != null) {
-                    dem.reDraw(g,dem);
+                if (dem != null) {
+                    dem.reDraw(g, dem, (int) dem.getXllcorner(), (int) dem.getYllcorner(), dem.colors);
                     g.setColor(Color.GREEN);
                     for (MyPoint channel : dem.channels) {
-                        g.fillOval((int) channel.getX(), (int) channel.getY(), 4, 4);
+                        g.fillOval((int) channel.getX() + (int) dem.getXllcorner(), (int) channel.getY() + (int) dem.getYllcorner(), 4, 4);
                     }
                 }
             } else if (content.equals("山脊点")) {
                 g = (Graphics2D) df.getGraphics();
-                if(dem != null) {
-                    dem.reDraw(g,dem);
+                if (dem != null) {
+                    dem.reDraw(g, dem, (int) dem.getXllcorner(), (int) dem.getYllcorner(), dem.colors);
                     g.setColor(Color.BLUE);
                     for (MyPoint ride : dem.ridges) {
-                        g.fillOval((int) ride.getX(), (int) ride.getY(), 4, 4);
+                        g.fillOval((int) ride.getX() + (int) dem.getXllcorner(), (int) ride.getY() + (int) dem.getYllcorner(), 4, 4);
                     }
                 }
             } else if (content.equals("鞍点")) {
                 g = (Graphics2D) df.getGraphics();
-                if(dem != null) {
-                    dem.reDraw(g,dem);
+                if (dem != null) {
+                    dem.reDraw(g, dem, (int) dem.getXllcorner(), (int) dem.getYllcorner(), dem.colors);
                     g.setColor(Color.ORANGE);
                     for (MyPoint p : dem.pass) {
-                        g.fillOval((int) p.getX(), (int) p.getY(), 4, 4);
+                        g.fillOval((int) p.getX() + (int) dem.getXllcorner(), (int) p.getY() + (int) dem.getYllcorner(), 4, 4);
                     }
                 }
             } else if (content.equals("坡度")) {
@@ -720,7 +743,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                             } else {
                                 g.setColor(colors[3]);
                             }
-                            g.fillRect((int) dem.points[i][j].getX() - (int) (0.5 * dem.getCellsize()), (int) dem.points[i][j].getY() - (int) (0.5 * dem.getCellsize()), (int) dem.getCellsize(), (int) dem.getCellsize());
+                            g.fillRect((int) dem.points[i][j].getX() - (int) (0.5 * dem.getCellsize()) + (int) dem.getXllcorner(), (int) dem.points[i][j].getY() - (int) (0.5 * dem.getCellsize()) + (int) dem.getYllcorner(), (int) dem.getCellsize(), (int) dem.getCellsize());
                         }
                     }
                 }
@@ -826,12 +849,12 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                         bufOp.setEndCapStyle(BufferOp.CAP_SQUARE);
                     }
                     Geometry resultGeometry = bufOp.getResultGeometry(Integer.parseInt(df.getText()));
-                    fillPol(resultGeometry,g,new Color(0, 255, 0, 70));
+                    fillPol(resultGeometry, g, new Color(0, 255, 0, 70));
                 }
                 for (MyPoint point : points) {
                     Point point1 = tf.PointTrans(point);
                     Geometry buffer = point1.buffer(Integer.parseInt(df.getText()));
-                    fillPol(buffer,g,new Color(255, 0, 0, 70));
+                    fillPol(buffer, g, new Color(255, 0, 0, 70));
                 }
             } else if (content.equals("面面相交关系")) {
                 if (polygons.size() == 2) {
@@ -869,7 +892,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                         Geometry intersection = lineString.intersection(polygon);
                         Coordinate[] coordinates = intersection.getCoordinates();
                         g.setColor(Color.CYAN);
-                        g.drawLine((int)coordinates[0].x,(int)coordinates[0].y,(int)coordinates[1].x,(int)coordinates[1].y);
+                        g.drawLine((int) coordinates[0].x, (int) coordinates[0].y, (int) coordinates[1].x, (int) coordinates[1].y);
                         for (Coordinate coordinate : intersection.getCoordinates()) {
                             rs += coordinate.toString() + "\n";
                         }
@@ -1050,6 +1073,64 @@ public class DrawListener extends MouseAdapter implements ActionListener{
         }
         g.setColor(color);
         g.fillPolygon(x, y, bg.getCoordinates().length);
+    }
+
+    public void importDem(MyDEM dem) {
+        String filePath = "";
+        //选择文件
+        JFileChooser chooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                "DEM_text", "txt", "gif");
+        chooser.setFileFilter(filter);
+        int returnVal = chooser.showOpenDialog(chooser);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            System.out.println("你选择的路径是: " +
+                    chooser.getSelectedFile().getPath());
+            filePath = chooser.getSelectedFile().getPath();
+        }
+        //文件流载入DEM数据
+        File file = new File(filePath);
+        BufferedReader reader = null;
+        String tempString = null;
+        int line = 1;
+        try {
+            System.out.println("以行为单位读取文件内容，一次读一整行：");
+            reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "utf-8"));
+            while ((tempString = reader.readLine()) != null) {
+                String regex = "\\D+";
+                if (line == 1) {
+                    //字符拆分
+                    String[] words = tempString.split(regex);
+                    //写入列
+                    dem.setNcols(Integer.parseInt(words[1]));
+                } else if (line == 2) {
+                    String[] words = tempString.split(regex);
+                    //写入行
+                    dem.setNrows(Integer.parseInt(words[1]));
+                } else if (line == 3) {
+                    String[] words = tempString.split(regex);
+                    dem.setXllcorner(Double.parseDouble(words[1]));
+                } else if (line == 4) {
+                    String[] words = tempString.split(regex);
+                    dem.setYllcorner(Double.parseDouble(words[1]));
+                } else if (line == 5) {
+                    String[] words = tempString.split(regex);
+                    dem.setCellsize(Double.parseDouble(words[1]));
+                } else if (line == 6) {
+                    String[] words = tempString.split(regex);
+                    dem.setNODATA_value(Double.parseDouble(words[1]));
+                    dem.points = new MyPoint[dem.getNrows()][dem.getNcols()];
+                } else {
+                    String[] words = tempString.split(regex);
+                    for (int i = 0; i < dem.getNcols(); i++) {
+                        dem.points[line - 7][i] = new MyPoint(dem.getXllcorner() + (line - 7) * dem.getCellsize(), dem.getYllcorner() + i * dem.getCellsize(), Double.parseDouble(words[i]));
+                    }
+                }
+                line++;
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
 }
