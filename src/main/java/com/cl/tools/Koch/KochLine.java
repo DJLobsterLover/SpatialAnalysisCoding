@@ -18,7 +18,6 @@ public class KochLine {
             // for (int a = 60; a <= 420; a += 180){
             for (int i = 0; i < 3; i++) {
                 int a = 60 + 180 * i;
-
                 drawKoch(t, len / 3, n - 1);
                 t.rotate(a);
             }

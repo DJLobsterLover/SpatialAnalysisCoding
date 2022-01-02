@@ -1,6 +1,8 @@
 package com.cl.tools.vectorSpaceCal;
 
 import com.cl.pojo.MyPoint;
+import com.cl.tools.distanceCalculation.DistanceCal;
+import com.cl.tools.distanceCalculation.DistanceCalImpl;
 import org.locationtech.jts.geom.Point;
 
 import java.util.ArrayList;
@@ -29,6 +31,17 @@ public class VectorSpaceCalImpl implements VectorSpaceCal{
         double A1 = 2 * Math.PI * (1 - Math.sin(lat1)) * Math.pow(R, 2);
         double A2 = 2 * Math.PI * (1 - Math.sin(lat2)) * Math.pow(R, 2);
         rs = Math.abs(A1 - A2) * Math.abs(p1.getX() - p2.getX()) / 360;
+        return rs;
+    }
+
+    public double triangleArea(ArrayList<MyPoint> tempList) {
+        double rs = 0;
+        DistanceCal dc = new DistanceCalImpl();
+        double a = dc.euclideanDistance(tempList.get(0), tempList.get(1));
+        double b = dc.euclideanDistance(tempList.get(1), tempList.get(2));
+        double c = dc.euclideanDistance(tempList.get(0), tempList.get(2));
+        double p = (a + b + c) / 2;
+        rs = Math.sqrt(p * (p - a) * (p - b) * (p - c));
         return rs;
     }
 }

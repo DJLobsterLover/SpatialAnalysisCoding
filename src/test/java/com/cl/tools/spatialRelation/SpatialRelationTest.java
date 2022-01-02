@@ -56,7 +56,9 @@ public class SpatialRelationTest {
         points.add(new MyPoint(0, 1));
         points.add(new MyPoint(1, 1));
         points.add(new MyPoint(1, 0));
-        MyPolygon p = new MyPolygon(points);
+//        MyPolygon p = new MyPolygon(points);
+
+
 //        System.out.println(tf.PolygonTrans(p).getLength());
 //        System.out.println(sr.lineBending(points));
     }

@@ -3,6 +3,8 @@ package com.cl.pojo;
 
 import com.cl.tools.GeometryBuilder;
 import com.cl.tools.Transform;
+import com.cl.tools.vectorSpaceCal.VectorSpaceCal;
+import com.cl.tools.vectorSpaceCal.VectorSpaceCalImpl;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,6 +22,7 @@ public class MyDEM {
     private double yllcorner;
     private double cellsize;
     private double NODATA_value;
+    private double demArea;
 
     public MyPoint[][] points;
     public ArrayList<MyPoint> demPoints;
@@ -41,10 +44,13 @@ public class MyDEM {
     public ArrayList<MyPoint> pass;//鞍点
     public ArrayList<MyPoint> plane;//平地点
     public int[][] changeHeight;//叠加分析后的高度矩阵
+    public double[][] areas;//每个格网的面积
+    VectorSpaceCal vs = new VectorSpaceCalImpl();
 
 
 
     public void init() {
+        this.demArea = 0;
         SetHeight();
         setSlopeAndAspect();
         setKvAndKh();
@@ -54,6 +60,7 @@ public class MyDEM {
         setPeakAndPit();
         setRidgesChannelPass();
         pointsToArray();
+        setAreas();
     }
 
     public void SetHeight() {
@@ -445,6 +452,75 @@ public class MyDEM {
         }
     }
 
+    public void setAreas() {
+        if (height != null) {
+            areas = new double[nrows][ncols];
+            //周围有8个领域
+            for (int i = 1; i < nrows-1; i++) {
+                for (int j = 1; j < ncols-1; j++) {
+                    double temp = 0;
+                    //分别计算8个三角形
+                    ArrayList tempList = new ArrayList<MyPoint>();
+                    tempList.add(points[i][j]);
+                    //1
+                    tempList.add(points[i - 1][j - 1]);
+                    tempList.add(points[i - 1][j]);
+                    temp += vs.triangleArea(tempList);
+                    tempList.remove(2);
+                    tempList.remove(1);
+                    //2
+                    tempList.add(points[i - 1][j]);
+                    tempList.add(points[i - 1][j + 1]);
+                    temp += vs.triangleArea(tempList);
+                    tempList.remove(2);
+                    tempList.remove(1);
+                    //3
+                    tempList.add(points[i - 1][j - 1]);
+                    tempList.add(points[i][j - 1]);
+                    temp += vs.triangleArea(tempList);
+                    tempList.remove(2);
+                    tempList.remove(1);
+                    //4
+                    tempList.add(points[i - 1][j + 1]);
+                    tempList.add(points[i][j + 1]);
+                    temp += vs.triangleArea(tempList);
+                    tempList.remove(2);
+                    tempList.remove(1);
+                    //5
+                    tempList.add(points[i][j - 1]);
+                    tempList.add(points[i + 1][j - 1]);
+                    temp += vs.triangleArea(tempList);
+                    tempList.remove(2);
+                    tempList.remove(1);
+                    //6
+                    tempList.add(points[i + 1][j - 1]);
+                    tempList.add(points[i + 1][j]);
+                    temp += vs.triangleArea(tempList);
+                    tempList.remove(2);
+                    tempList.remove(1);
+                    //7
+                    tempList.add(points[i + 1][j]);
+                    tempList.add(points[i + 1][j + 1]);
+                    temp += vs.triangleArea(tempList);
+                    tempList.remove(2);
+                    tempList.remove(1);
+                    //8
+                    tempList.add(points[i][j + 1]);
+                    tempList.add(points[i + 1][j + 1]);
+                    temp += vs.triangleArea(tempList);
+                    tempList.remove(2);
+                    tempList.remove(1);
+
+                    areas[i][j] = temp / 4;
+                    demArea += areas[i][j];
+                }
+            }
+        }
+
+    }
+
+
+
 
 
 
@@ -501,5 +577,13 @@ public class MyDEM {
 
     public void setChangeHeight(int[][] changeHeight) {
         this.changeHeight = changeHeight;
+    }
+
+    public double getDemArea() {
+        return demArea;
+    }
+
+    public void setDemArea(double demArea) {
+        this.demArea = demArea;
     }
 }

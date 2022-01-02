@@ -1,0 +1,55 @@
+% this code read landsat 5 data and subset interest region
+% then extract coastline from the satellite image
+%
+% create date: Thur Dec 16 10:10:00 PDT 2021
+% clear cathe
+close all
+clear all
+clc
+
+%extract coastalines
+cd ( 'F:\StudyingFiles\RemoteInternship\result\3_海岸线' );%更改为自己的存放路径
+[b3,b3r]=geotiffread('SeaBand.TIF');%读取影像数据
+
+% find background trend (remove sun reflection trend)
+background = imopen(b3,strel('disk',40));
+X2 = b3 - background;
+X3 = imadjust(X2);
+
+% use a threshold for dectecting coastline
+% filter out noise
+X4 = filter2(fspecial('average',3),X3);
+X5 = medfilt2(X4,[15 15]);
+
+level = graythresh(X5);
+bw = im2bw(X5,level);
+bw = bwareaopen(bw, 50);
+
+% look for boundaries
+BW=bw;
+[B,L,N,A] = bwboundaries(BW,'noholes');
+
+%find the largest boundaries 输出shp
+cell_length=length(B);
+b_length=zeros(cell_length,1);
+b_length(:)=NaN;
+for k=1:cell_length
+    b_length(k)=length(B{k});
+end
+[m,im]=max(b_length);
+bdry=B{im};
+x=628995+30*bdry(:,2);
+y=4227885-30*bdry(:,1);
+Map.Geometry = 'Polygon';%元素类型，Point，Line，Polygon等
+Map.BoundingBox = [628995,4150275,724875,4227885];
+Map.X = x;%坐标X
+Map.Y = y;%坐标Y
+
+Map.Id = 0;
+shapewrite(Map,'costaline.shp'); %生成shp，dbf，shx三个文件
+
+
+
+
+
+

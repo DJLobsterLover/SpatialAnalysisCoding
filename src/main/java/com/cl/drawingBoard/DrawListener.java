@@ -138,6 +138,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                 }
 
             }
+
             else if (content.equals("生成三角网2")) {
                 if (g != null) {
                     clear(g);
@@ -186,7 +187,6 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                 for (MyLine allLine : allLines) {
                     g.drawLine((int) allLine.getStartPoint().getX(), (int) allLine.getStartPoint().getY(), (int) allLine.getEndPoint().getX(), (int) allLine.getEndPoint().getY());
                 }
-
             }
             else if (content.equals("线约束")) {
                 g = (Graphics2D) df.getGraphics();
@@ -669,8 +669,8 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                 dem.reDraw(g, dem, 900, 200, dem.changeColors);
 
             } else if (content.equals("DEM面积")) {
-                if (cd != null) {
-                    double demArea = cd.getDemArea();
+                if (dem != null) {
+                    double demArea = dem.getDemArea();
                     String s = String.valueOf(demArea);
                     JOptionPane.showMessageDialog(null, s);
                 }

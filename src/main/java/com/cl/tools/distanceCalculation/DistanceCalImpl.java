@@ -28,7 +28,7 @@ public class DistanceCalImpl implements DistanceCal{
 //    private SpatialRelation sr = new SpatialRelationImpl();
 
     public double euclideanDistance(MyPoint startPoint, MyPoint endPoint) {
-        double rs = 0.0;
+        double rs = 0;
         rs += Math.pow(startPoint.getX()-endPoint.getX(),2);
         rs += Math.pow(startPoint.getY()-endPoint.getY(),2);
         rs += Math.pow(startPoint.getZ()-endPoint.getZ(),2);
@@ -46,6 +46,7 @@ public class DistanceCalImpl implements DistanceCal{
 
     public double chebyshevDistance(MyPoint startPoint, MyPoint endPoint) {
         double rs = 0.0;
+
         ArrayList list = new ArrayList();
         list.add(Math.abs(startPoint.getX() - endPoint.getX()));
         list.add(Math.abs(startPoint.getY() - endPoint.getY()));
@@ -140,7 +141,6 @@ public class DistanceCalImpl implements DistanceCal{
         }
         return rs;
     }
-
     public double pointToPolygonDistance(MyPoint p, MyPolygon polygon, String type) {
         double rs = 0;
         try {

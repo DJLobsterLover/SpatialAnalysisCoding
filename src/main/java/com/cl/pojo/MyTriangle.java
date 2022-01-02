@@ -29,4 +29,5 @@ public class MyTriangle {
     public MyTriangle(ArrayList<MyPoint> points) {
         this.points = points;
     }
+
 }

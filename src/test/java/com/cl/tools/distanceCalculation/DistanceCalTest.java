@@ -19,7 +19,6 @@ public class DistanceCalTest {
         MyPoint p1 = new MyPoint(0, 90);
         MyPoint p2 = new MyPoint(0, 45);
         System.out.println(dc.sphericalDistance(p1, p2, 2));
-
     }
 
     @Test

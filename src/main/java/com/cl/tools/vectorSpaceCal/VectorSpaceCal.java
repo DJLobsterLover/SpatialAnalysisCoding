@@ -24,4 +24,6 @@ public interface VectorSpaceCal {
      * 球面任意两点围成四边形的面积
      */
     double terrestrialSufArea(MyPoint p1, MyPoint p2, double R);
+
+    double triangleArea(ArrayList<MyPoint> tempList);
 }
