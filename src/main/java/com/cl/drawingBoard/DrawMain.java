@@ -1,6 +1,7 @@
 package com.cl.drawingBoard;
 
 import com.cl.pojo.MyShape;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -13,11 +14,8 @@ import java.util.Vector;
  * @author DJLobster
  */
 public class DrawMain extends JPanel implements ItemListener{
-    private BufferedImage bimg;
-    private Vector turtles;
     private static final int WIDTH = 1300;
     private static final int HEIGHT = 800;
-    private Rectangle clipRegion;
 
     private String selectedComBox;
     private String text = "3";
@@ -66,13 +64,7 @@ public class DrawMain extends JPanel implements ItemListener{
         Draw.InitUI();
     }
 
-    @Override
-    public void paint(Graphics g) {
-        super.paint(g);
-        //将shape中的数据重绘
-//        for (int i = 0; i < shapes.size(); i++) {
-//            g.fillOval((int)shapes.get(i).getX(),(int)shapes.get(i).getY(),5,5);
-//        }
+    public DrawMain() {
     }
 
     public ArrayList<MyShape> getShapes() {
@@ -125,6 +117,7 @@ public class DrawMain extends JPanel implements ItemListener{
         delaunayBox.addItem("生成三角网2");
         delaunayBox.addItem("生成三角网3");
         delaunayBox.addItem("线约束");
+        delaunayBox.addItem("等值线");
         delaunayBox.addActionListener(dl);
         delaunayBox.addItemListener(this);
         ShapePanel.add(delaunayBox);
@@ -132,7 +125,7 @@ public class DrawMain extends JPanel implements ItemListener{
         JComboBox spatialBox = new JComboBox();
         spatialBox.addItem("--空间关系--");
         spatialBox.addItem("点抽稀");
-        spatialBox.addItem("点平滑");
+        spatialBox.addItem("平滑");
         spatialBox.addItem("多边形各个心");
         spatialBox.addItem("多边形最小外接圆");
         spatialBox.addItem("多边形最大内切圆");
@@ -179,6 +172,7 @@ public class DrawMain extends JPanel implements ItemListener{
         rasterBox.addItem("计算栅格结果");
         rasterBox.addItem("DEM面积");
         rasterBox.addItem("坡度");
+        rasterBox.addItem("坡向");
         rasterBox.addItem("平地点");
         rasterBox.addItem("山顶点");
         rasterBox.addItem("凹陷点");
@@ -239,145 +233,9 @@ public class DrawMain extends JPanel implements ItemListener{
     public void itemStateChanged(ItemEvent e) {
         selectedComBox = e.getItem().toString();
     }
+
+
 }
 
-//class Turtle {
-//    static final int TURTLE_SIZE = 5;
-//    static final int SLOW_INTERVAL = 40;
-//    static int interval = SLOW_INTERVAL;
-//
-//    private static final double STRIDE = 9.0;
-//    private static DrawMain dm = null;
-//
-//    private Graphics pen;
-//    private double xpos, ypos;
-//    private int direction;
-//    private boolean penIsDown;
-//    private Color penColor;
-//
-//    private static synchronized void makePond() {
-//        if (dm == null) {
-//            dm = new DrawMain();
-//        }
-//    }
-//
-//    public Turtle() {
-//        makePond();
-//        dm.addTurtle(this);
-//        pen = dm.makePen();
-//        xpos = ypos = 0.0;
-//        direction = 0;
-//        penIsDown = false;
-//        penColor = Color.blue;
-//    }
-//
-//    private void repaint() {
-//        dm.partlyRepaint();
-//    }
-//
-//    void paint(Graphics g) {
-//        g.setColor(Color.black);
-//        g.drawOval((int)xpos - TURTLE_SIZE, (int)ypos - TURTLE_SIZE,
-//                TURTLE_SIZE * 2, TURTLE_SIZE * 2);
-//    }
-//
-//    public void penDown() { penIsDown = true; }
-//
-//    public void penUp() { penIsDown = false; }
-//
-//    public boolean isDown() { return penIsDown; }
-//
-//    public void setColor(Color c) { penColor = c; }
-//
-//    public void setDirection(double d) { direction = (int)d; }
-//
-//    public void setDirection(int d) { direction = d; }
-//
-//    public synchronized void rotate(int r) {
-//        direction = (direction + r) % 360;
-//    }
-//
-//    public void rotate(double r) { rotate((int)r); }
-//
-//    public void go(int distance) {
-//        go((double)distance);
-//    }
-//
-//    public void go(double distance) {
-//        double x = xpos;
-//        double y = ypos;
-//        if (direction == 0) {
-//            x += distance;
-//        } else if (direction == 90) {
-//            y -= distance;
-//        } else if (direction == 180) {
-//            x -= distance;
-//        } else if (direction == 270) {
-//            y += distance;
-//        } else {
-//            double r = direction * Math.PI * 2.0 / 360.0;
-//            x = xpos + distance * Math.cos(r);
-//            y = ypos - distance * Math.sin(r);
-//        }
-//
-//        move(x, y);
-//    }
-//
-//    public void move(int x, int y) {
-//        move((double)x, (double)y);
-//    }
-//
-//    public synchronized void move(double x, double y) {
-//        if (penIsDown) {
-//            pen.setColor(penColor);
-//            double x2 = xpos - x;
-//            double y2 = ypos - y;
-//            int step;
-//            if (interval > 0) {
-//                step = (int)(Math.sqrt(x2 * x2 + y2 * y2) / STRIDE);
-//                if (step < 2) {
-//                    step = 2;
-//                }
-//            }
-//            else {
-//                step = 1;
-//            }
-//
-//            for (int i = step - 1; i >= 0; --i) {
-//                double xx = x + x2 * i / step;
-//                double yy = y + y2 * i / step;
-//                dm.setClip((int)xpos, (int)ypos, TURTLE_SIZE + 2);
-//                dm.setClip((int)xx, (int)yy, TURTLE_SIZE + 2);
-//                pen.drawLine((int)xpos, (int)ypos, (int)xx, (int)yy);
-//                xpos = xx;
-//                ypos = yy;
-//                repaint();
-//                if (i > 0 && interval > 0) {
-//                    try {
-//                        Thread.sleep(interval);
-//                    }
-//                    catch (InterruptedException e) {}
-//                }
-//            }
-//        }
-//        else
-//        if (interval > 0) {
-//            try {
-//                Thread.sleep(interval / 2);
-//            }
-//            catch (InterruptedException e) {}
-//        }
-//
-//        dm.setClip((int)xpos, (int)ypos, TURTLE_SIZE + 2);
-//        xpos = x;
-//        ypos = y;
-//        dm.setClip((int)x, (int)y, TURTLE_SIZE + 2);
-//        repaint();
-//    }
-//
-//    public synchronized void print(String text) {
-//        pen.setColor(penColor);
-//        pen.drawString(text, (int)xpos, (int)ypos);
-//        repaint();
-//    }
-//}
+
+

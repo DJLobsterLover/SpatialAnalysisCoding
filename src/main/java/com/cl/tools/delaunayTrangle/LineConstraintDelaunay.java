@@ -65,7 +65,7 @@ public class LineConstraintDelaunay {
                     for (int j = 0; j < points.size(); j++) {
                         //getUniqueList两点组成线
 //                        double tempMin = sr.pointToLine(tf.PointTrans(points.get(j)),tf.LineTrans(new MyLine(uniqueList.get(i), uniqueList.get((i + 1)))));
-                        double tempMin = dc.pointToLineDistance(points.get(j), new MyLine(uniqueList.get(i), uniqueList.get(i + 1)), "min");
+                        double tempMin = dc.pointToLineDistance(points.get(j), new MyLine(uniqueList.get(i), uniqueList.get(i + 1)), "max");
                         if (tempMin < min) {
                             min = tempMin;
                             tempP = j;
@@ -84,7 +84,7 @@ public class LineConstraintDelaunay {
                     min = 999999999;
                     for (int j = 0; j < uniqueList.size(); j++) {
 //                            double tempMin = sr.pointToLine(tf.PointTrans(uniqueList.get(j)),tf.LineTrans(new MyLine(points.get(i), points.get((i + 1)))));
-                            double tempMin = dc.pointToLineDistance(uniqueList.get(j), new MyLine(points.get(i), points.get((i + 1))), "min");
+                            double tempMin = dc.pointToLineDistance(uniqueList.get(j), new MyLine(points.get(i), points.get((i + 1))), "max");
                         if (tempMin < min) {
                             min = tempMin;
                             tempP = j;

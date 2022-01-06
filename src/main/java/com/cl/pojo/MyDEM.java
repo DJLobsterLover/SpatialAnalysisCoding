@@ -45,6 +45,7 @@ public class MyDEM {
     public ArrayList<MyPoint> plane;//平地点
     public int[][] changeHeight;//叠加分析后的高度矩阵
     public double[][] areas;//每个格网的面积
+    public double[][] volumes;//每个格网上的体积
     VectorSpaceCal vs = new VectorSpaceCalImpl();
 
 
@@ -61,6 +62,7 @@ public class MyDEM {
         setRidgesChannelPass();
         pointsToArray();
         setAreas();
+        setVolume();
     }
 
     public void SetHeight() {
@@ -151,9 +153,9 @@ public class MyDEM {
                 for (int j = 1; j < ncols + 1; j++) {
                     double slopeWe = (height[i][j - 1] - height[i][j + 1]) / 2 * cellsize;
                     double slopeSn = (height[i - 1][j] - height[i + 1][j]) / 2 * cellsize;
-                    double slope = Math.sqrt(Math.pow(slopeWe, 2) + Math.pow(slopeSn, 2));
+                    double slope =Math.sqrt(Math.pow(slopeWe, 2) + Math.pow(slopeSn, 2));
                     slopes[i - 1][j - 1] = slope;
-                    aspects[i - 1][j - 1] = slopeSn / slopeWe;
+                    aspects[i - 1][j - 1] = Math.toDegrees(Math.atan(slopeSn / slopeWe));
                 }
             }
         }
@@ -217,14 +219,14 @@ public class MyDEM {
     }
 
     //生成叠加分析后的颜色矩阵
-    public void setChangeColor() {
+    public void setChangeColor(MyDEM dem2) {
         if (changeHeight != null) {
             double maxValue = 0;
             double minValue = 999999999;
             //找到高程数值中的最大值和最小值
             for (int i = 0; i < nrows; i++) {
                 for (int j = 0; j < ncols; j++) {
-                    if (changeHeight[i][j] != NODATA_value) {
+                    if (points[i][j].getZ() != NODATA_value && dem2.points[i][j].getZ() != dem2.getNODATA_value()) {
                         if (changeHeight[i][j] < minValue) {
                             minValue = changeHeight[i][j];
                         }
@@ -238,10 +240,10 @@ public class MyDEM {
             changeColors = new float[nrows][ncols];
             for (int i = 0; i < nrows; i++) {
                 for (int j = 0; j < ncols; j++) {
-                    if (changeHeight[i][j] == NODATA_value) {
+                    if (points[i][j].getZ() == NODATA_value || dem2.points[i][j].getZ() == dem2.getNODATA_value()) {
                         changeColors[i][j] = 0;
                     } else {
-                        changeColors[i][j] = (float)((changeHeight[i][j] - minValue) * 200 / range);
+                        changeColors[i][j] = (float)((changeHeight[i][j] - minValue) * 255 / range);
                     }
                 }
             }
@@ -517,6 +519,18 @@ public class MyDEM {
             }
         }
 
+    }
+
+    public void setVolume() {
+        if (height != null) {
+            volumes = new double[nrows][ncols];
+            //周围有8个领域
+            for (int i = 1; i < nrows - 1; i++) {
+                for (int j = 1; j < ncols - 1; j++) {
+                    volumes[i][j] = areas[i][j] * points[i][j].getZ();
+                }
+            }
+        }
     }
 
 

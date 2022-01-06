@@ -20,9 +20,7 @@ import java.util.Random;
 public class TransformTest {
     @Test
     public void Transform() {
-        Map<Character,MyPoint> Map = new HashMap();
-        Map.put('A', new MyPoint(100, 100));
-        System.out.println(Map.get('b'));
+//        System.out.println(Math.toDegrees(Math.).atan(1.8));
     }
 
     @Test

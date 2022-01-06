@@ -2,11 +2,10 @@ package com.cl.drawingBoard;
 
 import com.cl.pojo.*;
 import com.cl.tools.Constants;
-import com.cl.tools.Koch.KochLine;
-import com.cl.tools.Koch.KochSnow;
 import com.cl.tools.Transform;
 import com.cl.tools.cloudModel.CloudModel;
 import com.cl.tools.clustering.KCluster;
+import com.cl.tools.delaunayTrangle.Contour;
 import com.cl.tools.delaunayTrangle.CreateDelaunay;
 import com.cl.tools.delaunayTrangle.CreateDelaunay2;
 import com.cl.tools.delaunayTrangle.LineConstraintDelaunay;
@@ -15,6 +14,7 @@ import com.cl.tools.distanceCalculation.DijstraAlgorithm;
 import com.cl.tools.distanceCalculation.DistanceCal;
 import com.cl.tools.distanceCalculation.DistanceCalImpl;
 import com.cl.tools.distanceCalculation.KruskalCase;
+import com.cl.tools.spatialRelation.BesselCurve;
 import com.cl.tools.spatialRelation.SpatialRelation;
 import com.cl.tools.spatialRelation.SpatialRelationImpl;
 import com.cl.tools.vectorSpaceCal.VectorSpaceCal;
@@ -71,6 +71,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
     double chooseDemX;
     int INF = Constants.INF;
     KruskalCase kruskalCase;
+    Random rand = new Random();
 
     DrawListener(DrawMain d) {
         df = d;
@@ -94,8 +95,8 @@ public class DrawListener extends MouseAdapter implements ActionListener{
             content = "";
             content = df.getSelectedComBox();
             if (content.equals("Koch曲线")) {
-                KochLine a = new KochLine();
-                a.draw(3);
+//                KochLine a = new KochLine();
+//                a.draw(3);
             } else if (content.equals("正态云")) {
                 CloudModel cm = new CloudModel(0, 10, 1,  2000);
                 cm.getCloudDrops();
@@ -192,7 +193,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                 g = (Graphics2D) df.getGraphics();
                 g.setColor(Color.white);
                 g.fillRect(0, 0, df.getWidth(), df.getHeight());
-                g.setColor(Color.red);
+                g.setColor(Color.BLUE);
                 System.out.println("线约束");
                 LineConstraintDelaunay LCD = new LineConstraintDelaunay();
                 ArrayList<MyTriangle> myTriangles = LCD.LineConstraint(cd, constraintPoints);
@@ -206,8 +207,26 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                     g.drawLine((int) points1.get(1).getX(), (int) points1.get(1).getY(), (int) points1.get(2).getX(), (int) points1.get(2).getY());
                     g.drawLine((int) points1.get(2).getX(), (int) points1.get(2).getY(), (int) points1.get(0).getX(), (int) points1.get(0).getY());
                 }
-            }
-            else if (content.equals("点抽稀")) {
+                g.setColor(Color.RED);
+                for (int i = 0; i < constraintPoints.size() - 1; i++) {
+                    g.drawLine((int)constraintPoints.get(i).getX(), (int)constraintPoints.get(i).getY(), (int)constraintPoints.get(i + 1).getX(), (int)constraintPoints.get(i + 1).getY());
+                }
+            } else if (content.equals("等值线")) {
+                Contour contour = new Contour();
+                ArrayList<MyPoint> myPoints = contour.initContour(cd, 100);
+                g = (Graphics2D) df.getGraphics();
+                g.setColor(Color.RED);
+//                for (MyPoint myPoint : myPoints) {
+//                    g.fillOval((int) myPoint.getX(), (int) myPoint.getY(), 5, 5);
+//                }
+                ArrayList<MyPoint> polygonConvexHull = sr.getPolygonConvexHull(new MyPolygon(myPoints));
+                polygonConvexHull.remove(0);
+                BesselCurve bc = new BesselCurve();
+                ArrayList<MyPoint> myPoints1 = bc.creatCurve(polygonConvexHull);
+                for (int i = 0; i < myPoints1.size() - 1; i++) {
+                    g.drawLine((int)myPoints1.get(i).getX(), (int)myPoints1.get(i).getY(), (int)myPoints1.get(i + 1).getX(), (int)myPoints1.get(i + 1).getY());
+                }
+            } else if (content.equals("点抽稀")) {
                 System.out.println("点抽稀");
                 if (linePoints.size() != 0) {
                     ArrayList<MyPoint> myPoints = sr.pointWeedingDouglas(linePoints, 100);
@@ -220,20 +239,26 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                 } else {
                     JOptionPane.showMessageDialog(null, "请先输入一条线段");
                 }
-            }
-            else if (content.equals("点平滑")) {
-                if (linePoints.size() != 0) {
-                    ArrayList<MyPoint> myPoints = sr.simpleGeometrySmooth(linePoints, 100);
+            } else if (content.equals("平滑")) {
+                BesselCurve bc = new BesselCurve();
+                if (polygons != null) {
+                    ArrayList<MyPoint> myPoints = bc.creatCurve(polygons.get(0).getPolygonPoints());
                     g = (Graphics2D) df.getGraphics();
                     g.setColor(Color.RED);
                     for (int i = 0; i < myPoints.size() - 1; i++) {
                         g.drawLine((int) myPoints.get(i).getX(), (int) myPoints.get(i).getY(), (int) myPoints.get(i + 1).getX(), (int) myPoints.get(i + 1).getY());
                     }
-                } else {
-                    JOptionPane.showMessageDialog(null, "请先输入一条线段");
                 }
-            }
-            else if (content.equals("多边形最小外接圆")) {
+//                if (linePoints != null) {
+//                    ArrayList<MyPoint> myPoints1 = bc.creatCurve(linePoints);
+//                    for (int i = 0; i < myPoints1.size() - 1; i++) {
+//                        g.drawLine((int) myPoints1.get(i).getX(), (int) myPoints1.get(i).getY(), (int) myPoints1.get(i + 1).getX(), (int) myPoints1.get(i + 1).getY());
+//                    }
+//                }
+
+
+
+            } else if (content.equals("多边形最小外接圆")) {
                 //绘制多边形外接圆
                 if (polygons.size() != 0) {
                     for (int i = 0; i < polygons.size(); i++) {
@@ -246,8 +271,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                 } else {
                     JOptionPane.showMessageDialog(null, "请先输入一个多边形");
                 }
-            }
-            else if (content.equals("多边形最大内切圆")) {
+            } else if (content.equals("多边形最大内切圆")) {
                 if (polygons.size() != 0) {
                     for (int i = 0; i < polygons.size(); i++) {
                         int r = (int) dc.getMaximumInscribedCircle(polygons.get(i));
@@ -259,8 +283,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                 } else {
                     JOptionPane.showMessageDialog(null, "请先输入一个多边形");
                 }
-            }
-            else if (content.equals("点在多边形内判断")) {
+            } else if (content.equals("点在多边形内判断")) {
                 if (polygons.size() == 0) {
                     JOptionPane.showMessageDialog(null, "请先输入一个多边形");
                 } else if (points.size() == 0) {
@@ -278,8 +301,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                     }
                     JOptionPane.showMessageDialog(null, res);
                 }
-            }
-            else if (content.equals("两点距离")) {
+            } else if (content.equals("两点距离")) {
                 if (points.size() != 2) {
                     JOptionPane.showMessageDialog(null, "请先插入两个点");
                 } else {
@@ -290,21 +312,17 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                     res += "两点间明氏距离:" + String.valueOf(dc.minkowskiDistance(points.get(0), points.get(1), 3)) + "\n";
                     JOptionPane.showMessageDialog(null, res);
                 }
-            }
-            else if (content.equals("点到线距离")) {
-                if (points.size() != 1) {
-                    JOptionPane.showMessageDialog(null, "请先插入一个点");
-                } else if (linePoints.size() != 2) {
-                    JOptionPane.showMessageDialog(null, "请先插入一条直线");
-                } else {
+            } else if (content.equals("点到线距离")) {
+                if (points.size() >= 1 && linePoints.size() >= 2) {
                     String res = "";
                     res += "点到直线的最大距离:" + String.valueOf(dc.pointToLineDistance(points.get(0), new MyLine(linePoints.get(0), linePoints.get(1)), "max")) + "\n";
                     res += "点到直线的最小距离:" + String.valueOf(dc.pointToLineDistance(points.get(0), new MyLine(linePoints.get(0), linePoints.get(1)), "min")) + "\n";
                     res += "点到直线的垂直距离:" + String.valueOf(sr.pointToLine(tf.PointTrans(points.get(0)), tf.LineTrans(new MyLine(linePoints.get(0), linePoints.get(1))))) + "\n";
                     JOptionPane.showMessageDialog(null, res);
+                } else {
+                    JOptionPane.showMessageDialog(null, "请线插入一条直线和一个点");
                 }
-            }
-            else if (content.equals("点与面距离")) {
+            } else if (content.equals("点与面距离")) {
                 if (points.size() != 1) {
                     JOptionPane.showMessageDialog(null, "请先插入一个点");
                 } else if (polygons.size() != 1) {
@@ -315,8 +333,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                     res += "点到多边形的最小距离" + String.valueOf(dc.pointToPolygonDistance(points.get(0), polygons.get(0), "min"));
                     JOptionPane.showMessageDialog(null, res);
                 }
-            }
-            else if (content.equals("线与线距离")) {
+            } else if (content.equals("线与线距离")) {
                 if (lines.size() != 2) {
                     JOptionPane.showMessageDialog(null, "请先输入两条线");
                 } else {
@@ -325,8 +342,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                             new MyLine((MyPoint) lines.get(1).get(0), (MyPoint) lines.get(1).get(1))));
                     JOptionPane.showMessageDialog(null, res);
                 }
-            }
-            else if (content.equals("线与面距离")) {
+            } else if (content.equals("线与面距离")) {
                 if (lines.size() < 0) {
                     JOptionPane.showMessageDialog(null, "请先输入一条线");
                 } else if (polygons.size() < 0) {
@@ -335,8 +351,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                     String res = "线到多边形的距离是:" + String.valueOf(dc.lineToPolygonDistance(new MyLine((MyPoint) lines.get(0).get(0), (MyPoint) lines.get(0).get(1)), polygons.get(0)));
                     JOptionPane.showMessageDialog(null, res);
                 }
-            }
-            else if (content.equals("生成点击凸包")) {
+            } else if (content.equals("生成点击凸包")) {
                 if (points.size() < 0) {
                     JOptionPane.showMessageDialog(null, "请先插入一个点集");
                 } else {
@@ -349,7 +364,6 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                             g.setColor(Color.RED);
                             g.fillOval((int) polygonConvexHull.get(i).getX(), (int) polygonConvexHull.get(i).getY(), 4, 4);
                         }
-                        g.setColor(Color.YELLOW);
                         for (int i = 0; i < polygonConvexHull.size() - 1; i++) {
                             g.drawLine((int) polygonConvexHull.get(i).getX(), (int) polygonConvexHull.get(i).getY(), (int) polygonConvexHull.get(i + 1).getX(), (int) polygonConvexHull.get(i + 1).getY());
                         }
@@ -357,8 +371,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                         JOptionPane.showMessageDialog(null, "无法形成一个闭合多边形");
                     }
                 }
-            }
-            else if (content.equals("面状地物量测")) {
+            } else if (content.equals("面状地物量测")) {
                 if (polygons.size() < 0) {
                     JOptionPane.showMessageDialog(null, "请先输入一个多边形");
                 } else {
@@ -374,8 +387,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                     res += "多边形RBF相关外接圆:" + String.valueOf(sr.getPolygonRelateBoundingFigure(polygons.get(0)));
                     JOptionPane.showMessageDialog(null, res);
                 }
-            }
-            else if (content.equals("多边形各个心")) {
+            } else if (content.equals("多边形各个心")) {
                 if (polygons.size() < 0) {
                     JOptionPane.showMessageDialog(null, "请先输入一个多边形");
                 } else {
@@ -386,8 +398,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                     res += "多边形中心坐标:(" + String.valueOf(dc.getPolygonCenter(polygons.get(0)).getX()) + "," + String.valueOf(dc.getPolygonCenter(polygons.get(0)).getY()) + ")" + "\n";
                     JOptionPane.showMessageDialog(null, res);
                 }
-            }
-            else if (content.equals("多边形面积")) {
+            } else if (content.equals("多边形面积")) {
                 if (polygons.size() <= 0) {
                     JOptionPane.showMessageDialog(null, "请输入至少一个多边形");
                 } else {
@@ -397,8 +408,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                     }
                     JOptionPane.showMessageDialog(null, res);
                 }
-            }
-            else if (content.equals("生成栅格")) {
+            } else if (content.equals("生成栅格")) {
                 matrixWeight = new int[C.rasterSize][C.rasterSize];
                 g = (Graphics2D) df.getGraphics();
 //                g.fillRect(0, 0, 30, 30);
@@ -412,8 +422,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                         g.fillRect(i * C.netSize + 200, j * C.netSize + 200, C.netSize, C.netSize);
                     }
                 }
-            }
-            else if (content.equals("最短路径")) {
+            } else if (content.equals("最短路径")) {
                 if (matrixWeight != null) {
                     int size = C.rasterSize;
                     //顶点数
@@ -498,8 +507,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                 } else {
                     JOptionPane.showMessageDialog(null, "请先生成矩阵");
                 }
-            }
-            else if (content.equals("聚类生成")) {
+            } else if (content.equals("聚类生成")) {
 //                if (points.size() == 0) {
 //                    String s = String.valueOf(points.size());
 //                    JOptionPane.showMessageDialog(null, s);
@@ -542,8 +550,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                     }
                 }
 
-            }
-            else if (content.equals("聚类距离")) {
+            } else if (content.equals("聚类距离")) {
                 String res = "";
                 if (clusterList.size() == 0) {
                     JOptionPane.showMessageDialog(null, "请先生成聚类");
@@ -561,8 +568,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                     }
                     JOptionPane.showMessageDialog(null, res);
                 }
-            }
-            else if (content.equals("导入DEM")) {
+            } else if (content.equals("导入DEM")) {
 //                String filePath = "";
 //                //选择文件
 //                JFileChooser chooser = new JFileChooser();
@@ -631,7 +637,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                 ArrayList<MyPoint> demPoints = new ArrayList<MyPoint>(dem.demPoints);
                 points = demPoints;
                 dem.setYllcorner(200);
-                dem.reDraw(g, dem, (int)dem.getXllcorner(), (int)dem.getYllcorner(), dem.colors);
+                dem.reDraw(g, dem, (int) dem.getXllcorner(), (int) dem.getYllcorner(), dem.colors);
 //                cd = new CreateDelaunay(demPoints);
 //                cd.initDelaunay();
             } else if (content.equals("导入DEM2")) {
@@ -665,9 +671,8 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                 }
                 int[][] ints = dc.oneDemCal(df.getText());
                 dem.setChangeHeight(ints);
-                dem.setChangeColor();
+                dem.setChangeColor(dem2);
                 dem.reDraw(g, dem, 900, 200, dem.changeColors);
-
             } else if (content.equals("DEM面积")) {
                 if (dem != null) {
                     double demArea = dem.getDemArea();
@@ -732,17 +737,59 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                 if (dem != null) {
                     Color[] colors = new Color[]{Color.GREEN, Color.YELLOW, Color.ORANGE, Color.RED};
                     g = (Graphics2D) df.getGraphics();
+                    double maxValue = 0;
+                    double minValue = 9999999;
                     for (int i = 0; i < dem.getNrows(); i++) {
                         for (int j = 0; j < dem.getNcols(); j++) {
-                            if (dem.slopes[i][j] <= 10) {
-                                g.setColor(colors[0]);
-                            } else if (dem.slopes[i][j] < 20) {
-                                g.setColor(colors[1]);
-                            } else if (dem.slopes[i][j] < 40) {
-                                g.setColor(colors[2]);
-                            } else {
-                                g.setColor(colors[3]);
+                            if (dem.slopes[i][j] < 180) {
+                                if (dem.slopes[i][j] > maxValue) {
+                                    maxValue = dem.slopes[i][j];
+                                }
+                                if (dem.slopes[i][j] < minValue) {
+                                    minValue = dem.slopes[i][j];
+                                }
                             }
+                        }
+                    }
+                    double H = maxValue - minValue;
+                    for (int i = 0; i < dem.getNrows(); i++) {
+                        for (int j = 0; j < dem.getNcols(); j++) {
+                            if (dem.slopes[i][j] < 180) {
+                                double color = 255 * (dem.slopes[i][j] - minValue) / H;
+                                g.setColor(new Color((int)color, (int)color,(int)color));
+                                g.fillRect((int) dem.points[i][j].getX() - (int) (0.5 * dem.getCellsize()) + (int) dem.getXllcorner(), (int) dem.points[i][j].getY() - (int) (0.5 * dem.getCellsize()) + (int) dem.getYllcorner(), (int) dem.getCellsize(), (int) dem.getCellsize());
+                            }
+
+                        }
+                    }
+                }
+            } else if (content.equals("坡向")) {
+                if (dem != null) {
+                    Color[] colors = new Color[]{Color.GREEN, Color.YELLOW, Color.ORANGE, Color.RED};
+                    g = (Graphics2D) df.getGraphics();
+                    double maxValue = 0;
+                    double minValue = 9999999;
+                    for (int i = 0; i < dem.getNrows(); i++) {
+                        for (int j = 0; j < dem.getNcols(); j++) {
+                            if (Math.abs(dem.aspects[i][j]) > 1) {
+                                if (dem.aspects[i][j] > maxValue) {
+                                    maxValue = dem.aspects[i][j];
+                                }
+                                if (dem.aspects[i][j] < minValue) {
+                                    minValue = dem.aspects[i][j];
+                                }
+                            }
+                        }
+                    }
+                    double H = maxValue - minValue;
+                    for (int i = 0; i < dem.getNrows(); i++) {
+                        for (int j = 0; j < dem.getNcols(); j++) {
+                            double color = 255 * (dem.aspects[i][j] - minValue) / H;
+                            if (Math.abs(color) < 255) {
+                                color = Math.abs(color);
+                                g.setColor(new Color((int)color, (int)color,(int)color));
+                            }
+
                             g.fillRect((int) dem.points[i][j].getX() - (int) (0.5 * dem.getCellsize()) + (int) dem.getXllcorner(), (int) dem.points[i][j].getY() - (int) (0.5 * dem.getCellsize()) + (int) dem.getYllcorner(), (int) dem.getCellsize(), (int) dem.getCellsize());
                         }
                     }
@@ -866,9 +913,6 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                         rs += "面面相交\n";
                         rs += "========================\n";
                         Geometry intersection = polygon1.intersection(polygon2);
-//                        for (Coordinate coordinate : intersection.getCoordinates()) {
-//                            rs += coordinate.toString() + "\n";
-//                        }
                         g = (Graphics2D) df.getGraphics();
                         g.setColor(Color.CYAN);
                         fillPol(intersection, g, Color.CYAN);
@@ -967,6 +1011,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
         x2 = e.getX();
         y2 = e.getY();
         if ((shape.equals("多边形")||shape.equals("直线")) && !flag) {
+            tempPoints.clear();
             g.drawLine(x1, y1, x2, y2);
             newx1 = x1;
             newy1 = y1;
@@ -1000,6 +1045,7 @@ public class DrawListener extends MouseAdapter implements ActionListener{
             res += "地形起伏度" + String.valueOf(relativeRelief[0]) + "\n";
             res += "地表切割深度" + String.valueOf(relativeRelief[1]) + "\n";
             res += "高程变异系数" + String.valueOf(dem.getElevationVariation(i, j)) + "\n";
+            res += "此点的体积" + String.valueOf(dem.volumes[i][j]) + "\n";
             JOptionPane.showMessageDialog(null, res);
 
         }
@@ -1015,8 +1061,6 @@ public class DrawListener extends MouseAdapter implements ActionListener{
                     g.drawLine(newx1, newy1, newx2, newy2);
                     flag = false;
                     polygons.add(new MyPolygon(new ArrayList<MyPoint>(tempPoints)));
-
-
                     tempPoints.clear();
                 }else{
                     flag = false;
@@ -1030,7 +1074,8 @@ public class DrawListener extends MouseAdapter implements ActionListener{
             g.drawLine(newx2, newy2, x2, y2);
             newx2 = x2;
             newy2 = y2;
-        }else if (shape.equals("圆点")) {
+        }
+        else if (shape.equals("圆点")) {
             g = (Graphics2D) df.getGraphics();
             g.fillOval(e.getX(), e.getY(), 3, 3);
             points.add(new MyPoint(e.getX(), e.getY()));
